@@ -1,0 +1,33 @@
+{
+  "_comment": "Example runtime settings. Copy to settings.json and adjust values.",
+  "app_env": "development",
+  "retention": {
+    "context_idle_seconds": 1800,
+    "context_max_seconds": 86400,
+    "conversation_anonymized_days": 90,
+    "feedback_days": 180,
+    "mock_appointment_days": 90,
+    "emergency_audit_days": 365,
+    "analytics_days": 365
+  },
+  "rate_limits": {
+    "messages_per_session_per_minute": 20,
+    "messages_per_ip_per_minute": 60,
+    "max_messages_per_session": 100,
+    "max_message_length": 4000,
+    "appointment_create_per_session_per_minute": 5,
+    "content_write_per_user_per_minute": 30,
+    "analytics_read_per_user_per_minute": 60
+  },
+  "channels": {
+    "web_widget": {
+      "enabled": true,
+      "display_name": "Chat Widget"
+    },
+    "web_page": {
+      "enabled": true,
+      "display_name": "Standalone Chat"
+    }
+  },
+  "metadata": {}
+}

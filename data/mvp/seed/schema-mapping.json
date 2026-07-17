@@ -1,0 +1,237 @@
+{
+  "mapping_id": "SCHEMA-MAP-MVP-01",
+  "version": "1.0.0",
+  "created_at": "2026-07-18",
+  "manifest_ref": "data/mvp/manifest.json",
+  "source_registry_ref": "data/mvp/seed/source-registry.json",
+  "domain_mappings": [
+    {
+      "domain_code": "gia_dich_vu",
+      "canonical_entity": "KnowledgeChunk",
+      "source_id": "SRC-PRICE-001",
+      "seed_file": "data/mvp/seed/knowledge-base.json",
+      "chunk_count": 15,
+      "schema_fields": {
+        "chunk_id": "KCH-PRICE-*",
+        "content": "string",
+        "domain": "gia_dich_vu",
+        "sub_topic": "string",
+        "source_id": "SRC-PRICE-001",
+        "source_section": "string",
+        "source_page": "string|null",
+        "version": "string",
+        "is_active": "boolean",
+        "approval_status": "approved_for_pilot",
+        "effective_date": "date",
+        "tags": "string[]",
+        "is_mock": false,
+        "answerable": true
+      },
+      "data_status": "approved_for_pilot"
+    },
+    {
+      "domain_code": "quy_trinh",
+      "canonical_entity": "KnowledgeChunk",
+      "source_id": "SRC-PROCESS-001",
+      "seed_file": "data/mvp/seed/knowledge-base.json",
+      "chunk_count": 13,
+      "schema_fields": {
+        "chunk_id": "KCH-PROC-*",
+        "content": "string",
+        "domain": "quy_trinh",
+        "sub_topic": "string",
+        "source_id": "SRC-PROCESS-001",
+        "source_section": "string",
+        "source_page": null,
+        "version": "QT.25.01",
+        "is_active": true,
+        "approval_status": "approved_for_pilot",
+        "effective_date": "date",
+        "tags": "string[]",
+        "is_mock": false,
+        "answerable": true
+      },
+      "data_status": "approved_for_pilot"
+    },
+    {
+      "domain_code": "bhyt",
+      "canonical_entity": "KnowledgeChunk",
+      "source_ids": [
+        "SRC-BHYT-001",
+        "SRC-BHYT-002",
+        "SRC-BHYT-003",
+        "SRC-BHYT-004",
+        "SRC-BHYT-005",
+        "SRC-BHYT-006",
+        "SRC-BHYT-007"
+      ],
+      "seed_file": "data/mvp/seed/knowledge-base.json",
+      "chunk_count": 0,
+      "schema_fields": {
+        "chunk_id": "KCH-BHYT-*",
+        "content": "string",
+        "domain": "bhyt",
+        "sub_topic": "string",
+        "source_id": "SRC-BHYT-*",
+        "source_section": "string|null",
+        "source_page": "string|null",
+        "version": "string",
+        "is_active": true,
+        "approval_status": "approved_for_pilot",
+        "effective_date": "date",
+        "tags": "string[]",
+        "is_mock": false,
+        "answerable": true
+      },
+      "data_status": "approved_for_pilot"
+    },
+    {
+      "domain_code": "dat_lich",
+      "canonical_entity": "KnowledgeChunk",
+      "source_id": "SRC-MOCK-001",
+      "seed_file": "data/mvp/seed/knowledge-base.json",
+      "chunk_count": 6,
+      "schema_fields": {
+        "chunk_id": "KCH-BOOK-*",
+        "content": "string",
+        "domain": "dat_lich",
+        "sub_topic": "string",
+        "source_id": "SRC-MOCK-001",
+        "source_section": null,
+        "source_page": null,
+        "version": "1.0",
+        "is_active": true,
+        "approval_status": "mock",
+        "effective_date": "date",
+        "tags": "string[]",
+        "is_mock": true,
+        "answerable": true
+      },
+      "data_status": "mock"
+    },
+    {
+      "domain_code": "gio_lam_viec",
+      "canonical_entity": "KnowledgeChunk",
+      "source_id": "SRC-MOCK-002",
+      "seed_file": "data/mvp/seed/knowledge-base.json",
+      "chunk_count": 4,
+      "schema_fields": {
+        "chunk_id": "KCH-HOURS-*",
+        "content": "string",
+        "domain": "gio_lam_viec",
+        "sub_topic": "string",
+        "source_id": "SRC-MOCK-002",
+        "source_section": null,
+        "source_page": null,
+        "version": "1.0",
+        "is_active": true,
+        "approval_status": "mock",
+        "effective_date": "date",
+        "tags": "string[]",
+        "is_mock": true,
+        "answerable": true
+      },
+      "data_status": "mock"
+    },
+    {
+      "domain_code": "bac_si_khoa",
+      "canonical_entity": "KnowledgeChunk",
+      "source_id": "SRC-MOCK-003",
+      "seed_file": "data/mvp/seed/knowledge-base.json",
+      "chunk_count": 6,
+      "schema_fields": {
+        "chunk_id": "KCH-DOC-*",
+        "content": "string",
+        "domain": "bac_si_khoa",
+        "sub_topic": "string",
+        "source_id": "SRC-MOCK-003",
+        "source_section": null,
+        "source_page": null,
+        "version": "1.0",
+        "is_active": true,
+        "approval_status": "mock",
+        "effective_date": "date",
+        "tags": "string[]",
+        "is_mock": true,
+        "answerable": true
+      },
+      "data_status": "mock"
+    },
+    {
+      "domain_code": "thong_tin_benh_vien",
+      "canonical_entity": "KnowledgeChunk",
+      "source_id": "SRC-MOCK-004",
+      "seed_file": "data/mvp/seed/knowledge-base.json",
+      "chunk_count": 4,
+      "schema_fields": {
+        "chunk_id": "KCH-HOSP-*",
+        "content": "string",
+        "domain": "thong_tin_benh_vien",
+        "sub_topic": "string",
+        "source_id": "SRC-MOCK-004",
+        "source_section": null,
+        "source_page": null,
+        "version": "1.0",
+        "is_active": true,
+        "approval_status": "mock",
+        "effective_date": "date",
+        "tags": "string[]",
+        "is_mock": true,
+        "answerable": true
+      },
+      "data_status": "mock"
+    }
+  ],
+  "canonical_entity_references": {
+    "KnowledgeChunk": {
+      "artifact": "ARCH-02",
+      "section": "Knowledge",
+      "fields": [
+        "chunk_id",
+        "content",
+        "domain",
+        "sub_topic",
+        "source",
+        "version",
+        "is_active",
+        "embedding",
+        "metadata(tags, effective_date, page_numbers)"
+      ]
+    },
+    "KnowledgeDomain": {
+      "artifact": "ARCH-02",
+      "section": "Knowledge",
+      "fields": [
+        "domain_id",
+        "domain_name",
+        "domain_code",
+        "owner",
+        "last_reviewed"
+      ]
+    }
+  },
+  "contract_references": {
+    "KnowledgeChunkDTO": {
+      "artifact": "INT-04",
+      "section": "Knowledge/content DTOs",
+      "fields": [
+        "content",
+        "domain",
+        "subtopic",
+        "source",
+        "version",
+        "active",
+        "effective",
+        "approval"
+      ]
+    }
+  },
+  "seed_order": [
+    "hospital-configuration.json",
+    "emergency.json",
+    "knowledge-base.json",
+    "mock-his.json",
+    "admin-dashboard.json",
+    "analytics.json"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "_comment": "Example rate-limit budget configuration. Copy to rate-limits.json and adjust values.",
+  "budgets": [
+    {
+      "name": "chat_messages_per_session_per_minute",
+      "limit": 20,
+      "window_seconds": 60,
+      "key": "session_id"
+    },
+    {
+      "name": "chat_messages_per_ip_per_minute",
+      "limit": 60,
+      "window_seconds": 60,
+      "key": "ip_address"
+    },
+    {
+      "name": "chat_messages_per_session_total",
+      "limit": 100,
+      "window_seconds": 86400,
+      "key": "session_id"
+    },
+    {
+      "name": "appointment_create_per_session_per_minute",
+      "limit": 5,
+      "window_seconds": 60,
+      "key": "session_id"
+    },
+    {
+      "name": "content_write_per_user_per_minute",
+      "limit": 30,
+      "window_seconds": 60,
+      "key": "user_id"
+    },
+    {
+      "name": "analytics_read_per_user_per_minute",
+      "limit": 60,
+      "window_seconds": 60,
+      "key": "user_id"
+    }
+  ],
+  "enforcement": {
+    "strategy": "sliding_window",
+    "on_exceeded": {
+      "http_status": 429,
+      "error_code": "RATE_LIMIT_EXCEEDED",
+      "retry_after_header": true
+    }
+  },
+  "metadata": {}
+}

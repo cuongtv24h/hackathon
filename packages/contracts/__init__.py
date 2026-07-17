@@ -1,0 +1,185 @@
+# === TASK:WP-009:START ===
+"""Shared DTO, error and runtime configuration contracts.
+
+This package exposes the canonical contracts declared in:
+
+* ``docs/artifacts/interface/data-contracts.md``      (INT-04)
+* ``docs/artifacts/interface/error-contracts.md``     (INT-07)
+* ``docs/artifacts/interface/interface-guidelines.md`` (INT-09)
+
+The public surface is intentionally narrow:
+
+* :mod:`errors` — ``UnifiedErrorEnvelope`` and the canonical error codes.
+* :mod:`dto`    — ``CapabilityResponseEnvelope``, ``ClientContextDTO``,
+                 ``ChannelConfigurationDTO``, ``ChatConfigurationDTO``.
+* :mod:`runtime` — ``RuntimeSettings``, ``RBACConfig`` and the RBAC role
+                   constants.
+
+All contracts are frozen; downstream code must not add, remove or rename
+fields.
+"""
+
+from .dto import (
+    CapabilityResponseEnvelope,
+    ChannelConfigurationDTO,
+    ChatConfigurationDTO,
+    ClientContextDTO,
+    make_confirmation_required_envelope,
+    make_error_envelope_from_dto,
+    make_success_envelope,
+)
+from .errors import (
+    AI_OUTPUT_REJECTED,
+    AI_PROVIDER_UNAVAILABLE,
+    ACCESS_DENIED,
+    APPOINTMENT_NOT_FOUND,
+    AUTHENTICATION_REQUIRED,
+    CATEGORY_AI,
+    CATEGORY_AUTHENTICATION,
+    CATEGORY_AUTHORIZATION,
+    CATEGORY_BUSINESS,
+    CATEGORY_NOT_FOUND,
+    CATEGORY_RATE_LIMIT,
+    CATEGORY_SAFETY,
+    CATEGORY_SYSTEM,
+    CATEGORY_TOOL,
+    CATEGORY_VALIDATION,
+    CONFIG_UNAVAILABLE,
+    CONFIRMATION_REQUIRED,
+    CONTENT_CONFLICT,
+    CONTENT_NOT_APPROVED,
+    CONTENT_NOT_FOUND,
+    DOMAIN_APPROVER_REQUIRED,
+    EMERGENCY_AUDIT_DEFERRED,
+    EMERGENCY_PROTOCOL_FALLBACK_USED,
+    ErrorDetail,
+    FIELD_REQUIRED,
+    INTEGRATION_UNAVAILABLE,
+    INTERNAL_ERROR,
+    INVALID_DATE_RANGE,
+    INVALID_ENUM,
+    INVALID_REQUEST,
+    INVALID_STATE_TRANSITION,
+    MEDICAL_ADVICE_REFUSED,
+    MESSAGE_TOO_LONG,
+    NO_GROUNDED_RESULT,
+    OUT_OF_SCOPE,
+    RATE_LIMIT_EXCEEDED,
+    SERVICE_UNAVAILABLE,
+    SLOT_UNAVAILABLE,
+    TOKEN_INVALID,
+    TOOL_OUTPUT_INVALID,
+    TOOL_TIMEOUT,
+    TOOL_UNAVAILABLE,
+    UnifiedErrorEnvelope,
+    make_error_envelope,
+)
+from .runtime import (
+    ALL_RBAC_ROLES,
+    DEFAULT_ROLE_PERMISSIONS,
+    PERM_ANALYTICS_READ,
+    PERM_APPOINTMENT_READ,
+    PERM_APPOINTMENT_WRITE,
+    PERM_AUDIT_READ,
+    PERM_CONTENT_ADMIN,
+    PERM_EMERGENCY_CONFIG,
+    PERM_KNOWLEDGE_READ,
+    PERM_KNOWLEDGE_WRITE,
+    PERM_SESSION_MANAGE,
+    RBACConfig,
+    RBAC_ANONYMOUS_USER,
+    RBAC_CONTENT_ADMIN,
+    RBAC_DOMAIN_OWNER,
+    RBAC_EMERGENCY_APPROVER,
+    RBAC_OPERATIONS_ANALYST,
+    RBAC_SECURITY_AUDITOR,
+    RBAC_SYSTEM_SERVICE,
+    RateLimitSettings,
+    RetentionSettings,
+    RuntimeSettings,
+    load_runtime_settings,
+)
+
+__all__ = [
+    # DTOs
+    "CapabilityResponseEnvelope",
+    "ChannelConfigurationDTO",
+    "ChatConfigurationDTO",
+    "ClientContextDTO",
+    "make_success_envelope",
+    "make_error_envelope_from_dto",
+    "make_confirmation_required_envelope",
+    # Errors
+    "ErrorDetail",
+    "UnifiedErrorEnvelope",
+    "make_error_envelope",
+    # Error codes
+    "INVALID_REQUEST",
+    "FIELD_REQUIRED",
+    "INVALID_ENUM",
+    "INVALID_DATE_RANGE",
+    "MESSAGE_TOO_LONG",
+    "AUTHENTICATION_REQUIRED",
+    "TOKEN_INVALID",
+    "ACCESS_DENIED",
+    "DOMAIN_APPROVER_REQUIRED",
+    "CONFIRMATION_REQUIRED",
+    "SLOT_UNAVAILABLE",
+    "CONTENT_NOT_APPROVED",
+    "CONTENT_CONFLICT",
+    "INVALID_STATE_TRANSITION",
+    "APPOINTMENT_NOT_FOUND",
+    "CONTENT_NOT_FOUND",
+    "NO_GROUNDED_RESULT",
+    "OUT_OF_SCOPE",
+    "MEDICAL_ADVICE_REFUSED",
+    "AI_PROVIDER_UNAVAILABLE",
+    "AI_OUTPUT_REJECTED",
+    "TOOL_UNAVAILABLE",
+    "TOOL_TIMEOUT",
+    "TOOL_OUTPUT_INVALID",
+    "INTEGRATION_UNAVAILABLE",
+    "EMERGENCY_PROTOCOL_FALLBACK_USED",
+    "EMERGENCY_AUDIT_DEFERRED",
+    "RATE_LIMIT_EXCEEDED",
+    "INTERNAL_ERROR",
+    "CONFIG_UNAVAILABLE",
+    "SERVICE_UNAVAILABLE",
+    # Error categories
+    "CATEGORY_VALIDATION",
+    "CATEGORY_AUTHENTICATION",
+    "CATEGORY_AUTHORIZATION",
+    "CATEGORY_BUSINESS",
+    "CATEGORY_NOT_FOUND",
+    "CATEGORY_AI",
+    "CATEGORY_TOOL",
+    "CATEGORY_SAFETY",
+    "CATEGORY_RATE_LIMIT",
+    "CATEGORY_SYSTEM",
+    # Runtime
+    "RetentionSettings",
+    "RateLimitSettings",
+    "RuntimeSettings",
+    "load_runtime_settings",
+    # RBAC
+    "RBACConfig",
+    "RBAC_ANONYMOUS_USER",
+    "RBAC_CONTENT_ADMIN",
+    "RBAC_DOMAIN_OWNER",
+    "RBAC_EMERGENCY_APPROVER",
+    "RBAC_OPERATIONS_ANALYST",
+    "RBAC_SECURITY_AUDITOR",
+    "RBAC_SYSTEM_SERVICE",
+    "ALL_RBAC_ROLES",
+    "PERM_KNOWLEDGE_READ",
+    "PERM_KNOWLEDGE_WRITE",
+    "PERM_CONTENT_ADMIN",
+    "PERM_EMERGENCY_CONFIG",
+    "PERM_APPOINTMENT_READ",
+    "PERM_APPOINTMENT_WRITE",
+    "PERM_ANALYTICS_READ",
+    "PERM_AUDIT_READ",
+    "PERM_SESSION_MANAGE",
+    "DEFAULT_ROLE_PERMISSIONS",
+]
+# === TASK:WP-009:END ===
