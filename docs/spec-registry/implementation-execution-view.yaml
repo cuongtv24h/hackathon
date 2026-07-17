@@ -5,8 +5,8 @@ source:
   work_package_map: docs/spec-registry/work-package-map.yaml
   task_file_contracts: docs/spec-registry/task-to-file-contract-map.yaml
 gates:
-  - {id: G0, name: base_scaffold, packets: [WP-001, WP-002, WP-003], verify: scripts/verify-scaffold.bat}
-  - {id: G0R, name: region_scaffold, packets: [WP-004], verify: "scripts/verify-scaffold.bat /regions"}
+  - {id: G0, name: base_scaffold, packets: [WP-001, WP-002, WP-003], verify: manual_readiness_review}
+  - {id: G0R, name: region_scaffold, packets: [WP-004], verify: initialization_map_review}
   - {id: G1, name: data_contract_baseline, packets: [WP-005, WP-006, WP-007, WP-008, WP-009]}
   - {id: G2, name: foundation_baseline, packets: [WP-101, WP-102, WP-103, WP-104, WP-105]}
   - {id: G3, name: tool_baseline, packets: [WP-201, WP-202, WP-203, WP-204]}
@@ -63,4 +63,3 @@ waves:
     parallel_groups: [[WP-601], [WP-602, WP-603, WP-604, WP-605], [WP-606]]
     entry: experience_baseline
     exit: release_baseline
-

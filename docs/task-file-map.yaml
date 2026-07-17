@@ -16,7 +16,7 @@ zone_groups:
 mapping:
   - {work_package: WP-001, owner_pool: OTHER, zones: [docs/repo-manifest.yaml, docs/file-ownership.yaml, docs/task-file-map.yaml, docs/spec-registry/task-to-file-contract-map.yaml]}
   - {work_package: WP-002, owner_pool: OTHER, zones: [scripts/bootstrap.bat, docs/spec-registry/scaffold-script-contracts.yaml]}
-  - {work_package: WP-003, owner_pool: QA, zones: [scripts/verify-scaffold.bat, docs/spec-registry/scaffold-script-contracts.yaml]}
+  - {work_package: WP-003, owner_pool: QA, zones: []}
   - {work_package: WP-004, owner_pool: OTHER, zones: [docs/region-marker-policy.md, config/region-markers/]}
   - {work_package: WP-005, owner_pool: DATA, zones: [supabase/migrations/, docs/data-schema/]}
   - {work_package: WP-006, owner_pool: DATA, zones: [supabase/policies/, apps/api/foundation/database/]}

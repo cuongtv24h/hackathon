@@ -12,7 +12,7 @@ Monorepo cho MVP trợ lý bệnh viện: kênh chat người bệnh, dashboard 
    ```
 
 3. Sao chép `.env.example` thành `.env` và chỉ điền `DATABASE_URL` cùng khoá LLM ở môi trường local/server.
-4. Chạy `scripts\verify-scaffold.bat` trước Sprint 1. Kiểm tra `/regions` chỉ chạy sau khi WP-004 hoàn tất.
+4. Hoàn tất WP-003 manual readiness review và WP-004 initialization-map review trước Sprint 1.
 
 ## Tài liệu thực thi
 

@@ -6,8 +6,8 @@ Human-readable execution guide for the 40 approved work packages. This is a coor
 
 ## Readiness Gates
 
-1. **G0 Base scaffold:** WP-001 → WP-002 → WP-003. No builder coding starts before `scripts/verify-scaffold.bat` passes.
-2. **G0R Region scaffold:** WP-004 creates region initialization evidence. Run `scripts/verify-scaffold.bat /regions` before the first builder task in a zone.
+1. **G0 Base scaffold:** WP-001 → WP-002 → WP-003. No builder coding starts before WP-003 manual readiness review is approved.
+2. **G0R Region scaffold:** WP-004 creates region initialization evidence. Human Lead or Reviewer approves the initialization map before the first builder task in a zone.
 3. **G1 Data baseline:** WP-005, WP-006, WP-007, WP-008 and WP-009 establish schema, connection, source registry, seed/RAG index and shared contracts.
 4. **G2 Foundation baseline:** WP-101–105.
 5. **G3 Tool baseline:** WP-201–204.
@@ -42,4 +42,3 @@ Human-readable execution guide for the 40 approved work packages. This is a coor
 - One builder owns one packet and one branch at a time.
 - Reviewer capacity is reserved for every packet; Audit runs at the end of Sprint 0, 1, 2 and 3.
 - Use `docs/spec-registry/implementation-execution-view.yaml` for scripts/board lookup.
-

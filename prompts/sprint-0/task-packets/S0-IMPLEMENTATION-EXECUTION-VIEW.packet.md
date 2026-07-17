@@ -39,7 +39,7 @@ Publish the board-level execution guide for wave order, parallel groups, entry/e
 
 | Thứ tự | Wave / Sprint | Dispatch order | Điều kiện để chuyển wave |
 |---|---|---|---|
-| 1 | Wave 0 / Sprint 0 | `WP-001 → WP-002 → WP-003 → WP-004` | `scripts\verify-scaffold.bat /regions` pass |
+| 1 | Wave 0 / Sprint 0 | `WP-001 → WP-002 → WP-003 → WP-004` | WP-003 readiness review và WP-004 initialization-map review được approve |
 | 2 | Wave 1 / Sprint 1 | Chạy song song `WP-005`, `WP-007`, `WP-009`; sau đó `WP-006` (sau WP-005); cuối cùng `WP-008` (sau WP-006 và WP-007) | Schema, kết nối, source registry, seed/RAG và shared contracts pass |
 | 3 | Wave 2 / Sprint 1 | `WP-101` đến `WP-105` chạy song song khi dependency dữ liệu của từng WP đã pass | Foundation contract checks pass |
 | 4 | Wave 3 / Sprint 2 | `WP-201` đến `WP-204` chạy song song | Tool contract, timeout và fallback tests pass |

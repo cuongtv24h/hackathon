@@ -43,15 +43,7 @@ work_packages:
   - id: WP-003
     owner_pool: QA
     suggested_branch: task/WP-003
-    files:
-      - path: scripts/verify-scaffold.bat
-        path_kind: file
-        operation: UPDATE
-        region: FULL_FILE
-      - path: docs/spec-registry/scaffold-script-contracts.yaml
-        path_kind: file
-        operation: UPDATE
-        region: FULL_FILE
+    files: []
   - id: WP-004
     owner_pool: OTHER
     suggested_branch: task/WP-004

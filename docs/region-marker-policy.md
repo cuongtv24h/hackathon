@@ -28,9 +28,9 @@ Không lồng marker. Không đổi ID, không xóa marker của task khác. Fil
 3. Nếu marker hoặc file leaf chưa tồn tại, builder có `CREATE` directory zone được tạo leaf file đầu tiên trong đúng zone và thêm marker của chính task. WP-004 chỉ tạo/duy trì initialization map và kiểm tra marker/zone không chồng lấn.
 4. Chạm vùng ngoài contract: dừng task, tạo escalation cho Human Lead.
 5. Reviewer từ chối diff làm đổi marker, ownership hoặc file path mà không có exception được duyệt.
-6. Sau merge, integration branch chạy `scripts/verify-scaffold.bat /regions`.
+6. Sau merge WP-004, Human Lead hoặc Reviewer xác nhận initialization map và vùng ghi không chồng lấn trước builder task đầu tiên trong zone.
 
-## 5. Two-stage verification
+## 5. Readiness review
 
-- `scripts/verify-scaffold.bat`: base gate sau WP-002/WP-003; kiểm tra governance files và directory zones.
-- `scripts/verify-scaffold.bat /regions`: post-region gate sau WP-004; kiểm tra region policy/initialization map trước builder task đầu tiên trong zone.
+- WP-003 ghi nhận manual review rằng manifest bắt buộc và directory zones do WP-002 tạo đã sẵn sàng.
+- Sau WP-004, Human Lead hoặc Reviewer xác nhận initialization map và region policy trước builder task đầu tiên trong zone.
