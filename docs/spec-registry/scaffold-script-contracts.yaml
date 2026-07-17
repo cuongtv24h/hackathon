@@ -1,0 +1,39 @@
+# Scaffold Script Contracts — Phase 6
+version: "1.0.0"
+scripts:
+  - path: scripts/bootstrap.bat
+    owner_work_package: WP-002
+    purpose: Create approved empty directory zones without overwriting files.
+    input: Run from repository root; no required arguments.
+    success_conditions:
+      - Required workspace and PromptOps directories exist.
+      - Existing files are untouched.
+      - Exit code is 0.
+    failure_conditions:
+      - Not executed from repository root.
+      - Required governance manifest is missing.
+  - path: scripts/verify-scaffold.bat
+    owner_work_package: WP-003
+    purpose: Verify required governance files and scaffold directories.
+    modes:
+      - {argument: "", scope: base, required_before: builder_tasks}
+      - {argument: "/regions", scope: post_region, required_before: first_task_in_each_zone}
+    success_conditions:
+      - Required files and directories exist.
+      - In /regions mode, region marker policy and initialization map exist.
+      - Exit code is 0.
+    failure_conditions:
+      - Any required path missing.
+      - Unknown argument.
+required_files:
+  - docs/repo-manifest.yaml
+  - docs/file-ownership.yaml
+  - docs/task-file-map.yaml
+  - docs/region-marker-policy.md
+  - docs/spec-registry/scaffold-script-contracts.yaml
+  - docs/spec-registry/task-to-file-contract-map.yaml
+  - scripts/bootstrap.bat
+  - scripts/verify-scaffold.bat
+  - .env.example
+  - README.md
+

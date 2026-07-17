@@ -1,0 +1,57 @@
+# Task File Map — Phase 6 Governance
+version: "1.0.0"
+path_semantics:
+  directory_zone: A real, exclusive folder path. The exact leaf source file is chosen only in a Phase 6.5 packet after technology is confirmed; it must remain inside this zone.
+  full_file: A concrete governance file. Builders may edit only the declared task region after initialization.
+operation_rules:
+  CREATE: May create the declared file or content within an empty directory zone.
+  UPDATE: May update only the declared region after reviewer-visible diff.
+  FULL_FILE: Allowed only for a newly created file or explicit Human Lead exception.
+zone_groups:
+  foundation: [apps/api/foundation/, apps/api/logging/, apps/mock-his/]
+  ai: [apps/api/ai/, apps/api/capabilities/emergency/]
+  experience: [apps/chat-web/, apps/admin-web/]
+  quality: [tests/]
+  delivery: [docs/, scripts/, config/]
+mapping:
+  - {work_package: WP-001, owner_pool: OTHER, zones: [docs/repo-manifest.yaml, docs/file-ownership.yaml, docs/task-file-map.yaml, docs/spec-registry/task-to-file-contract-map.yaml]}
+  - {work_package: WP-002, owner_pool: OTHER, zones: [scripts/bootstrap.bat, docs/spec-registry/scaffold-script-contracts.yaml]}
+  - {work_package: WP-003, owner_pool: QA, zones: [scripts/verify-scaffold.bat, docs/spec-registry/scaffold-script-contracts.yaml]}
+  - {work_package: WP-004, owner_pool: OTHER, zones: [docs/region-marker-policy.md, config/region-markers/]}
+  - {work_package: WP-005, owner_pool: DATA, zones: [supabase/migrations/, docs/data-schema/]}
+  - {work_package: WP-006, owner_pool: DATA, zones: [supabase/policies/, apps/api/foundation/database/]}
+  - {work_package: WP-007, owner_pool: DATA, zones: [data/mvp/, docs/knowledge/]}
+  - {work_package: WP-008, owner_pool: DATA, zones: [apps/api/foundation/knowledge/ingestion/, supabase/seed/]}
+  - {work_package: WP-009, owner_pool: API, zones: [packages/contracts/, config/runtime/]}
+  - {work_package: WP-101, owner_pool: API, zones: [apps/api/foundation/session/, apps/api/foundation/configuration/, apps/api/foundation/feedback/]}
+  - {work_package: WP-102, owner_pool: API, zones: [apps/api/foundation/knowledge/repository/, apps/api/foundation/knowledge/content/]}
+  - {work_package: WP-103, owner_pool: API, zones: [apps/api/foundation/emergency/, apps/api/capabilities/emergency/protocols/]}
+  - {work_package: WP-104, owner_pool: API, zones: [apps/api/foundation/appointments/, apps/mock-his/]}
+  - {work_package: WP-105, owner_pool: API, zones: [apps/api/logging/conversation/, apps/api/logging/audit/, apps/api/foundation/analytics/]}
+  - {work_package: WP-201, owner_pool: AI-CORE, zones: [apps/api/ai/rag/]}
+  - {work_package: WP-202, owner_pool: AI-CORE, zones: [apps/api/capabilities/emergency/prefilter/]}
+  - {work_package: WP-203, owner_pool: API, zones: [apps/api/foundation/appointments/tools/]}
+  - {work_package: WP-204, owner_pool: AI-CORE, zones: [apps/api/ai/guardrails/privacy/, apps/api/logging/conversation/tool-adapter/]}
+  - {work_package: WP-301, owner_pool: AI-CORE, zones: [apps/api/ai/providers/]}
+  - {work_package: WP-302, owner_pool: AI-CORE, zones: [apps/api/ai/orchestrator/core/, apps/api/ai/guardrails/]}
+  - {work_package: WP-303, owner_pool: AI-CORE, zones: [apps/api/ai/orchestrator/information-assistance/]}
+  - {work_package: WP-304, owner_pool: AI-CORE, zones: [apps/api/ai/orchestrator/emergency-safety/]}
+  - {work_package: WP-305, owner_pool: AI-CORE, zones: [apps/api/ai/orchestrator/appointment-booking/]}
+  - {work_package: WP-306, owner_pool: AI-CORE, zones: [apps/api/ai/orchestrator/appointment-status/]}
+  - {work_package: WP-401, owner_pool: API, zones: [apps/api/gateway/capabilities/information-assistance/]}
+  - {work_package: WP-402, owner_pool: API, zones: [apps/api/gateway/capabilities/emergency-safety/]}
+  - {work_package: WP-403, owner_pool: API, zones: [apps/api/gateway/capabilities/appointment-booking/]}
+  - {work_package: WP-404, owner_pool: API, zones: [apps/api/gateway/capabilities/appointment-status/]}
+  - {work_package: WP-501, owner_pool: FE, zones: [apps/chat-web/src/shared/, apps/chat-web/src/widget/, apps/chat-web/src/standalone/]}
+  - {work_package: WP-502, owner_pool: FE, zones: [apps/chat-web/src/features/information-assistance/]}
+  - {work_package: WP-503, owner_pool: FE, zones: [apps/chat-web/src/features/appointments/]}
+  - {work_package: WP-504, owner_pool: FE, zones: [apps/chat-web/src/features/emergency-safety/]}
+  - {work_package: WP-505, owner_pool: FE, zones: [apps/admin-web/src/features/content-management/]}
+  - {work_package: WP-506, owner_pool: FE, zones: [apps/admin-web/src/features/analytics-audit/]}
+  - {work_package: WP-601, owner_pool: QA, zones: [tests/contracts/, tests/data-validation/]}
+  - {work_package: WP-602, owner_pool: QA, zones: [tests/e2e/information-assistance/]}
+  - {work_package: WP-603, owner_pool: QA, zones: [tests/e2e/emergency-safety/, tests/fault/]}
+  - {work_package: WP-604, owner_pool: QA, zones: [tests/e2e/appointments/]}
+  - {work_package: WP-605, owner_pool: QA, zones: [tests/e2e/admin-dashboard/]}
+  - {work_package: WP-606, owner_pool: QA, zones: [tests/nfr/, tests/release/, config/deployment/]}
+

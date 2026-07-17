@@ -1,0 +1,75 @@
+{
+  "dataset": {
+    "id": "MOCK-HIS-MVP-01",
+    "version": "1.0.0",
+    "is_mock": true,
+    "pilot_anchor_date": "2026-08-03",
+    "default_appointment_status": "pending",
+    "notice": "Tên bác sĩ và bệnh nhân trong file này hoàn toàn hư cấu."
+  },
+  "departments": [
+    {"department_id": "DEP-CARD", "code": "TIM_MACH", "name": "Khoa Tim mạch", "location": "[MOCK] Tầng 2", "is_active": true},
+    {"department_id": "DEP-SURG", "code": "PT_TIM", "name": "Khoa Phẫu thuật Tim mạch", "location": "[MOCK] Tầng 4", "is_active": true},
+    {"department_id": "DEP-PED", "code": "TIM_TRE_EM", "name": "Khoa Tim trẻ em", "location": "[MOCK] Tầng 3", "is_active": true},
+    {"department_id": "DEP-HTN", "code": "TANG_HUYET_AP", "name": "Đơn vị Tăng huyết áp", "location": "[MOCK] Tầng 2", "is_active": true},
+    {"department_id": "DEP-CHECK", "code": "KHAM_YEU_CAU", "name": "Khu Khám theo yêu cầu", "location": "[MOCK] Tầng 1", "is_active": true}
+  ],
+  "specialties": [
+    {"specialty_id": "SP-CARD-GEN", "code": "TIM_MACH_TONG_QUAT", "name": "Tim mạch tổng quát", "department_id": "DEP-CARD", "description": "[MOCK] Khám hành chính chuyên khoa tim mạch tổng quát.", "is_active": true},
+    {"specialty_id": "SP-ARR", "code": "ROI_LOAN_NHIP", "name": "Rối loạn nhịp", "department_id": "DEP-CARD", "description": "[MOCK] Thông tin chuyên khoa, không phải hướng dẫn tự chẩn đoán.", "is_active": true},
+    {"specialty_id": "SP-SURG", "code": "PHAU_THUAT_TIM", "name": "Phẫu thuật tim mạch", "department_id": "DEP-SURG", "description": "[MOCK] Khám và tư vấn chuyên môn trực tiếp tại bệnh viện.", "is_active": true},
+    {"specialty_id": "SP-PED", "code": "TIM_MACH_NHI", "name": "Tim mạch nhi", "department_id": "DEP-PED", "description": "[MOCK] Chuyên khoa tim mạch trẻ em.", "is_active": true},
+    {"specialty_id": "SP-HTN", "code": "TANG_HUYET_AP", "name": "Tăng huyết áp", "department_id": "DEP-HTN", "description": "[MOCK] Chuyên khoa tăng huyết áp.", "is_active": true}
+  ],
+  "doctors": [
+    {"doctor_id": "DOC-001", "full_name": "Nguyễn Minh An", "title": "BSCKII", "specialty_ids": ["SP-CARD-GEN"], "department_id": "DEP-CARD", "facility": "Cơ sở chính", "profile_summary": "[MOCK] Bác sĩ dữ liệu demo.", "is_active": true},
+    {"doctor_id": "DOC-002", "full_name": "Trần Thu Bình", "title": "TS.BS", "specialty_ids": ["SP-CARD-GEN", "SP-HTN"], "department_id": "DEP-CARD", "facility": "Cơ sở chính", "profile_summary": "[MOCK] Bác sĩ dữ liệu demo.", "is_active": true},
+    {"doctor_id": "DOC-003", "full_name": "Lê Hoàng Châu", "title": "ThS.BS", "specialty_ids": ["SP-ARR"], "department_id": "DEP-CARD", "facility": "Cơ sở chính", "profile_summary": "[MOCK] Bác sĩ dữ liệu demo.", "is_active": true},
+    {"doctor_id": "DOC-004", "full_name": "Phạm Gia Dũng", "title": "BSCKII", "specialty_ids": ["SP-ARR"], "department_id": "DEP-CARD", "facility": "Cơ sở chính", "profile_summary": "[MOCK] Bác sĩ dữ liệu demo.", "is_active": true},
+    {"doctor_id": "DOC-005", "full_name": "Vũ Thanh Hà", "title": "PGS.TS.BS", "specialty_ids": ["SP-SURG"], "department_id": "DEP-SURG", "facility": "Cơ sở chính", "profile_summary": "[MOCK] Bác sĩ dữ liệu demo.", "is_active": true},
+    {"doctor_id": "DOC-006", "full_name": "Đỗ Quang Huy", "title": "ThS.BS", "specialty_ids": ["SP-SURG"], "department_id": "DEP-SURG", "facility": "Cơ sở chính", "profile_summary": "[MOCK] Bác sĩ dữ liệu demo.", "is_active": true},
+    {"doctor_id": "DOC-007", "full_name": "Bùi Ngọc Lan", "title": "TS.BS", "specialty_ids": ["SP-PED"], "department_id": "DEP-PED", "facility": "Cơ sở chính", "profile_summary": "[MOCK] Bác sĩ dữ liệu demo.", "is_active": true},
+    {"doctor_id": "DOC-008", "full_name": "Hoàng Đức Long", "title": "BSCKI", "specialty_ids": ["SP-PED"], "department_id": "DEP-PED", "facility": "Cơ sở chính", "profile_summary": "[MOCK] Bác sĩ dữ liệu demo.", "is_active": true},
+    {"doctor_id": "DOC-009", "full_name": "Đặng Mai Ngọc", "title": "ThS.BS", "specialty_ids": ["SP-HTN"], "department_id": "DEP-HTN", "facility": "Cơ sở chính", "profile_summary": "[MOCK] Bác sĩ dữ liệu demo.", "is_active": true},
+    {"doctor_id": "DOC-010", "full_name": "Ngô Hải Phương", "title": "BSCKII", "specialty_ids": ["SP-CARD-GEN"], "department_id": "DEP-CHECK", "facility": "Cơ sở chính", "profile_summary": "[MOCK] Bác sĩ dữ liệu demo.", "is_active": true}
+  ],
+  "slots": [
+    {"slot_id": "SL-001", "doctor_id": "DOC-001", "date": "2026-08-03", "time": "08:00", "room": "P201", "status": "available"},
+    {"slot_id": "SL-002", "doctor_id": "DOC-001", "date": "2026-08-03", "time": "08:30", "room": "P201", "status": "booked"},
+    {"slot_id": "SL-003", "doctor_id": "DOC-002", "date": "2026-08-04", "time": "09:00", "room": "P202", "status": "available"},
+    {"slot_id": "SL-004", "doctor_id": "DOC-002", "date": "2026-08-04", "time": "09:30", "room": "P202", "status": "available"},
+    {"slot_id": "SL-005", "doctor_id": "DOC-003", "date": "2026-08-05", "time": "08:00", "room": "P203", "status": "available"},
+    {"slot_id": "SL-006", "doctor_id": "DOC-004", "date": "2026-08-05", "time": "10:00", "room": "P204", "status": "booked"},
+    {"slot_id": "SL-007", "doctor_id": "DOC-005", "date": "2026-08-06", "time": "08:00", "room": "P401", "status": "available"},
+    {"slot_id": "SL-008", "doctor_id": "DOC-006", "date": "2026-08-06", "time": "09:00", "room": "P402", "status": "available"},
+    {"slot_id": "SL-009", "doctor_id": "DOC-007", "date": "2026-08-07", "time": "08:30", "room": "P301", "status": "available"},
+    {"slot_id": "SL-010", "doctor_id": "DOC-008", "date": "2026-08-07", "time": "09:30", "room": "P302", "status": "available"},
+    {"slot_id": "SL-011", "doctor_id": "DOC-009", "date": "2026-08-10", "time": "08:00", "room": "P205", "status": "available"},
+    {"slot_id": "SL-012", "doctor_id": "DOC-010", "date": "2026-08-10", "time": "10:00", "room": "P101", "status": "available"},
+    {"slot_id": "SL-013", "doctor_id": "DOC-001", "date": "2026-08-11", "time": "08:00", "room": "P201", "status": "available"},
+    {"slot_id": "SL-014", "doctor_id": "DOC-003", "date": "2026-08-11", "time": "09:00", "room": "P203", "status": "available"},
+    {"slot_id": "SL-015", "doctor_id": "DOC-005", "date": "2026-08-12", "time": "08:30", "room": "P401", "status": "available"},
+    {"slot_id": "SL-016", "doctor_id": "DOC-007", "date": "2026-08-12", "time": "10:00", "room": "P301", "status": "booked"},
+    {"slot_id": "SL-017", "doctor_id": "DOC-009", "date": "2026-08-13", "time": "08:00", "room": "P205", "status": "available"},
+    {"slot_id": "SL-018", "doctor_id": "DOC-010", "date": "2026-08-13", "time": "09:00", "room": "P101", "status": "available"},
+    {"slot_id": "SL-019", "doctor_id": "DOC-002", "date": "2026-08-14", "time": "08:30", "room": "P202", "status": "available"},
+    {"slot_id": "SL-020", "doctor_id": "DOC-004", "date": "2026-08-14", "time": "10:30", "room": "P204", "status": "available"}
+  ],
+  "appointments": [
+    {"appointment_id": "HEN-2026-0001", "doctor_id": "DOC-001", "slot_id": "SL-002", "patient_name": "Bệnh Nhân Mẫu Một", "patient_phone": "0900000001", "patient_dob": "1970-01-15", "has_insurance": true, "visit_reason": "Dữ liệu demo", "visit_type": "first_visit", "status": "pending", "rejection_reason": null, "created_at": "2026-07-20T08:00:00+07:00", "updated_at": "2026-07-20T08:00:00+07:00"},
+    {"appointment_id": "HEN-2026-0002", "doctor_id": "DOC-004", "slot_id": "SL-006", "patient_name": "Bệnh Nhân Mẫu Hai", "patient_phone": "0900000002", "patient_dob": "1982-03-20", "has_insurance": false, "visit_reason": "Dữ liệu demo", "visit_type": "follow_up", "status": "confirmed", "rejection_reason": null, "created_at": "2026-07-20T08:10:00+07:00", "updated_at": "2026-07-21T09:00:00+07:00"},
+    {"appointment_id": "HEN-2026-0003", "doctor_id": "DOC-007", "slot_id": "SL-016", "patient_name": "Bệnh Nhân Mẫu Ba", "patient_phone": "0900000003", "patient_dob": "2016-05-12", "has_insurance": true, "visit_reason": "Dữ liệu demo", "visit_type": "first_visit", "status": "cancelled", "rejection_reason": null, "created_at": "2026-07-21T10:00:00+07:00", "updated_at": "2026-07-22T14:00:00+07:00"},
+    {"appointment_id": "HEN-2026-0004", "doctor_id": "DOC-005", "slot_id": "SL-007", "patient_name": "Bệnh Nhân Mẫu Bốn", "patient_phone": "0900000004", "patient_dob": "1965-09-01", "has_insurance": true, "visit_reason": "Dữ liệu demo", "visit_type": "first_visit", "status": "rejected", "rejection_reason": "[MOCK] Bác sĩ không làm việc vào thời gian yêu cầu", "created_at": "2026-07-22T09:00:00+07:00", "updated_at": "2026-07-22T11:00:00+07:00"},
+    {"appointment_id": "HEN-2026-0005", "doctor_id": "DOC-009", "slot_id": "SL-011", "patient_name": "Bệnh Nhân Mẫu Năm", "patient_phone": "0900000005", "patient_dob": "1978-11-30", "has_insurance": false, "visit_reason": "Dữ liệu demo", "visit_type": "follow_up", "status": "completed", "rejection_reason": null, "created_at": "2026-06-01T08:00:00+07:00", "updated_at": "2026-06-10T12:00:00+07:00"}
+  ],
+  "business_rules": {
+    "appointment_id_pattern": "^HEN-[0-9]{4}-[0-9]{4}$",
+    "new_status": "pending",
+    "allowed_visit_types": ["first_visit", "follow_up"],
+    "allowed_statuses": ["pending", "confirmed", "cancelled", "rejected", "completed"],
+    "create_requires_explicit_confirmation": true,
+    "create_requires_idempotency_key": true,
+    "lookup_key": "appointment_id",
+    "slot_conflict_result": "SLOT_UNAVAILABLE"
+  }
+}

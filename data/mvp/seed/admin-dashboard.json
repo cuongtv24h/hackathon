@@ -1,0 +1,521 @@
+{
+  "dataset": {
+    "dataset_id": "ADMIN-DASHBOARD-MVP-01",
+    "version": "1.0.0",
+    "is_mock": true,
+    "effective_date": "2026-07-17",
+    "review_due_date": "2026-12-31"
+  },
+  "demo_users": [
+    {
+      "user_id": "USR-DEMO-ADMIN-001",
+      "display_name": "Demo Admin - MVP Pilot Only",
+      "email": "demo-admin@example.invalid",
+      "pilot_demo_only": true,
+      "production_allowed": false,
+      "roles": [
+        "content_admin",
+        "domain_owner",
+        "emergency_approver",
+        "operations_analyst",
+        "security_auditor"
+      ],
+      "created_at": "2026-07-17T00:00:00+07:00",
+      "is_mock": true
+    }
+  ],
+  "dashboard_modules": [
+    {
+      "module_id": "MOD-CONTENT-DRAFTS",
+      "name": "Content Drafts",
+      "description": "Quản lý bản nháp nội dung kiến thức",
+      "icon": "file-text",
+      "route": "/content/drafts",
+      "required_roles": ["content_admin", "domain_owner"],
+      "is_active": true
+    },
+    {
+      "module_id": "MOD-CONTENT-REVIEW",
+      "name": "Review & Approval",
+      "description": "Xét duyệt nội dung kiến thức",
+      "icon": "check-circle",
+      "route": "/content/review",
+      "required_roles": ["content_admin", "domain_owner"],
+      "is_active": true
+    },
+    {
+      "module_id": "MOD-CONTENT-PUBLISHED",
+      "name": "Published Versions",
+      "description": "Xem nội dung đã xuất bản",
+      "icon": "book",
+      "route": "/content/published",
+      "required_roles": ["content_admin", "domain_owner", "operations_analyst"],
+      "is_active": true
+    },
+    {
+      "module_id": "MOD-CONTENT-EXPIRING",
+      "name": "Expiring Content",
+      "description": "Nội dung sắp hết hạn",
+      "icon": "clock",
+      "route": "/content/expiring",
+      "required_roles": ["content_admin", "domain_owner"],
+      "is_active": true
+    },
+    {
+      "module_id": "MOD-CONTENT-CONFLICTS",
+      "name": "Content Conflicts",
+      "description": "Quản lý xung đột nội dung",
+      "icon": "alert-triangle",
+      "route": "/content/conflicts",
+      "required_roles": ["content_admin", "domain_owner"],
+      "is_active": true
+    },
+    {
+      "module_id": "MOD-ANALYTICS-SUMMARY",
+      "name": "Analytics Summary",
+      "description": "Tổng hợp phân tích hội thoại",
+      "icon": "bar-chart",
+      "route": "/analytics/summary",
+      "required_roles": ["operations_analyst", "content_admin"],
+      "is_active": true
+    },
+    {
+      "module_id": "MOD-EMERGENCY-EVENTS",
+      "name": "Emergency Events",
+      "description": "Sự kiện cấp cứu đã kích hoạt",
+      "icon": "activity",
+      "route": "/emergency/events",
+      "required_roles": ["emergency_approver", "security_auditor", "operations_analyst"],
+      "is_active": true
+    },
+    {
+      "module_id": "MOD-AUDIT-LOG",
+      "name": "Audit Log",
+      "description": "Nhật ký kiểm tra",
+      "icon": "shield",
+      "route": "/audit/log",
+      "required_roles": ["security_auditor", "content_admin"],
+      "is_active": true
+    }
+  ],
+  "content_drafts": [
+    {
+      "draft_id": "DFT-001",
+      "chunk_id": null,
+      "domain": "gio_lam_viec",
+      "title": "Cập nhật giờ làm việc cuối tuần",
+      "content": "[MOCK] Bệnh viện có thể mở thêm giờ làm việc cuối tuần. Dữ liệu này cần xác nhận.",
+      "status": "draft",
+      "created_by": "USR-DEMO-ADMIN-001",
+      "created_at": "2026-07-15T09:00:00+07:00",
+      "updated_at": "2026-07-15T09:00:00+07:00",
+      "is_mock": true
+    },
+    {
+      "draft_id": "DFT-002",
+      "chunk_id": null,
+      "domain": "thong_tin_benh_vien",
+      "title": "Thêm thông tin bãi giữ xe",
+      "content": "[MOCK] Bệnh viện có bãi giữ xe miễn phí cho bệnh nhân. Cần cập nhật địa chỉ chính xác.",
+      "status": "draft",
+      "created_by": "USR-DEMO-ADMIN-001",
+      "created_at": "2026-07-16T10:30:00+07:00",
+      "updated_at": "2026-07-16T10:30:00+07:00",
+      "is_mock": true
+    },
+    {
+      "draft_id": "DFT-003",
+      "chunk_id": "KCH-PRICE-005",
+      "domain": "gia_dich_vu",
+      "title": "Cập nhật giá tổng phân tích tế bào máu ngoại vi",
+      "content": "Tổng phân tích tế bào máu ngoại vi (bằng máy đếm laser): 50,000 VNĐ (cập nhật từ 46,200 VNĐ)",
+      "status": "submitted",
+      "created_by": "USR-DEMO-ADMIN-001",
+      "created_at": "2026-07-14T14:00:00+07:00",
+      "updated_at": "2026-07-14T15:00:00+07:00",
+      "submitted_at": "2026-07-14T15:00:00+07:00",
+      "is_mock": true
+    },
+    {
+      "draft_id": "DFT-004",
+      "chunk_id": "KCH-HOURS-001",
+      "domain": "gio_lam_viec",
+      "title": "Cập nhật giờ làm việc quầy tiếp đón",
+      "content": "Giờ làm việc quầy tiếp đón: 06:00–17:30 từ Thứ Hai đến Thứ Sáu (cập nhật từ 06:30–17:00)",
+      "status": "submitted",
+      "created_by": "USR-DEMO-ADMIN-001",
+      "created_at": "2026-07-15T11:00:00+07:00",
+      "updated_at": "2026-07-15T12:00:00+07:00",
+      "submitted_at": "2026-07-15T12:00:00+07:00",
+      "is_mock": true
+    },
+    {
+      "draft_id": "DFT-005",
+      "chunk_id": "KCH-DOC-001",
+      "domain": "bac_si_khoa",
+      "title": "Cập nhật thông tin bác sĩ Nguyễn Minh An",
+      "content": "Bác sĩ Nguyễn Minh An - BSCKII - Tim mạch tổng quát - Khoa Tim mạch - Cơ sở chính - Thêm thông tin: Chuyên về rối loạn nhịp tim",
+      "status": "changes_requested",
+      "created_by": "USR-DEMO-ADMIN-001",
+      "created_at": "2026-07-13T08:00:00+07:00",
+      "updated_at": "2026-07-14T09:00:00+07:00",
+      "submitted_at": "2026-07-13T09:00:00+07:00",
+      "reviewed_by": "USR-DEMO-ADMIN-001",
+      "reviewed_at": "2026-07-14T09:00:00+07:00",
+      "review_comment": "Cần xác nhận lại thông tin chuyên môn với bác sĩ trước khi cập nhật.",
+      "is_mock": true
+    },
+    {
+      "draft_id": "DFT-006",
+      "chunk_id": "KCH-PROC-003",
+      "domain": "quy_trinh",
+      "title": "Cập nhật quy trình lấy số",
+      "content": "Bệnh nhân không đặt lịch trước đến lấy số thứ tự tại cây lấy số tự động hoặc qua ứng dụng di động.",
+      "status": "approved",
+      "created_by": "USR-DEMO-ADMIN-001",
+      "created_at": "2026-07-12T10:00:00+07:00",
+      "updated_at": "2026-07-13T11:00:00+07:00",
+      "submitted_at": "2026-07-12T11:00:00+07:00",
+      "reviewed_by": "USR-DEMO-ADMIN-001",
+      "reviewed_at": "2026-07-13T10:00:00+07:00",
+      "approved_by": "USR-DEMO-ADMIN-001",
+      "approved_at": "2026-07-13T11:00:00+07:00",
+      "is_mock": true
+    },
+    {
+      "draft_id": "DFT-007",
+      "chunk_id": "KCH-BOOK-002",
+      "domain": "dat_lich",
+      "title": "Cập nhật quy trình đặt lịch",
+      "content": "Quy trình đặt lịch: chọn loại khám → chọn chuyên khoa → chọn bác sĩ → chọn khung giờ → nhập thông tin bệnh nhân → xác nhận OTP → hoàn tất.",
+      "status": "approved",
+      "created_by": "USR-DEMO-ADMIN-001",
+      "created_at": "2026-07-11T14:00:00+07:00",
+      "updated_at": "2026-07-12T15:00:00+07:00",
+      "submitted_at": "2026-07-11T15:00:00+07:00",
+      "reviewed_by": "USR-DEMO-ADMIN-001",
+      "reviewed_at": "2026-07-12T14:00:00+07:00",
+      "approved_by": "USR-DEMO-ADMIN-001",
+      "approved_at": "2026-07-12T15:00:00+07:00",
+      "is_mock": true
+    },
+    {
+      "draft_id": "DFT-008",
+      "chunk_id": "KCH-HOSP-003",
+      "domain": "thong_tin_benh_vien",
+      "title": "Cập nhật website bệnh viện",
+      "content": "Website: https://www.bvtimhanoi.vn (cập nhật từ placeholder)",
+      "status": "published",
+      "created_by": "USR-DEMO-ADMIN-001",
+      "created_at": "2026-07-10T09:00:00+07:00",
+      "updated_at": "2026-07-11T10:00:00+07:00",
+      "submitted_at": "2026-07-10T10:00:00+07:00",
+      "reviewed_by": "USR-DEMO-ADMIN-001",
+      "reviewed_at": "2026-07-11T09:00:00+07:00",
+      "approved_by": "USR-DEMO-ADMIN-001",
+      "approved_at": "2026-07-11T10:00:00+07:00",
+      "published_at": "2026-07-11T11:00:00+07:00",
+      "is_mock": true
+    },
+    {
+      "draft_id": "DFT-009",
+      "chunk_id": "KCH-PRICE-010",
+      "domain": "gia_dich_vu",
+      "title": "Cập nhật giá Holter huyết áp",
+      "content": "Holter huyết áp: 220,000 VNĐ (cập nhật từ 198,000 VNĐ)",
+      "status": "published",
+      "created_by": "USR-DEMO-ADMIN-001",
+      "created_at": "2026-07-09T08:00:00+07:00",
+      "updated_at": "2026-07-10T09:00:00+07:00",
+      "submitted_at": "2026-07-09T09:00:00+07:00",
+      "reviewed_by": "USR-DEMO-ADMIN-001",
+      "reviewed_at": "2026-07-10T08:00:00+07:00",
+      "approved_by": "USR-DEMO-ADMIN-001",
+      "approved_at": "2026-07-10T09:00:00+07:00",
+      "published_at": "2026-07-10T10:00:00+07:00",
+      "is_mock": true
+    }
+  ],
+  "approval_events": [
+    {
+      "event_id": "AEV-001",
+      "draft_id": "DFT-003",
+      "action": "submit",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-14T15:00:00+07:00",
+      "comment": null,
+      "is_mock": true
+    },
+    {
+      "event_id": "AEV-002",
+      "draft_id": "DFT-004",
+      "action": "submit",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-15T12:00:00+07:00",
+      "comment": null,
+      "is_mock": true
+    },
+    {
+      "event_id": "AEV-003",
+      "draft_id": "DFT-005",
+      "action": "request_changes",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-14T09:00:00+07:00",
+      "comment": "Cần xác nhận lại thông tin chuyên môn với bác sĩ trước khi cập nhật.",
+      "is_mock": true
+    },
+    {
+      "event_id": "AEV-004",
+      "draft_id": "DFT-006",
+      "action": "approve",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-13T11:00:00+07:00",
+      "comment": null,
+      "is_mock": true
+    },
+    {
+      "event_id": "AEV-005",
+      "draft_id": "DFT-007",
+      "action": "approve",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-12T15:00:00+07:00",
+      "comment": null,
+      "is_mock": true
+    },
+    {
+      "event_id": "AEV-006",
+      "draft_id": "DFT-008",
+      "action": "publish",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-11T11:00:00+07:00",
+      "comment": null,
+      "is_mock": true
+    },
+    {
+      "event_id": "AEV-007",
+      "draft_id": "DFT-009",
+      "action": "publish",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-10T10:00:00+07:00",
+      "comment": null,
+      "is_mock": true
+    }
+  ],
+  "content_versions": [
+    {
+      "version_id": "VER-001",
+      "chunk_id": "KCH-PROC-003",
+      "content_before": "Bệnh nhân không đặt lịch trước đến lấy số thứ tự tại cây lấy số tự động và ngồi chờ gọi theo số thứ tự đã lấy.",
+      "content_after": "Bệnh nhân không đặt lịch trước đến lấy số thứ tự tại cây lấy số tự động hoặc qua ứng dụng di động.",
+      "changed_by": "USR-DEMO-ADMIN-001",
+      "approved_by": "USR-DEMO-ADMIN-001",
+      "changed_at": "2026-07-13T11:00:00+07:00",
+      "is_mock": true
+    },
+    {
+      "version_id": "VER-002",
+      "chunk_id": "KCH-BOOK-002",
+      "content_before": "Quy trình đặt lịch: chọn loại khám (khám mới/tái khám) → chọn chuyên khoa → chọn bác sĩ → chọn khung giờ → nhập thông tin bệnh nhân → xác nhận.",
+      "content_after": "Quy trình đặt lịch: chọn loại khám → chọn chuyên khoa → chọn bác sĩ → chọn khung giờ → nhập thông tin bệnh nhân → xác nhận OTP → hoàn tất.",
+      "changed_by": "USR-DEMO-ADMIN-001",
+      "approved_by": "USR-DEMO-ADMIN-001",
+      "changed_at": "2026-07-12T15:00:00+07:00",
+      "is_mock": true
+    },
+    {
+      "version_id": "VER-003",
+      "chunk_id": "KCH-HOSP-003",
+      "content_before": "[MOCK] Website: https://example.invalid/hospital. Chỉ là placeholder cho pilot.",
+      "content_after": "Website: https://www.bvtimhanoi.vn (cập nhật từ placeholder)",
+      "changed_by": "USR-DEMO-ADMIN-001",
+      "approved_by": "USR-DEMO-ADMIN-001",
+      "changed_at": "2026-07-11T11:00:00+07:00",
+      "is_mock": true
+    },
+    {
+      "version_id": "VER-004",
+      "chunk_id": "KCH-PRICE-010",
+      "content_before": "Holter huyết áp: 198,000 VNĐ",
+      "content_after": "Holter huyết áp: 220,000 VNĐ (cập nhật từ 198,000 VNĐ)",
+      "changed_by": "USR-DEMO-ADMIN-001",
+      "approved_by": "USR-DEMO-ADMIN-001",
+      "changed_at": "2026-07-10T10:00:00+07:00",
+      "is_mock": true
+    }
+  ],
+  "content_conflicts": [
+    {
+      "conflict_id": "CNF-001",
+      "domain_code": "gia_dich_vu",
+      "source_chunk_ids": [
+        "KCH-PRICE-005",
+        "KCH-PRICE-006"
+      ],
+      "conflicting_fields": [
+        "price"
+      ],
+      "detected_at": "2026-07-16T08:00:00+07:00",
+      "due_at": "2026-07-17T08:00:00+07:00",
+      "status": "open",
+      "assigned_owner": "USR-DEMO-ADMIN-001",
+      "resolution": null,
+      "winning_version_id": null,
+      "resolved_by": null,
+      "resolved_at": null,
+      "is_mock": true
+    },
+    {
+      "conflict_id": "CNF-002",
+      "domain_code": "gio_lam_viec",
+      "source_chunk_ids": [
+        "KCH-HOURS-001",
+        "KCH-HOURS-002"
+      ],
+      "conflicting_fields": [
+        "operating_hours"
+      ],
+      "detected_at": "2026-07-15T10:00:00+07:00",
+      "due_at": "2026-07-16T10:00:00+07:00",
+      "status": "open",
+      "assigned_owner": "USR-DEMO-ADMIN-001",
+      "resolution": null,
+      "winning_version_id": null,
+      "resolved_by": null,
+      "resolved_at": null,
+      "is_mock": true
+    },
+    {
+      "conflict_id": "CNF-003",
+      "domain_code": "quy_trinh",
+      "source_chunk_ids": [
+        "KCH-PROC-004",
+        "KCH-PROC-005"
+      ],
+      "conflicting_fields": [
+        "bhyt_requirements"
+      ],
+      "detected_at": "2026-07-14T09:00:00+07:00",
+      "due_at": "2026-07-15T09:00:00+07:00",
+      "status": "investigating",
+      "assigned_owner": "USR-DEMO-ADMIN-001",
+      "resolution": "Đang kiểm tra với Phòng BHYT",
+      "winning_version_id": null,
+      "resolved_by": null,
+      "resolved_at": null,
+      "is_mock": true
+    },
+    {
+      "conflict_id": "CNF-004",
+      "domain_code": "bac_si_khoa",
+      "source_chunk_ids": [
+        "KCH-DOC-001",
+        "KCH-DOC-002"
+      ],
+      "conflicting_fields": [
+        "specialty"
+      ],
+      "detected_at": "2026-07-13T07:00:00+07:00",
+      "due_at": "2026-07-14T07:00:00+07:00",
+      "status": "resolved",
+      "assigned_owner": "USR-DEMO-ADMIN-001",
+      "resolution": "Xác nhận thông tin chính xác từ Khoa Tim mạch",
+      "winning_version_id": "VER-001",
+      "resolved_by": "USR-DEMO-ADMIN-001",
+      "resolved_at": "2026-07-13T15:00:00+07:00",
+      "is_mock": true
+    }
+  ],
+  "audit_events": [
+    {
+      "audit_id": "AUD-001",
+      "action": "create_draft",
+      "entity_type": "content_draft",
+      "entity_id": "DFT-001",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-15T09:00:00+07:00",
+      "details": {
+        "domain": "gio_lam_viec",
+        "title": "Cập nhật giờ làm việc cuối tuần"
+      },
+      "is_mock": true
+    },
+    {
+      "audit_id": "AUD-002",
+      "action": "submit_draft",
+      "entity_type": "content_draft",
+      "entity_id": "DFT-003",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-14T15:00:00+07:00",
+      "details": {
+        "domain": "gia_dich_vu",
+        "title": "Cập nhật giá tổng phân tích tế bào máu ngoại vi"
+      },
+      "is_mock": true
+    },
+    {
+      "audit_id": "AUD-003",
+      "action": "review_draft",
+      "entity_type": "content_draft",
+      "entity_id": "DFT-005",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-14T09:00:00+07:00",
+      "details": {
+        "decision": "changes_requested",
+        "comment": "Cần xác nhận lại thông tin chuyên môn với bác sĩ trước khi cập nhật."
+      },
+      "is_mock": true
+    },
+    {
+      "audit_id": "AUD-004",
+      "action": "approve_draft",
+      "entity_type": "content_draft",
+      "entity_id": "DFT-006",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-13T11:00:00+07:00",
+      "details": {
+        "domain": "quy_trinh",
+        "title": "Cập nhật quy trình lấy số"
+      },
+      "is_mock": true
+    },
+    {
+      "audit_id": "AUD-005",
+      "action": "publish_content",
+      "entity_type": "content_version",
+      "entity_id": "VER-003",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-11T11:00:00+07:00",
+      "details": {
+        "chunk_id": "KCH-HOSP-003",
+        "change_type": "website_update"
+      },
+      "is_mock": true
+    },
+    {
+      "audit_id": "AUD-006",
+      "action": "resolve_conflict",
+      "entity_type": "content_conflict",
+      "entity_id": "CNF-004",
+      "performed_by": "USR-DEMO-ADMIN-001",
+      "performed_at": "2026-07-13T15:00:00+07:00",
+      "details": {
+        "resolution": "Xác nhận thông tin chính xác từ Khoa Tim mạch",
+        "winning_version_id": "VER-001"
+      },
+      "is_mock": true
+    },
+    {
+      "audit_id": "AUD-007",
+      "action": "detect_conflict",
+      "entity_type": "content_conflict",
+      "entity_id": "CNF-001",
+      "performed_by": "system",
+      "performed_at": "2026-07-16T08:00:00+07:00",
+      "details": {
+        "domain": "gia_dich_vu",
+        "conflicting_fields": ["price"]
+      },
+      "is_mock": true
+    }
+  ]
+}

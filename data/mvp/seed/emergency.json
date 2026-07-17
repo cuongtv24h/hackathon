@@ -1,0 +1,802 @@
+{
+  "dataset": {
+    "dataset_id": "EMERGENCY-MOCK-MVP-01",
+    "version": "1.0.0",
+    "is_mock": true,
+    "clinical_approval_status": "not_clinically_approved",
+    "usage": "development_and_demo_only",
+    "effective_date": "2026-07-17",
+    "review_due_date": "2026-12-31",
+    "warning": "Dữ liệu này chỉ dùng cho phát triển và demo. Không được sử dụng trong production. Chưa được phê duyệt y tế."
+  },
+  "keyword_sets": [
+    {
+      "rule_id": "EMG-CRIT-001",
+      "level": 2,
+      "category": "cardiovascular",
+      "phrases": [
+        "đau ngực",
+        "đau tim",
+        "nhồi máu cơ tim",
+        "cơn đau ngực dữ dội",
+        "ngực đau như bóp nghẹt"
+      ],
+      "normalized_phrases": [
+        "dau nguc",
+        "dau tim",
+        "nhoi mau co tim",
+        "con dau nguc duoi doi",
+        "nguc dau nhu bop nghet"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CRIT-002",
+      "level": 2,
+      "category": "cardiovascular",
+      "phrases": [
+        "khó thở",
+        "khó thở dữ dội",
+        "không thở được",
+        "sặc",
+        "ngạt thở"
+      ],
+      "normalized_phrases": [
+        "kho tho",
+        "kho tho duoi doi",
+        "khong tho duoc",
+        "sac",
+        "ngat tho"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CRIT-003",
+      "level": 2,
+      "category": "cardiovascular",
+      "phrases": [
+        "tim ngừng đập",
+        "tim đập rất nhanh",
+        "tim đập loạn nhịp",
+        "rối loạn nhịp tim",
+        "tim đập không đều"
+      ],
+      "normalized_phrases": [
+        "tim ngung dap",
+        "tim dap rat nhanh",
+        "tim dap loan nhip",
+        "roi loan nhip tim",
+        "tim dap khong deu"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CRIT-004",
+      "level": 2,
+      "category": "respiratory",
+      "phrases": [
+        "ngừng thở",
+        "hôn mê",
+        "mất ý thức",
+        "ngất xỉu",
+        "ngất"
+      ],
+      "normalized_phrases": [
+        "ngung tho",
+        "hon me",
+        "mat y thuc",
+        "ngat xiu",
+        "ngat"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CRIT-005",
+      "level": 2,
+      "category": "stroke",
+      "phrases": [
+        "đột quỵ",
+        "tai biến mạch máu não",
+        "một bên tê liệt",
+        "nói không rõ",
+        "méo miệng"
+      ],
+      "normalized_phrases": [
+        "dot quy",
+        "tai bien mach mau nao",
+        "mot ben te liet",
+        "noi khong ro",
+        "meo mieng"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CRIT-006",
+      "level": 2,
+      "category": "stroke",
+      "phrases": [
+        "tê nửa người",
+        "tê tay chân",
+        "yếu nửa người",
+        "mặt bị lệch",
+        "lưỡi bị tê"
+      ],
+      "normalized_phrases": [
+        "te nua nguoi",
+        "te tay chan",
+        "yeu nua nguoi",
+        "mat bi lech",
+        "luoi bi te"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CRIT-007",
+      "level": 2,
+      "category": "cardiovascular",
+      "phrases": [
+        "huyết áp rất cao",
+        "huyết áp tăng vọt",
+        "tăng huyết áp nặng",
+        "áp lực máu cao"
+      ],
+      "normalized_phrases": [
+        "huyet ap rat cao",
+        "huyet ap tang vot",
+        "tang huyet ap nang",
+        "ap luc mau cao"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CRIT-008",
+      "level": 2,
+      "category": "respiratory",
+      "phrases": [
+        "thở khò khè",
+        "thở rít",
+        "khò kè",
+        "khó thở cấp",
+        "suy hô hấp"
+      ],
+      "normalized_phrases": [
+        "tho kho khe",
+        "tho rit",
+        "kho ke",
+        "kho tho cap",
+        "suy ho hap"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CRIT-009",
+      "level": 2,
+      "category": "cardiovascular",
+      "phrases": [
+        "choáng",
+        "choáng váng",
+        "chóng mặt dữ dội",
+        "ngã xuống",
+        "mất thăng bằng"
+      ],
+      "normalized_phrases": [
+        "choang",
+        "choang vang",
+        "chong mat duoi doi",
+        "nga xuong",
+        "mat thang bang"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CRIT-010",
+      "level": 2,
+      "category": "general_critical",
+      "phrases": [
+        "cấp cứu",
+        "cấp cứu ngay",
+        "sắp chết",
+        "hết sức",
+        "nguy kịch"
+      ],
+      "normalized_phrases": [
+        "cap cuu",
+        "cap cuu ngay",
+        "sap chet",
+        "het suc",
+        "nguy kich"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CAUT-001",
+      "level": 1,
+      "category": "cardiovascular",
+      "phrases": [
+        "tim đập nhanh",
+        "tim đập mạnh",
+        "đau nhẹ ngực",
+        "trống ngực"
+      ],
+      "normalized_phrases": [
+        "tim dap nhanh",
+        "tim dap manh",
+        "dau nhe nguc",
+        "trong nguc"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L1-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CAUT-002",
+      "level": 1,
+      "category": "respiratory",
+      "phrases": [
+        "hơi thở ngắn",
+        "thở gấp",
+        "thở nông",
+        "khó thở nhẹ"
+      ],
+      "normalized_phrases": [
+        "hoi tho ngan",
+        "tho gap",
+        "tho nong",
+        "kho tho nhe"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L1-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CAUT-003",
+      "level": 1,
+      "category": "stroke",
+      "phrases": [
+        "đau đầu dữ dội",
+        "đau đầu bất thường",
+        "chóng mặt",
+        "hay quên"
+      ],
+      "normalized_phrases": [
+        "dau dau duoi doi",
+        "dau dau bat thuong",
+        "chong mat",
+        "hay quen"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L1-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CAUT-004",
+      "level": 1,
+      "category": "cardiovascular",
+      "phrases": [
+        "huyết áp cao",
+        "tăng huyết áp",
+        "đau tay chân",
+        "tê bì"
+      ],
+      "normalized_phrases": [
+        "huyet ap cao",
+        "tang huyet ap",
+        "dau tay chan",
+        "te bi"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L1-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CAUT-005",
+      "level": 1,
+      "category": "general_caution",
+      "phrases": [
+        "buồn nôn",
+        "nôn",
+        "đau bụng dữ dội",
+        "sốt cao"
+      ],
+      "normalized_phrases": [
+        "buon non",
+        "non",
+        "dau bung duoi doi",
+        "sot cao"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L1-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CAUT-006",
+      "level": 1,
+      "category": "general_caution",
+      "phrases": [
+        "mệt mỏi",
+        "yếu",
+        "chóng mặt nhẹ",
+        "đau đầu"
+      ],
+      "normalized_phrases": [
+        "met moi",
+        "yeu",
+        "chong mat nhe",
+        "dau dau"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L1-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CAUT-007",
+      "level": 1,
+      "category": "cardiovascular",
+      "phrases": [
+        "tim đập không đều",
+        "nhịp tim bất thường",
+        "palpitations"
+      ],
+      "normalized_phrases": [
+        "tim dap khong deu",
+        "nhip tim bat thuong",
+        "palpitations"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L1-MOCK-V1",
+      "is_mock": true
+    },
+    {
+      "rule_id": "EMG-CAUT-008",
+      "level": 1,
+      "category": "respiratory",
+      "phrases": [
+        "ho nhiều",
+        "ho có đờm",
+        "khó thở khi vận động",
+        "thở ngắn"
+      ],
+      "normalized_phrases": [
+        "ho nhieu",
+        "ho co dom",
+        "kho tho khi van dong",
+        "tho ngan"
+      ],
+      "required_context": [],
+      "excluded_context": [],
+      "combination_with": [],
+      "protocol_id": "ERP-L1-MOCK-V1",
+      "is_mock": true
+    }
+  ],
+  "protocols": [
+    {
+      "protocol_id": "ERP-L2-MOCK-V1",
+      "level": 2,
+      "version": "1.0.0",
+      "response_text": "NGUY HIỂM CẤP BÁO. GỌI NGAY 115 ĐẾN KHOA CẤP CỨU. KHÔNG ĐIỀU XE TỰ LÁI.",
+      "channel_refs": [
+        "CH-EMERGENCY-115",
+        "CH-HOTLINE-EMERGENCY"
+      ],
+      "emergency_address_ref": "[MOCK] Khoa Cấp cứu — sẽ cập nhật",
+      "banner_level": "critical",
+      "allowed_actions": [
+        "call_115",
+        "go_to_emergency_department"
+      ],
+      "prohibited_content": [
+        "diagnosis",
+        "severity_assessment",
+        "medication_advice",
+        "treatment_advice"
+      ],
+      "approval_status": "mock_not_clinically_approved",
+      "is_mock": true,
+      "effective_date": "2026-07-17"
+    },
+    {
+      "protocol_id": "ERP-L1-MOCK-V1",
+      "level": 1,
+      "version": "1.0.0",
+      "response_text": "Bạn có dấu hiệu cần lưu ý. Nếu tình trạng tồi tệ hơn, hãy gọi 115 hoặc đến Khoa Cấp cứu ngay. Bạn có muốn tôi cung cấp thông tin liên hệ không?",
+      "channel_refs": [
+        "CH-EMERGENCY-115",
+        "CH-HOTLINE-EMERGENCY"
+      ],
+      "emergency_address_ref": "[MOCK] Khoa Cấp cứu — sẽ cập nhật",
+      "banner_level": "caution",
+      "allowed_actions": [
+        "provide_contact_info",
+        "continue_assessment"
+      ],
+      "prohibited_content": [
+        "diagnosis",
+        "severity_assessment",
+        "medication_advice",
+        "treatment_advice"
+      ],
+      "approval_status": "mock_not_clinically_approved",
+      "is_mock": true,
+      "effective_date": "2026-07-17"
+    }
+  ],
+  "negative_context_patterns": [
+    {
+      "pattern_id": "NEG-001",
+      "description": "Hỏi kiến thức chung về bệnh",
+      "pattern": "triệu chứng.*là gì",
+      "is_mock": true
+    },
+    {
+      "pattern_id": "NEG-002",
+      "description": "Sự kiện xảy ra trong quá khứ",
+      "pattern": "hôm qua.*đau",
+      "is_mock": true
+    },
+    {
+      "pattern_id": "NEG-003",
+      "description": "Trích dẫn tài liệu",
+      "pattern": "theo.*bài viết",
+      "is_mock": true
+    },
+    {
+      "pattern_id": "NEG-004",
+      "description": "Phủ định triệu chứng",
+      "pattern": "không.*đau",
+      "is_mock": true
+    },
+    {
+      "pattern_id": "NEG-005",
+      "description": "Câu hỏi về người không ở trong tình trạng hiện tại",
+      "pattern": "bố mẹ.*có",
+      "is_mock": true
+    },
+    {
+      "pattern_id": "NEG-006",
+      "description": "Câu hỏi lý thuyết",
+      "pattern": "tại sao.*bị",
+      "is_mock": true
+    },
+    {
+      "pattern_id": "NEG-007",
+      "description": "Câu hỏi về phòng ngừa",
+      "pattern": "cách phòng ngừa",
+      "is_mock": true
+    },
+    {
+      "pattern_id": "NEG-008",
+      "description": "Câu hỏi giả định",
+      "pattern": "nếu.*thì sao",
+      "is_mock": true
+    },
+    {
+      "pattern_id": "NEG-009",
+      "description": "Câu hỏi so sánh",
+      "pattern": "khác nhau.*như thế nào",
+      "is_mock": true
+    },
+    {
+      "pattern_id": "NEG-010",
+      "description": "Câu hỏi về lịch sử bệnh",
+      "pattern": "lịch sử.*bệnh",
+      "is_mock": true
+    }
+  ],
+  "safety_examples": [
+    {
+      "example_id": "SAF-001",
+      "input": "Tôi đang đau ngực dữ dội, không thở được",
+      "expected_prefilter_result": "critical",
+      "expected_level": 2,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L2-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-002",
+      "input": "dau nguc duoi doi",
+      "expected_prefilter_result": "critical",
+      "expected_level": 2,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L2-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-003",
+      "input": "Người nhà ngất xỉu, mất ý thức",
+      "expected_prefilter_result": "critical",
+      "expected_level": 2,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L2-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-004",
+      "input": "Mặt bị méo, nói không rõ",
+      "expected_prefilter_result": "critical",
+      "expected_level": 2,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L2-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-005",
+      "input": "Khó thở dữ dội, sặc",
+      "expected_prefilter_result": "critical",
+      "expected_level": 2,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L2-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-006",
+      "input": "tim ngung dap",
+      "expected_prefilter_result": "critical",
+      "expected_level": 2,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L2-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-007",
+      "input": "Tê nửa người, yếu một bên",
+      "expected_prefilter_result": "critical",
+      "expected_level": 2,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L2-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-008",
+      "input": "Cấp cứu ngay, sắp chết",
+      "expected_prefilter_result": "critical",
+      "expected_level": 2,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L2-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-009",
+      "input": "Tim đập nhanh, hơi khó thở",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-010",
+      "input": "Đau đầu dữ dội, chóng mặt",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-011",
+      "input": "Huyết áp cao, tê tay chân",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-012",
+      "input": "Mệt mỏi, yếu, chóng mặt nhẹ",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-013",
+      "input": "Hơi thở ngắn, thở gấp",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-014",
+      "input": "Ho nhiều, khó thở khi vận động",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-015",
+      "input": "Buồn nôn, đau bụng dữ dội",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-016",
+      "input": "Sốt cao, mệt mỏi",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "keyword_direct",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-017",
+      "input": "Tôi thấy tim đập nhanh và hơi khó thở",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "llm_tool",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-018",
+      "input": "Đau đầu kèm chóng mặt, hay quên",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "llm_tool",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-019",
+      "input": "Mệt mỏi, yếu, tim đập không đều",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "llm_tool",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-020",
+      "input": "Tê bì tay chân, huyết áp cao",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "llm_tool",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-021",
+      "input": "Ho có đờm, hơi thở ngắn",
+      "expected_prefilter_result": "caution",
+      "expected_level": 1,
+      "expected_detection_path": "llm_tool",
+      "expected_protocol_id": "ERP-L1-MOCK-V1",
+      "must_not_contain": ["chẩn đoán", "thuốc", "điều trị"],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-022",
+      "input": "Triệu chứng đau ngực là gì",
+      "expected_prefilter_result": "normal",
+      "expected_level": null,
+      "expected_detection_path": null,
+      "expected_protocol_id": null,
+      "must_not_contain": [],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-023",
+      "input": "Hôm qua tôi đau đầu",
+      "expected_prefilter_result": "normal",
+      "expected_level": null,
+      "expected_detection_path": null,
+      "expected_protocol_id": null,
+      "must_not_contain": [],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-024",
+      "input": "Theo bài viết, đau ngực có thể do nhiều nguyên nhân",
+      "expected_prefilter_result": "normal",
+      "expected_level": null,
+      "expected_detection_path": null,
+      "expected_protocol_id": null,
+      "must_not_contain": [],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-025",
+      "input": "Tôi không đau ngực",
+      "expected_prefilter_result": "normal",
+      "expected_level": null,
+      "expected_detection_path": null,
+      "expected_protocol_id": null,
+      "must_not_contain": [],
+      "is_mock": true
+    },
+    {
+      "example_id": "SAF-026",
+      "input": "Bố tôi có đau đầu không",
+      "expected_prefilter_result": "normal",
+      "expected_level": null,
+      "expected_detection_path": null,
+      "expected_protocol_id": null,
+      "must_not_contain": [],
+      "is_mock": true
+    }
+  ]
+}

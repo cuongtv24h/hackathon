@@ -1,0 +1,74 @@
+{
+  "data_pack_id": "hospital-assistant-mvp-pilot-v1",
+  "version": "1.0.0",
+  "status": "ready_for_schema_mapping",
+  "locale": "vi-VN",
+  "timezone": "Asia/Bangkok",
+  "scope": {
+    "release": "mvp_pilot",
+    "clients": ["web_widget", "standalone_chat_page"],
+    "appointment_integration": "mock_his_database_backed_api",
+    "appointment_default_status": "pending",
+    "content_management": true,
+    "analytics_dashboard": true,
+    "live_agent_handoff": "level_1_contact_handoff",
+    "asr_tts": false,
+    "deployment": "vps"
+  },
+  "approved_pilot_sources": [
+    {
+      "source_id": "SRC-PRICE-001",
+      "path": "docs/knowledge/Bang_gia_dich_vu_ky_thuat.md",
+      "domain": "gia_dich_vu",
+      "approval_status": "approved_for_pilot",
+      "approval_basis": "product_owner_confirmation",
+      "notes": "Các đoạn bị cắt hoặc thiếu trong ảnh nguồn phải được đánh dấu không đủ căn cứ."
+    },
+    {
+      "source_id": "SRC-PROCESS-001",
+      "path": "docs/knowledge/quy-trinh-don-tiep-benh-nhan_chuan-hoa-doi-chieu-nguon.md",
+      "domain": "quy_trinh",
+      "approval_status": "approved_for_pilot",
+      "approval_basis": "product_owner_confirmation",
+      "applicability": "ap_dung_chung_cho_benh_vien_trong_mvp_pilot"
+    },
+    {
+      "source_ids": ["SRC-BHYT-001", "SRC-BHYT-002", "SRC-BHYT-003", "SRC-BHYT-004", "SRC-BHYT-005", "SRC-BHYT-006", "SRC-BHYT-007"],
+      "path": "docs/knowledge/bhyt/",
+      "domain": "bhyt",
+      "approval_status": "approved_for_pilot",
+      "approval_basis": "product_owner_bootstrap_approval",
+      "notes": "Bảy tài liệu BHYT bootstrap, gồm biểu giá; chỉ áp dụng MVP Pilot. Quyền lợi cá nhân vẫn phải có disclaimer và không được tự tính."
+    }
+  ],
+  "canonical_knowledge_domains": [
+    "dat_lich",
+    "quy_trinh",
+    "bhyt",
+    "gia_dich_vu",
+    "gio_lam_viec",
+    "bac_si_khoa",
+    "thong_tin_benh_vien"
+  ],
+  "mock_only_domains": [
+    "dat_lich",
+    "gio_lam_viec",
+    "bac_si_khoa",
+    "thong_tin_benh_vien"
+  ],
+  "deferred_domains": [],
+  "hard_warnings": [
+    "Emergency data is mock and not clinically approved.",
+    "Hospital contacts and URLs are placeholders.",
+    "All Mock HIS patient identities are fictional.",
+    "BHYT answers must cite an approved pilot source and must not determine individual entitlement or payment."
+  ],
+  "seed_order": [
+    "hospital-configuration.json",
+    "emergency.json",
+    "knowledge-base.json",
+    "mock-his.json",
+    "admin-dashboard.json",
+    "analytics.json"
+  ]
+}

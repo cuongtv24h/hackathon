@@ -1,0 +1,130 @@
+{
+  "hospital": {
+    "hospital_id": "HHT-MVP",
+    "display_name": "Bệnh viện Tim Hà Nội — MVP Pilot",
+    "short_name": "BV Tim Hà Nội",
+    "locale": "vi-VN",
+    "timezone": "Asia/Bangkok",
+    "address": "[MOCK] Địa chỉ Bệnh viện Tim Hà Nội — sẽ cập nhật",
+    "emergency_address": "[MOCK] Khoa Cấp cứu — sẽ cập nhật",
+    "website_url": "https://example.invalid/hospital",
+    "configuration_status": "mock_requires_replacement"
+  },
+  "channels": [
+    {
+      "channel_id": "CH-HOTLINE-CSKH",
+      "type": "hotline",
+      "label": "Gọi hotline CSKH",
+      "target": "0000000000",
+      "operating_hours": "[MOCK] Thứ Hai–Thứ Sáu, 07:00–17:00",
+      "is_active": true,
+      "is_mock": true
+    },
+    {
+      "channel_id": "CH-EMERGENCY-115",
+      "type": "emergency",
+      "label": "Gọi cấp cứu 115",
+      "target": "115",
+      "operating_hours": "24/7",
+      "is_active": true,
+      "is_mock": false
+    },
+    {
+      "channel_id": "CH-HOTLINE-EMERGENCY",
+      "type": "emergency",
+      "label": "Hotline Khoa Cấp cứu",
+      "target": "0000000115",
+      "operating_hours": "24/7",
+      "is_active": true,
+      "is_mock": true
+    },
+    {
+      "channel_id": "CH-BOOKING-WEB",
+      "type": "website",
+      "label": "Đặt lịch trực tuyến",
+      "target": "https://example.invalid/booking",
+      "operating_hours": "24/7",
+      "is_active": true,
+      "is_mock": true
+    },
+    {
+      "channel_id": "CH-BOOKING-ZALO",
+      "type": "zalo",
+      "label": "Đặt lịch qua Zalo",
+      "target": "https://example.invalid/zalo",
+      "operating_hours": "24/7",
+      "is_active": true,
+      "is_mock": true
+    },
+    {
+      "channel_id": "CH-COUNTER",
+      "type": "counter",
+      "label": "Quầy tiếp đón",
+      "target": "[MOCK] Sảnh tiếp đón",
+      "operating_hours": "[MOCK] 06:30–17:00",
+      "is_active": true,
+      "is_mock": true
+    }
+  ],
+  "chat_configuration": {
+    "welcome_message": "Xin chào, tôi là trợ lý thông tin AI của Bệnh viện Tim Hà Nội.",
+    "ai_disclaimer": "Tôi cung cấp thông tin hành chính từ nguồn của bệnh viện, không phải nhân viên y tế và không thay thế bác sĩ.",
+    "financial_disclaimer": "Thông tin giá và quyền lợi có thể thay đổi; vui lòng xác nhận lại với bệnh viện trước khi sử dụng dịch vụ.",
+    "medical_refusal": "Tôi không thể chẩn đoán, giải thích kết quả xét nghiệm, đề xuất thuốc hoặc phác đồ điều trị. Bạn nên trao đổi trực tiếp với bác sĩ.",
+    "unsupported_bhyt_fallback": "Không tìm thấy thông tin BHYT đủ căn cứ cho trường hợp này trong nguồn pilot. Vui lòng xác nhận với quầy BHYT hoặc hotline bệnh viện.",
+    "provider_unavailable_fallback": "Hệ thống đang tạm thời không thể xử lý câu hỏi. Vui lòng liên hệ hotline bệnh viện.",
+    "quick_prompts": [
+      {"id": "QP-01", "domain": "dat_lich", "text": "Tôi muốn đặt lịch khám"},
+      {"id": "QP-02", "domain": "quy_trinh", "text": "Quy trình khám lần đầu như thế nào?"},
+      {"id": "QP-03", "domain": "gia_dich_vu", "text": "Tra cứu giá dịch vụ"},
+      {"id": "QP-04", "domain": "bhyt", "text": "Hỏi về quyền lợi BHYT"},
+      {"id": "QP-05", "domain": "bac_si_khoa", "text": "Tìm khoa hoặc bác sĩ"},
+      {"id": "QP-06", "domain": "gio_lam_viec", "text": "Bệnh viện làm việc giờ nào?"},
+      {"id": "QP-07", "domain": "thong_tin_benh_vien", "text": "Địa chỉ và thông tin liên hệ"}
+    ]
+  },
+  "live_agent_handoff": {
+    "level": 1,
+    "mode": "contact_handoff",
+    "triggers": [
+      "user_requests_human",
+      "no_grounded_result",
+      "tool_or_provider_unavailable",
+      "out_of_scope",
+      "appointment_integration_unavailable"
+    ],
+    "actions": ["CH-HOTLINE-CSKH", "CH-COUNTER"],
+    "real_time_agent_chat": false,
+    "ticket_creation": false
+  },
+  "retention_policy": {
+    "status": "pilot_default_requires_hospital_approval",
+    "session_idle_timeout_minutes": 30,
+    "session_absolute_timeout_hours": 24,
+    "anonymized_conversation_days": 90,
+    "feedback_days": 180,
+    "mock_appointment_days_after_last_update": 90,
+    "emergency_event_days": 365,
+    "security_and_content_audit_days": 365,
+    "aggregate_analytics_days": 365,
+    "raw_conversation_pii_allowed": false
+  },
+  "rate_limits": {
+    "status": "pilot_default",
+    "messages_per_session_per_minute": 20,
+    "messages_per_ip_per_minute": 60,
+    "max_messages_per_session": 100,
+    "max_message_length": 4000
+  },
+  "feature_flags": {
+    "web_widget": true,
+    "standalone_chat_page": true,
+    "mock_his_booking": true,
+    "mock_his_lookup": true,
+    "content_management": true,
+    "analytics_dashboard": true,
+    "asr": false,
+    "tts": false,
+    "live_agent_realtime": false
+  }
+}

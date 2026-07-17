@@ -1,0 +1,40 @@
+version: "1.0.0"
+sprint: 0
+status: packet_generation_complete
+packets:
+  - id: S0-IMPLEMENTATION-EXECUTION-VIEW
+    file: prompts/sprint-0/task-packets/S0-IMPLEMENTATION-EXECUTION-VIEW.packet.md
+    wave: all
+    pool: OTHER
+    priority: P0
+    product_code: false
+    column: Prompt Backlog
+  - id: WP-001
+    file: prompts/sprint-0/task-packets/WP-001.packet.md
+    wave: 0
+    pool: OTHER
+    priority: P0
+    product_code: false
+    column: Prompt Backlog
+  - id: WP-002
+    file: prompts/sprint-0/task-packets/WP-002.packet.md
+    wave: 0
+    pool: OTHER
+    priority: P0
+    product_code: false
+    column: Prompt Backlog
+  - id: WP-003
+    file: prompts/sprint-0/task-packets/WP-003.packet.md
+    wave: 0
+    pool: QA
+    priority: P0
+    product_code: false
+    column: Prompt Backlog
+  - id: WP-004
+    file: prompts/sprint-0/task-packets/WP-004.packet.md
+    wave: 0
+    pool: OTHER
+    priority: P0
+    product_code: false
+    column: Prompt Backlog
+

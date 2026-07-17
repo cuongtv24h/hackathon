@@ -1,0 +1,66 @@
+# Implementation Execution View — Phase 6.5
+version: "1.0.0"
+source:
+  planning: docs/5.ai-engineering-planning.md
+  work_package_map: docs/spec-registry/work-package-map.yaml
+  task_file_contracts: docs/spec-registry/task-to-file-contract-map.yaml
+gates:
+  - {id: G0, name: base_scaffold, packets: [WP-001, WP-002, WP-003], verify: scripts/verify-scaffold.bat}
+  - {id: G0R, name: region_scaffold, packets: [WP-004], verify: "scripts/verify-scaffold.bat /regions"}
+  - {id: G1, name: data_contract_baseline, packets: [WP-005, WP-006, WP-007, WP-008, WP-009]}
+  - {id: G2, name: foundation_baseline, packets: [WP-101, WP-102, WP-103, WP-104, WP-105]}
+  - {id: G3, name: tool_baseline, packets: [WP-201, WP-202, WP-203, WP-204]}
+  - {id: G4, name: ai_baseline, packets: [WP-301, WP-302, WP-303, WP-304, WP-305, WP-306]}
+  - {id: G5, name: capability_api_baseline, packets: [WP-401, WP-402, WP-403, WP-404]}
+  - {id: G6, name: experience_baseline, packets: [WP-501, WP-502, WP-503, WP-504, WP-505, WP-506]}
+  - {id: G7, name: release_baseline, packets: [WP-601, WP-602, WP-603, WP-604, WP-605, WP-606]}
+waves:
+  - id: wave-0
+    sprint: 0
+    packets: [WP-001, WP-002, WP-003, WP-004]
+    parallel_groups: [[WP-001], [WP-002], [WP-003], [WP-004]]
+    entry: normalized_specs_available
+    exit: region_scaffold_verified
+  - id: wave-1
+    sprint: 1
+    packets: [WP-005, WP-006, WP-007, WP-008, WP-009]
+    parallel_groups: [[WP-005, WP-007, WP-009], [WP-006], [WP-008]]
+    entry: region_scaffold_verified
+    exit: data_contract_baseline
+  - id: wave-2
+    sprint: 1
+    packets: [WP-101, WP-102, WP-103, WP-104, WP-105]
+    parallel_groups: [[WP-101, WP-102, WP-103, WP-104, WP-105]]
+    entry: data_contract_baseline
+    exit: foundation_baseline
+  - id: wave-3
+    sprint: 2
+    packets: [WP-201, WP-202, WP-203, WP-204]
+    parallel_groups: [[WP-201, WP-202, WP-203, WP-204]]
+    entry: foundation_baseline
+    exit: tool_baseline
+  - id: wave-4
+    sprint: 2
+    packets: [WP-301, WP-302, WP-303, WP-304, WP-305, WP-306]
+    parallel_groups: [[WP-301], [WP-302], [WP-303, WP-304, WP-305, WP-306]]
+    entry: tool_baseline
+    exit: ai_baseline
+  - id: wave-5
+    sprint: 2
+    packets: [WP-401, WP-402, WP-403, WP-404]
+    parallel_groups: [[WP-401, WP-402, WP-403, WP-404]]
+    entry: ai_baseline
+    exit: capability_api_baseline
+  - id: wave-6
+    sprint: 2
+    packets: [WP-501, WP-502, WP-503, WP-504, WP-505, WP-506]
+    parallel_groups: [[WP-501], [WP-502, WP-503, WP-504, WP-505, WP-506]]
+    entry: capability_api_baseline
+    exit: experience_baseline
+  - id: wave-7
+    sprint: 3
+    packets: [WP-601, WP-602, WP-603, WP-604, WP-605, WP-606]
+    parallel_groups: [[WP-601], [WP-602, WP-603, WP-604, WP-605], [WP-606]]
+    entry: experience_baseline
+    exit: release_baseline
+

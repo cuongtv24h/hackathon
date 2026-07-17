@@ -1,0 +1,613 @@
+# Task-to-File Contract Map — Phase 6
+version: "1.0.0"
+source_work_package_map: docs/spec-registry/work-package-map.yaml
+rules:
+  - A directory_zone is a real exclusive folder, not a framework/language choice.
+  - A builder may create leaf files only within its declared directory_zone.
+  - UPDATE requires the exact TASK marker; FULL_FILE is only for a new file or approved exception.
+  - Cross-zone edits require a Human Lead exception recorded on the board.
+work_packages:
+  - id: WP-001
+    owner_pool: OTHER
+    suggested_branch: task/WP-001
+    files:
+      - path: docs/repo-manifest.yaml
+        path_kind: file
+        operation: UPDATE
+        region: {TASK:WP-001}
+      - path: docs/file-ownership.yaml
+        path_kind: file
+        operation: UPDATE
+        region: {TASK:WP-001}
+      - path: docs/task-file-map.yaml
+        path_kind: file
+        operation: UPDATE
+        region: {TASK:WP-001}
+      - path: docs/spec-registry/task-to-file-contract-map.yaml
+        path_kind: file
+        operation: UPDATE
+        region: {TASK:WP-001}
+  - id: WP-002
+    owner_pool: OTHER
+    suggested_branch: task/WP-002
+    files:
+      - path: scripts/bootstrap.bat
+        path_kind: file
+        operation: UPDATE
+        region: {TASK:WP-002}
+      - path: docs/spec-registry/scaffold-script-contracts.yaml
+        path_kind: file
+        operation: UPDATE
+        region: {TASK:WP-002}
+  - id: WP-003
+    owner_pool: QA
+    suggested_branch: task/WP-003
+    files:
+      - path: scripts/verify-scaffold.bat
+        path_kind: file
+        operation: UPDATE
+        region: {TASK:WP-003}
+      - path: docs/spec-registry/scaffold-script-contracts.yaml
+        path_kind: file
+        operation: UPDATE
+        region: {TASK:WP-003}
+  - id: WP-004
+    owner_pool: OTHER
+    suggested_branch: task/WP-004
+    files:
+      - path: docs/region-marker-policy.md
+        path_kind: file
+        operation: UPDATE
+        region: {TASK:WP-004}
+      - path: config/region-markers/
+        path_kind: directory_zone
+        operation: CREATE
+        region: FULL_FILE
+  - id: WP-005
+    owner_pool: DATA
+    suggested_branch: task/WP-005
+    files:
+      - path: supabase/migrations/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: docs/data-schema/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/contract/test_wp_005_schema.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-005}
+        test_companion: true
+  - id: WP-006
+    owner_pool: DATA
+    suggested_branch: task/WP-006
+    files:
+      - path: supabase/policies/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/api/foundation/database/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_006_database.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-006}
+        test_companion: true
+  - id: WP-007
+    owner_pool: DATA
+    suggested_branch: task/WP-007
+    files:
+      - path: data/mvp/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: docs/knowledge/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/contract/test_wp_007_seed_registry.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-007}
+        test_companion: true
+  - id: WP-008
+    owner_pool: DATA
+    suggested_branch: task/WP-008
+    files:
+      - path: apps/api/foundation/knowledge/ingestion/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: supabase/seed/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_008_knowledge_ingestion.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-008}
+        test_companion: true
+  - id: WP-009
+    owner_pool: API
+    suggested_branch: task/WP-009
+    files:
+      - path: packages/contracts/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: config/runtime/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/contract/test_wp_009_contracts.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-009}
+        test_companion: true
+  - id: WP-101
+    owner_pool: API
+    suggested_branch: task/WP-101
+    files:
+      - path: apps/api/foundation/session/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/api/foundation/configuration/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/api/foundation/feedback/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/unit/test_wp_101_foundation_session.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-101}
+        test_companion: true
+  - id: WP-102
+    owner_pool: API
+    suggested_branch: task/WP-102
+    files:
+      - path: apps/api/foundation/knowledge/repository/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/api/foundation/knowledge/content/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_102_knowledge_content.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-102}
+        test_companion: true
+  - id: WP-103
+    owner_pool: API
+    suggested_branch: task/WP-103
+    files:
+      - path: apps/api/foundation/emergency/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/api/capabilities/emergency/protocols/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/unit/test_wp_103_emergency_foundation.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-103}
+        test_companion: true
+  - id: WP-104
+    owner_pool: API
+    suggested_branch: task/WP-104
+    files:
+      - path: apps/api/foundation/appointments/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/mock-his/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_104_appointments.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-104}
+        test_companion: true
+  - id: WP-105
+    owner_pool: API
+    suggested_branch: task/WP-105
+    files:
+      - path: apps/api/logging/conversation/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/api/logging/audit/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/api/foundation/analytics/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_105_analytics_logging.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-105}
+        test_companion: true
+  - id: WP-201
+    owner_pool: AI-CORE
+    suggested_branch: task/WP-201
+    files:
+      - path: apps/api/ai/rag/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/unit/test_wp_201_knowledge_search.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-201}
+        test_companion: true
+  - id: WP-202
+    owner_pool: AI-CORE
+    suggested_branch: task/WP-202
+    files:
+      - path: apps/api/capabilities/emergency/prefilter/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/unit/test_wp_202_emergency_prefilter.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-202}
+        test_companion: true
+  - id: WP-203
+    owner_pool: API
+    suggested_branch: task/WP-203
+    files:
+      - path: apps/api/foundation/appointments/tools/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_203_appointment_tools.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-203}
+        test_companion: true
+  - id: WP-204
+    owner_pool: AI-CORE
+    suggested_branch: task/WP-204
+    files:
+      - path: apps/api/ai/guardrails/privacy/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/api/logging/conversation/tool-adapter/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/unit/test_wp_204_privacy_logging.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-204}
+        test_companion: true
+  - id: WP-301
+    owner_pool: AI-CORE
+    suggested_branch: task/WP-301
+    files:
+      - path: apps/api/ai/providers/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/unit/test_wp_301_ai_provider.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-301}
+        test_companion: true
+  - id: WP-302
+    owner_pool: AI-CORE
+    suggested_branch: task/WP-302
+    files:
+      - path: apps/api/ai/orchestrator/core/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/api/ai/guardrails/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/unit/test_wp_302_ai_orchestration.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-302}
+        test_companion: true
+  - id: WP-303
+    owner_pool: AI-CORE
+    suggested_branch: task/WP-303
+    files:
+      - path: apps/api/ai/orchestrator/information-assistance/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_303_information_assistance.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-303}
+        test_companion: true
+  - id: WP-304
+    owner_pool: AI-CORE
+    suggested_branch: task/WP-304
+    files:
+      - path: apps/api/ai/orchestrator/emergency-safety/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_304_emergency_safety.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-304}
+        test_companion: true
+  - id: WP-305
+    owner_pool: AI-CORE
+    suggested_branch: task/WP-305
+    files:
+      - path: apps/api/ai/orchestrator/appointment-booking/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_305_appointment_booking.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-305}
+        test_companion: true
+  - id: WP-306
+    owner_pool: AI-CORE
+    suggested_branch: task/WP-306
+    files:
+      - path: apps/api/ai/orchestrator/appointment-status/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_306_appointment_status.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-306}
+        test_companion: true
+  - id: WP-401
+    owner_pool: API
+    suggested_branch: task/WP-401
+    files:
+      - path: apps/api/gateway/capabilities/information-assistance/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/contract/test_wp_401_information_assistance.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-401}
+        test_companion: true
+  - id: WP-402
+    owner_pool: API
+    suggested_branch: task/WP-402
+    files:
+      - path: apps/api/gateway/capabilities/emergency-safety/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/contract/test_wp_402_emergency_safety.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-402}
+        test_companion: true
+  - id: WP-403
+    owner_pool: API
+    suggested_branch: task/WP-403
+    files:
+      - path: apps/api/gateway/capabilities/appointment-booking/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/contract/test_wp_403_appointment_booking.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-403}
+        test_companion: true
+  - id: WP-404
+    owner_pool: API
+    suggested_branch: task/WP-404
+    files:
+      - path: apps/api/gateway/capabilities/appointment-status/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/contract/test_wp_404_appointment_status.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-404}
+        test_companion: true
+  - id: WP-501
+    owner_pool: FE
+    suggested_branch: task/WP-501
+    files:
+      - path: apps/chat-web/src/shared/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/chat-web/src/widget/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: apps/chat-web/src/standalone/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_501_chat_channels.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-501}
+        test_companion: true
+  - id: WP-502
+    owner_pool: FE
+    suggested_branch: task/WP-502
+    files:
+      - path: apps/chat-web/src/features/information-assistance/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_502_information_ui.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-502}
+        test_companion: true
+  - id: WP-503
+    owner_pool: FE
+    suggested_branch: task/WP-503
+    files:
+      - path: apps/chat-web/src/features/appointments/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_503_appointment_ui.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-503}
+        test_companion: true
+  - id: WP-504
+    owner_pool: FE
+    suggested_branch: task/WP-504
+    files:
+      - path: apps/chat-web/src/features/emergency-safety/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_504_emergency_ui.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-504}
+        test_companion: true
+  - id: WP-505
+    owner_pool: FE
+    suggested_branch: task/WP-505
+    files:
+      - path: apps/admin-web/src/features/content-management/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_505_content_dashboard.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-505}
+        test_companion: true
+  - id: WP-506
+    owner_pool: FE
+    suggested_branch: task/WP-506
+    files:
+      - path: apps/admin-web/src/features/analytics-audit/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_506_analytics_dashboard.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-506}
+        test_companion: true
+  - id: WP-601
+    owner_pool: QA
+    suggested_branch: task/WP-601
+    files:
+      - path: tests/contracts/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/data-validation/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/contract/test_wp_601_data_contracts.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-601}
+        test_companion: true
+  - id: WP-602
+    owner_pool: QA
+    suggested_branch: task/WP-602
+    files:
+      - path: tests/e2e/information-assistance/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_602_information_assistance.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-602}
+        test_companion: true
+  - id: WP-603
+    owner_pool: QA
+    suggested_branch: task/WP-603
+    files:
+      - path: tests/e2e/emergency-safety/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/fault/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_603_emergency_safety.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-603}
+        test_companion: true
+  - id: WP-604
+    owner_pool: QA
+    suggested_branch: task/WP-604
+    files:
+      - path: tests/e2e/appointments/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_604_appointments.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-604}
+        test_companion: true
+  - id: WP-605
+    owner_pool: QA
+    suggested_branch: task/WP-605
+    files:
+      - path: tests/e2e/admin-dashboard/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_605_admin_dashboard.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-605}
+        test_companion: true
+  - id: WP-606
+    owner_pool: QA
+    suggested_branch: task/WP-606
+    files:
+      - path: tests/nfr/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/release/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: config/deployment/
+        path_kind: directory_zone
+        operation: CREATE
+        region: DIRECTORY_ZONE
+      - path: tests/integration/test_wp_606_release_gate.py
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-606}
+        test_companion: true

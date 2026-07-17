@@ -1,0 +1,47 @@
+version: "1.0.0"
+sprint: 3
+status: packet_generation_complete
+packets:
+  - id: WP-601
+    file: prompts/sprint-3/task-packets/WP-601.packet.md
+    wave: 7
+    pool: QA
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-602
+    file: prompts/sprint-3/task-packets/WP-602.packet.md
+    wave: 7
+    pool: QA
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-603
+    file: prompts/sprint-3/task-packets/WP-603.packet.md
+    wave: 7
+    pool: QA
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-604
+    file: prompts/sprint-3/task-packets/WP-604.packet.md
+    wave: 7
+    pool: QA
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-605
+    file: prompts/sprint-3/task-packets/WP-605.packet.md
+    wave: 7
+    pool: QA
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-606
+    file: prompts/sprint-3/task-packets/WP-606.packet.md
+    wave: 7
+    pool: QA
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+

@@ -1,0 +1,208 @@
+# Task Packet Index — Phase 6.5
+version: "1.0.0"
+packets:
+  - id: S0-IMPLEMENTATION-EXECUTION-VIEW
+    sprint: 0
+    file: prompts/sprint-0/task-packets/S0-IMPLEMENTATION-EXECUTION-VIEW.packet.md
+    type: coordination
+  - id: WP-001
+    sprint: 0
+    wave: 0
+    file: prompts/sprint-0/task-packets/WP-001.packet.md
+    type: governance
+  - id: WP-002
+    sprint: 0
+    wave: 0
+    file: prompts/sprint-0/task-packets/WP-002.packet.md
+    type: governance
+  - id: WP-003
+    sprint: 0
+    wave: 0
+    file: prompts/sprint-0/task-packets/WP-003.packet.md
+    type: governance
+  - id: WP-004
+    sprint: 0
+    wave: 0
+    file: prompts/sprint-0/task-packets/WP-004.packet.md
+    type: governance
+  - id: WP-005
+    sprint: 1
+    wave: 1
+    file: prompts/sprint-1/task-packets/WP-005.packet.md
+    type: implementation
+  - id: WP-006
+    sprint: 1
+    wave: 1
+    file: prompts/sprint-1/task-packets/WP-006.packet.md
+    type: implementation
+  - id: WP-007
+    sprint: 1
+    wave: 1
+    file: prompts/sprint-1/task-packets/WP-007.packet.md
+    type: implementation
+  - id: WP-008
+    sprint: 1
+    wave: 1
+    file: prompts/sprint-1/task-packets/WP-008.packet.md
+    type: implementation
+  - id: WP-009
+    sprint: 1
+    wave: 1
+    file: prompts/sprint-1/task-packets/WP-009.packet.md
+    type: implementation
+  - id: WP-101
+    sprint: 1
+    wave: 2
+    file: prompts/sprint-1/task-packets/WP-101.packet.md
+    type: implementation
+  - id: WP-102
+    sprint: 1
+    wave: 2
+    file: prompts/sprint-1/task-packets/WP-102.packet.md
+    type: implementation
+  - id: WP-103
+    sprint: 1
+    wave: 2
+    file: prompts/sprint-1/task-packets/WP-103.packet.md
+    type: implementation
+  - id: WP-104
+    sprint: 1
+    wave: 2
+    file: prompts/sprint-1/task-packets/WP-104.packet.md
+    type: implementation
+  - id: WP-105
+    sprint: 1
+    wave: 2
+    file: prompts/sprint-1/task-packets/WP-105.packet.md
+    type: implementation
+  - id: WP-201
+    sprint: 2
+    wave: 3
+    file: prompts/sprint-2/task-packets/WP-201.packet.md
+    type: implementation
+  - id: WP-202
+    sprint: 2
+    wave: 3
+    file: prompts/sprint-2/task-packets/WP-202.packet.md
+    type: implementation
+  - id: WP-203
+    sprint: 2
+    wave: 3
+    file: prompts/sprint-2/task-packets/WP-203.packet.md
+    type: implementation
+  - id: WP-204
+    sprint: 2
+    wave: 3
+    file: prompts/sprint-2/task-packets/WP-204.packet.md
+    type: implementation
+  - id: WP-301
+    sprint: 2
+    wave: 4
+    file: prompts/sprint-2/task-packets/WP-301.packet.md
+    type: implementation
+  - id: WP-302
+    sprint: 2
+    wave: 4
+    file: prompts/sprint-2/task-packets/WP-302.packet.md
+    type: implementation
+  - id: WP-303
+    sprint: 2
+    wave: 4
+    file: prompts/sprint-2/task-packets/WP-303.packet.md
+    type: implementation
+  - id: WP-304
+    sprint: 2
+    wave: 4
+    file: prompts/sprint-2/task-packets/WP-304.packet.md
+    type: implementation
+  - id: WP-305
+    sprint: 2
+    wave: 4
+    file: prompts/sprint-2/task-packets/WP-305.packet.md
+    type: implementation
+  - id: WP-306
+    sprint: 2
+    wave: 4
+    file: prompts/sprint-2/task-packets/WP-306.packet.md
+    type: implementation
+  - id: WP-401
+    sprint: 2
+    wave: 5
+    file: prompts/sprint-2/task-packets/WP-401.packet.md
+    type: implementation
+  - id: WP-402
+    sprint: 2
+    wave: 5
+    file: prompts/sprint-2/task-packets/WP-402.packet.md
+    type: implementation
+  - id: WP-403
+    sprint: 2
+    wave: 5
+    file: prompts/sprint-2/task-packets/WP-403.packet.md
+    type: implementation
+  - id: WP-404
+    sprint: 2
+    wave: 5
+    file: prompts/sprint-2/task-packets/WP-404.packet.md
+    type: implementation
+  - id: WP-501
+    sprint: 2
+    wave: 6
+    file: prompts/sprint-2/task-packets/WP-501.packet.md
+    type: implementation
+  - id: WP-502
+    sprint: 2
+    wave: 6
+    file: prompts/sprint-2/task-packets/WP-502.packet.md
+    type: implementation
+  - id: WP-503
+    sprint: 2
+    wave: 6
+    file: prompts/sprint-2/task-packets/WP-503.packet.md
+    type: implementation
+  - id: WP-504
+    sprint: 2
+    wave: 6
+    file: prompts/sprint-2/task-packets/WP-504.packet.md
+    type: implementation
+  - id: WP-505
+    sprint: 2
+    wave: 6
+    file: prompts/sprint-2/task-packets/WP-505.packet.md
+    type: implementation
+  - id: WP-506
+    sprint: 2
+    wave: 6
+    file: prompts/sprint-2/task-packets/WP-506.packet.md
+    type: implementation
+  - id: WP-601
+    sprint: 3
+    wave: 7
+    file: prompts/sprint-3/task-packets/WP-601.packet.md
+    type: implementation
+  - id: WP-602
+    sprint: 3
+    wave: 7
+    file: prompts/sprint-3/task-packets/WP-602.packet.md
+    type: implementation
+  - id: WP-603
+    sprint: 3
+    wave: 7
+    file: prompts/sprint-3/task-packets/WP-603.packet.md
+    type: implementation
+  - id: WP-604
+    sprint: 3
+    wave: 7
+    file: prompts/sprint-3/task-packets/WP-604.packet.md
+    type: implementation
+  - id: WP-605
+    sprint: 3
+    wave: 7
+    file: prompts/sprint-3/task-packets/WP-605.packet.md
+    type: implementation
+  - id: WP-606
+    sprint: 3
+    wave: 7
+    file: prompts/sprint-3/task-packets/WP-606.packet.md
+    type: implementation
+

@@ -1,0 +1,145 @@
+version: "1.0.0"
+sprint: 2
+status: packet_generation_complete
+packets:
+  - id: WP-201
+    file: prompts/sprint-2/task-packets/WP-201.packet.md
+    wave: 3
+    pool: AI-CORE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-202
+    file: prompts/sprint-2/task-packets/WP-202.packet.md
+    wave: 3
+    pool: AI-CORE
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-203
+    file: prompts/sprint-2/task-packets/WP-203.packet.md
+    wave: 3
+    pool: API
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-204
+    file: prompts/sprint-2/task-packets/WP-204.packet.md
+    wave: 3
+    pool: AI-CORE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-301
+    file: prompts/sprint-2/task-packets/WP-301.packet.md
+    wave: 4
+    pool: AI-CORE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-302
+    file: prompts/sprint-2/task-packets/WP-302.packet.md
+    wave: 4
+    pool: AI-CORE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-303
+    file: prompts/sprint-2/task-packets/WP-303.packet.md
+    wave: 4
+    pool: AI-CORE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-304
+    file: prompts/sprint-2/task-packets/WP-304.packet.md
+    wave: 4
+    pool: AI-CORE
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-305
+    file: prompts/sprint-2/task-packets/WP-305.packet.md
+    wave: 4
+    pool: AI-CORE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-306
+    file: prompts/sprint-2/task-packets/WP-306.packet.md
+    wave: 4
+    pool: AI-CORE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-401
+    file: prompts/sprint-2/task-packets/WP-401.packet.md
+    wave: 5
+    pool: API
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-402
+    file: prompts/sprint-2/task-packets/WP-402.packet.md
+    wave: 5
+    pool: API
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-403
+    file: prompts/sprint-2/task-packets/WP-403.packet.md
+    wave: 5
+    pool: API
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-404
+    file: prompts/sprint-2/task-packets/WP-404.packet.md
+    wave: 5
+    pool: API
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-501
+    file: prompts/sprint-2/task-packets/WP-501.packet.md
+    wave: 6
+    pool: FE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-502
+    file: prompts/sprint-2/task-packets/WP-502.packet.md
+    wave: 6
+    pool: FE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-503
+    file: prompts/sprint-2/task-packets/WP-503.packet.md
+    wave: 6
+    pool: FE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-504
+    file: prompts/sprint-2/task-packets/WP-504.packet.md
+    wave: 6
+    pool: FE
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-505
+    file: prompts/sprint-2/task-packets/WP-505.packet.md
+    wave: 6
+    pool: FE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-506
+    file: prompts/sprint-2/task-packets/WP-506.packet.md
+    wave: 6
+    pool: FE
+    priority: P1
+    product_code: true
+    column: Prompt Backlog
+

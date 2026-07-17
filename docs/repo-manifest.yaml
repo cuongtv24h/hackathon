@@ -1,0 +1,45 @@
+# Repository Manifest — Phase 6 Governance
+version: "1.0.0"
+repository:
+  strategy: monorepo
+  default_branch: main
+  platform: github
+  scope: mvp_pilot
+governance:
+  scaffold_version: "1.0.0"
+  task_file_contract_version: "1.0.0"
+  region_marker_version: "1.0.0"
+  required_gate: WP-003
+  post_region_gate: WP-004
+workspaces:
+  - path: apps/api/
+    purpose: capability APIs, foundation services and AI services
+  - path: apps/chat-web/
+    purpose: widget and standalone chat channels
+  - path: apps/admin-web/
+    purpose: content management and analytics dashboard
+  - path: apps/mock-his/
+    purpose: database-backed Mock HIS adapter
+  - path: packages/contracts/
+    purpose: shared implementation contracts derived from canonical DTOs
+  - path: supabase/
+    purpose: migrations, policies and seed integration
+  - path: config/
+    purpose: non-secret runtime configuration
+  - path: tests/
+    purpose: contract, integration, E2E and NFR validation
+  - path: prompts/
+    purpose: PromptOps governance; no product source
+  - path: scripts/
+    purpose: scaffold/bootstrap verification only
+authoritative_registries:
+  - docs/spec-registry/work-package-map.yaml
+  - docs/spec-registry/task-to-file-contract-map.yaml
+  - docs/file-ownership.yaml
+  - docs/spec-registry/scaffold-script-contracts.yaml
+constraints:
+  - No secret is committed.
+  - No builder task starts before WP-003 base verification passes.
+  - A task edits only its contracted zone and marker.
+  - Source documents remain outside product source ownership.
+
