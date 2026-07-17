@@ -14,3 +14,7 @@ google-genai
 # Automated test harness required by Phase 6.5.
 pytest
 pytest-asyncio
+
+# Development automation: packet parsing and governance validation.
+PyYAML
+requests

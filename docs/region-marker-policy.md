@@ -24,10 +24,11 @@ Không lồng marker. Không đổi ID, không xóa marker của task khác. Fil
 ## 4. Quy tắc sửa
 
 1. Builder đọc `docs/spec-registry/task-to-file-contract-map.yaml` trước khi sửa.
-2. Nếu marker hoặc file leaf chưa tồn tại, builder có `CREATE` directory zone được tạo leaf file đầu tiên trong đúng zone và thêm marker của chính task. WP-004 chỉ tạo/duy trì initialization map và kiểm tra marker/zone không chồng lấn.
-3. Chạm vùng ngoài contract: dừng task, tạo escalation cho Human Lead.
-4. Reviewer từ chối diff làm đổi marker, ownership hoặc file path mà không có exception được duyệt.
-5. Sau merge, integration branch chạy `scripts/verify-scaffold.bat /regions`.
+2. **Bootstrap exception (Wave 0):** WP-001 đến WP-004 được phép `UPDATE + FULL_FILE` duy nhất trên các file đã liệt kê chính xác trong task-to-file contract để thiết lập control plane ban đầu. Không cần marker có sẵn; exception này không áp dụng cho bất kỳ work package nào khác.
+3. Nếu marker hoặc file leaf chưa tồn tại, builder có `CREATE` directory zone được tạo leaf file đầu tiên trong đúng zone và thêm marker của chính task. WP-004 chỉ tạo/duy trì initialization map và kiểm tra marker/zone không chồng lấn.
+4. Chạm vùng ngoài contract: dừng task, tạo escalation cho Human Lead.
+5. Reviewer từ chối diff làm đổi marker, ownership hoặc file path mà không có exception được duyệt.
+6. Sau merge, integration branch chạy `scripts/verify-scaffold.bat /regions`.
 
 ## 5. Two-stage verification
 

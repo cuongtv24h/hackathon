@@ -15,19 +15,19 @@ work_packages:
       - path: docs/repo-manifest.yaml
         path_kind: file
         operation: UPDATE
-        region: {TASK:WP-001}
+        region: FULL_FILE
       - path: docs/file-ownership.yaml
         path_kind: file
         operation: UPDATE
-        region: {TASK:WP-001}
+        region: FULL_FILE
       - path: docs/task-file-map.yaml
         path_kind: file
         operation: UPDATE
-        region: {TASK:WP-001}
+        region: FULL_FILE
       - path: docs/spec-registry/task-to-file-contract-map.yaml
         path_kind: file
         operation: UPDATE
-        region: {TASK:WP-001}
+        region: FULL_FILE
   - id: WP-002
     owner_pool: OTHER
     suggested_branch: task/WP-002
@@ -35,11 +35,11 @@ work_packages:
       - path: scripts/bootstrap.bat
         path_kind: file
         operation: UPDATE
-        region: {TASK:WP-002}
+        region: FULL_FILE
       - path: docs/spec-registry/scaffold-script-contracts.yaml
         path_kind: file
         operation: UPDATE
-        region: {TASK:WP-002}
+        region: FULL_FILE
   - id: WP-003
     owner_pool: QA
     suggested_branch: task/WP-003
@@ -47,11 +47,11 @@ work_packages:
       - path: scripts/verify-scaffold.bat
         path_kind: file
         operation: UPDATE
-        region: {TASK:WP-003}
+        region: FULL_FILE
       - path: docs/spec-registry/scaffold-script-contracts.yaml
         path_kind: file
         operation: UPDATE
-        region: {TASK:WP-003}
+        region: FULL_FILE
   - id: WP-004
     owner_pool: OTHER
     suggested_branch: task/WP-004
@@ -59,7 +59,7 @@ work_packages:
       - path: docs/region-marker-policy.md
         path_kind: file
         operation: UPDATE
-        region: {TASK:WP-004}
+        region: FULL_FILE
       - path: config/region-markers/
         path_kind: directory_zone
         operation: CREATE
