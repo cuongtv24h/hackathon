@@ -24,10 +24,14 @@ zones:
   - {id: CHAT-WEB, path: apps/chat-web/, primary_pool: FE, write_mode: subdivided}
   - {id: ADMIN-WEB, path: apps/admin-web/, primary_pool: FE, write_mode: subdivided}
   - {id: CONFIG, path: config/, primary_pool: OTHER, write_mode: subdivided}
-  - {id: TESTS, path: tests/, primary_pool: QA, write_mode: subdivided}
+  - {id: TESTS, path: tests/, primary_pool: QA, write_mode: reviewed_test_companion_exception}
 shared_files:
   - {path: .env.example, steward: OTHER, change_rule: Human Lead approval}
   - {path: README.md, steward: OTHER, change_rule: Human Lead approval}
   - {path: docs/spec-registry/work-package-map.yaml, steward: Human Lead, change_rule: planning-only}
   - {path: docs/spec-registry/task-to-file-contract-map.yaml, steward: Human Lead, change_rule: orchestration-only}
-
+test_companion_exception:
+  applies_to: "tests/unit/, tests/integration/, tests/contract/"
+  allowed_writer: "The owner_pool of the same work package when the exact pytest path is listed in task-to-file-contract-map.yaml."
+  qa_role: "QA retains review, integration and release ownership; it does not block the builder from writing its contracted companion test."
+  restriction: "A builder may not edit another work package's test file or any uncontracted test path."

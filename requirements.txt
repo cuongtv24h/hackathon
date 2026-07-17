@@ -5,8 +5,9 @@ uvicorn[standard]
 pydantic
 pydantic-settings
 
-# Supabase PostgreSQL/pgvector access and external provider adapters.
-supabase
+# Direct PostgreSQL/pgvector connection to Supabase and provider adapters.
+psycopg[binary]
+pgvector
 httpx
 google-genai
 

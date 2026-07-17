@@ -63,3 +63,4 @@ Desktop.ini
 
 # Local task/runtime evidence; canonical docs and prompts remain tracked
 .agents/
+scripts/

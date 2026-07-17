@@ -1,7 +1,7 @@
 # Task File Map — Phase 6 Governance
 version: "1.0.0"
 path_semantics:
-  directory_zone: A real, exclusive folder path. The exact leaf source file is chosen only in a Phase 6.5 packet after technology is confirmed; it must remain inside this zone.
+  directory_zone: A real, exclusive folder path. The builder may create the first leaf source file inside this zone and must record its exact path in BUILD RESULT; it must remain inside this zone.
   full_file: A concrete governance file. Builders may edit only the declared task region after initialization.
 operation_rules:
   CREATE: May create the declared file or content within an empty directory zone.
@@ -48,10 +48,9 @@ mapping:
   - {work_package: WP-504, owner_pool: FE, zones: [apps/chat-web/src/features/emergency-safety/]}
   - {work_package: WP-505, owner_pool: FE, zones: [apps/admin-web/src/features/content-management/]}
   - {work_package: WP-506, owner_pool: FE, zones: [apps/admin-web/src/features/analytics-audit/]}
-  - {work_package: WP-601, owner_pool: QA, zones: [tests/contracts/, tests/data-validation/]}
+  - {work_package: WP-601, owner_pool: QA, zones: [tests/contract/, tests/data-validation/]}
   - {work_package: WP-602, owner_pool: QA, zones: [tests/e2e/information-assistance/]}
   - {work_package: WP-603, owner_pool: QA, zones: [tests/e2e/emergency-safety/, tests/fault/]}
   - {work_package: WP-604, owner_pool: QA, zones: [tests/e2e/appointments/]}
   - {work_package: WP-605, owner_pool: QA, zones: [tests/e2e/admin-dashboard/]}
   - {work_package: WP-606, owner_pool: QA, zones: [tests/nfr/, tests/release/, config/deployment/]}
-

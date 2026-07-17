@@ -4,6 +4,7 @@ source_work_package_map: docs/spec-registry/work-package-map.yaml
 rules:
   - A directory_zone is a real exclusive folder, not a framework/language choice.
   - A builder may create leaf files only within its declared directory_zone.
+  - A work-package owner may create only its exact pytest companion path under tests/unit/, tests/integration/ or tests/contract/; QA reviews that test.
   - UPDATE requires the exact TASK marker; FULL_FILE is only for a new file or approved exception.
   - Cross-zone edits require a Human Lead exception recorded on the board.
 work_packages:
@@ -521,7 +522,7 @@ work_packages:
     owner_pool: QA
     suggested_branch: task/WP-601
     files:
-      - path: tests/contracts/
+      - path: tests/contract/
         path_kind: directory_zone
         operation: CREATE
         region: DIRECTORY_ZONE
