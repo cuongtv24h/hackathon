@@ -61,6 +61,6 @@ supabase/.branches/
 Thumbs.db
 Desktop.ini
 
-# Local task/runtime evidence; canonical docs and prompts remain tracked
+# Local task/runtime evidence; canonical docs, prompts and scripts remain tracked
 .agents/
-scripts/
+scripts/*.zip
