@@ -17,6 +17,10 @@ from apps.api.foundation.appointments.tools.service import (
     AppointmentOutput,
     create_appointment_tools,
 )
+from apps.api.foundation.appointments.tools.booking import (
+    MockBookingRequest,
+    book_appointment_mock,
+)
 
 __all__ = [
     "AppointmentTools",
@@ -31,4 +35,6 @@ __all__ = [
     "AvailableSlotsOutput",
     "AppointmentOutput",
     "create_appointment_tools",
+    "MockBookingRequest",
+    "book_appointment_mock",
 ]

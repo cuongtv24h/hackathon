@@ -30,6 +30,7 @@ from apps.api.ai.providers.embedding_provider import (
     EmbeddingProviderChain,
     create_mock_embedding_provider,
 )
+from apps.api.ai.providers.openai import OpenAIProvider, SafetyEvaluationOutput
 
 __all__ = [
     # LLM
@@ -56,4 +57,6 @@ __all__ = [
     "MockEmbeddingProvider",
     "EmbeddingProviderChain",
     "create_mock_embedding_provider",
+    "OpenAIProvider",
+    "SafetyEvaluationOutput",
 ]

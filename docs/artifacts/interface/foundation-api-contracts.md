@@ -25,7 +25,7 @@ Fast, deterministic APIs. They never call LLM or perform AI reasoning.
 
 ### Knowledge/content
 
-- `POST /v1/foundation/knowledge:search`.
+- `POST /v1/foundation/knowledge:search`: vector + PostgreSQL FTS candidates and RRF fusion; returns at most 20 fused candidates for the WP-201 RAG/tool layer to rerank. Foundation does not call LLM/reranker.
 - `GET /v1/foundation/knowledge/chunks/{chunk_id}`.
 - Draft lifecycle: create, patch, `:submit`, `:review`, `:publish` under `/v1/foundation/knowledge/drafts`.
 - Conflict lifecycle: `GET /v1/foundation/knowledge/conflicts`; `POST /v1/foundation/knowledge/conflicts/{conflict_id}:resolve`.

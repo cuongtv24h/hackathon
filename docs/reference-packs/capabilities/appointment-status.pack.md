@@ -32,7 +32,7 @@ Tra cứu lịch bằng định danh tối thiểu và trả trạng thái cùng
 
 ### Tools
 
-- `lookup_appointment(appointment_id)` → appointment/null; timeout 1000ms, max one transient retry.
+- `get_patient_appointments` and `get_appointment_request_status` require authenticated patient context; timeout 1000ms, max one transient retry, and no cross-patient existence disclosure.
 - `search_knowledge_base` for grounded preparation guidance.
 - `fallback_response` for unavailable integration.
 

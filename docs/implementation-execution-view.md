@@ -31,7 +31,7 @@ Human-readable execution guide for the 40 approved work packages. This is a coor
 
 ## Data / Schema / API Readiness
 
-- **Data:** `data/mvp/` and `docs/knowledge/` must be reconciled by WP-007, then imported/indexed by WP-008. All bootstrap BHYT sources are `approved_for_pilot`; later content requires workflow approval.
+- **Data:** `data/mvp/` and `docs/knowledge/` must be reconciled by WP-007, then imported/indexed by WP-008. Approval is source/version-level for MVP; bootstrap BHYT sources are `approved_for_pilot`, while later sources default to `draft` until Human Lead updates the registry. WP-008 uses document-aware bounded chunking and populates both vector and PostgreSQL FTS inputs; WP-102 performs hybrid retrieval + RRF and WP-201 reranks with RRF fallback. Chunk-level approval and multi-step workflow are not ingestion gates.
 - **Schema:** WP-005 migration baseline and WP-006 connectivity/RLS must pass before seed import and Foundation services.
 - **API:** Foundation APIs must exist before tool adapters; tools before AI; AI pipelines before Capability APIs; APIs before UI and E2E.
 - **Test harness:** Every product/data implementation packet has a pytest companion file. A blocked dependency does not remove the obligation to create the test file and report the blocker.

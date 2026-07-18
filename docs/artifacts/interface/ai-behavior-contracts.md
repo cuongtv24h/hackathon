@@ -23,8 +23,8 @@ Message + maximum 20 ConversationContext turns + BusinessContext + caution flags
 
 ### Structured output
 
-- `ReasoningResultDTO`: intent_labels, domains, clarity, missing_information, scope, safety_disposition, confidence_band. This is a conclusion, not chain-of-thought.
-- `PlanningResultDTO`: goal and ordered tool steps with dependencies/status.
+- `AgentDecisionDTO`: next action (`tool_call`, `clarify`, `final`, `abstain`), optional selected tool calls, public reason code, safety disposition and budget state. It is not chain-of-thought and is not an intent-routing contract.
+- `ToolPolicyDecisionDTO`: allow/deny/confirmation decision produced by backend policy, never by the model.
 - `ObservationResultDTO`: tool call/name/status, result reference, citations, freshness, conflict and error.
 - `ConversationResultDTO`: message, response_type, disclaimers, actions, streaming flag.
 - `ExplainabilityResultDTO`: citations and public fallback/refusal/safety evidence.
@@ -32,10 +32,12 @@ Message + maximum 20 ConversationContext turns + BusinessContext + caution flags
 ### Planning rules
 
 1. Emergency priority.
-2. Factual information requires Knowledge Search before synthesis.
-3. Only registry tools and validated inputs.
-4. Write tools require confirmation/idempotency.
-5. Ask minimal clarification; never fill missing data.
+2. The model selects the next tool from the backend-provided visible subset; there is no mandatory intent-classification/router step.
+3. Factual information requires a validated observation or approved static response before synthesis.
+4. Only visible registry tools and validated inputs; authorization and workflow state are rechecked immediately before execution.
+5. Write tools require confirmation/idempotency.
+6. Ask minimal clarification; never fill missing data.
+7. Stop on deadline/tool-call/repair budget exhaustion and return a safe fallback.
 
 ### Grounding/fallback
 
@@ -57,4 +59,3 @@ Message + maximum 20 ConversationContext turns + BusinessContext + caution flags
 - `docs/artifacts/architecture/ai-capability-mapping.md`
 - `docs/artifacts/interface/tool-contracts.md`
 - `docs/artifacts/interface/error-contracts.md`
-

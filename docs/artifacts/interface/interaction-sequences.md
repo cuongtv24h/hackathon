@@ -19,21 +19,21 @@ Execution ordering across frontend, capability, AI, tools, Foundation APIs and e
 
 ### PC-01
 
-Frontend → Information API → pre-filter → guardrail → Orchestrator → Knowledge tool/Foundation/vector system → validated observation → grounded synthesis or fallback → SSE/complete response → citations/actions.
+Frontend → Information API → emergency gate → shared LangGraph agent with authorized visible tools → model-selected knowledge tool → execution policy → Foundation/vector system → validated observation → grounded synthesis or fallback → citation verification → SSE/complete response.
 
 ### PC-02
 
 - Critical: Frontend → Emergency API/Gateway → local pre-filter → cached Level 2 protocol → response → async audit.
-- Caution: flags → Orchestrator → `trigger_emergency` → effective protocol → event → response.
-- Normal: route to appropriate capability.
+- Caution/uncertain: flags → restricted safety profile → approved emergency/contact tools only → effective protocol/event → response.
+- Normal: shared agent receives the capability profile and authorized tool subset; no intent router is required.
 
 ### PC-03
 
-Booking API/Orchestrator loops through specialty/doctor/slot/patient fields using tools/Foundation/HIS. It returns `confirmation_required`; after explicit confirmation, `create_appointment` returns `pending`. Unavailable integration returns redirect, never false success.
+Booking API/shared LangGraph agent loops through read tools, creates a draft, then interrupts with `confirmation_required`. Patient approval resumes the graph and `submit_appointment_request` creates `pending_staff_review`. Only authorized staff can confirm/reject. Unavailable integration returns redirect, never false success.
 
 ### PC-04
 
-Appointment ID → Status API → Orchestrator → lookup tool/Foundation/HIS → found/not-found/unavailable → safe next steps.
+Authenticated patient context + minimal reference → Status API → shared agent → authorized status tool/Foundation/HIS → found/not-found/unavailable → safe next steps without cross-patient disclosure.
 
 ### Content lifecycle
 
@@ -51,4 +51,3 @@ Content Admin draft/update/submit → Domain Owner approve/request changes → a
 - `docs/artifacts/architecture/business-sequences.md`
 - `docs/artifacts/interface/capability-api-contracts.md`
 - `docs/artifacts/interface/tool-contracts.md`
-

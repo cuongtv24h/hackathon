@@ -104,8 +104,8 @@ contracts:
   - {name: AnalyticsSummaryDTO, type: dto, artifact_id: INT-04, artifact_file: docs/artifacts/interface/data-contracts.md, source_section: "Artifact 4.7", used_by_capabilities: []}
 
   # AI behavior
-  - {name: ReasoningResultDTO, type: ai_behavior, artifact_id: INT-05, artifact_file: docs/artifacts/interface/ai-behavior-contracts.md, source_section: "Artifact 5.3", used_by_capabilities: [PC-01, PC-02, PC-03, PC-04]}
-  - {name: PlanningResultDTO, type: ai_behavior, artifact_id: INT-05, artifact_file: docs/artifacts/interface/ai-behavior-contracts.md, source_section: "Artifact 5.4", used_by_capabilities: [PC-01, PC-02, PC-03, PC-04]}
+  - {name: AgentDecisionDTO, type: ai_behavior, artifact_id: INT-05, artifact_file: docs/artifacts/interface/ai-behavior-contracts.md, source_section: "Structured output", used_by_capabilities: [PC-01, PC-02, PC-03, PC-04]}
+  - {name: ToolPolicyDecisionDTO, type: ai_behavior, artifact_id: INT-05, artifact_file: docs/artifacts/interface/ai-behavior-contracts.md, source_section: "Structured output", used_by_capabilities: [PC-01, PC-02, PC-03, PC-04]}
   - {name: ObservationResultDTO, type: ai_behavior, artifact_id: INT-05, artifact_file: docs/artifacts/interface/ai-behavior-contracts.md, source_section: "Artifact 5.5", used_by_capabilities: [PC-01, PC-02, PC-03, PC-04]}
   - {name: ConversationResultDTO, type: ai_behavior, artifact_id: INT-05, artifact_file: docs/artifacts/interface/ai-behavior-contracts.md, source_section: "Artifact 5.6", used_by_capabilities: [PC-01, PC-02, PC-03, PC-04]}
   - {name: ExplainabilityResultDTO, type: ai_behavior, artifact_id: INT-05, artifact_file: docs/artifacts/interface/ai-behavior-contracts.md, source_section: "Artifact 5.7", used_by_capabilities: [PC-01, PC-02, PC-03, PC-04]}
@@ -118,8 +118,10 @@ contracts:
   - {name: get_specialty_list, type: mcp_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Artifact 6.1", used_by_capabilities: [PC-03]}
   - {name: get_doctor_list, type: mcp_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Artifact 6.1", used_by_capabilities: [PC-01, PC-03]}
   - {name: get_available_slots, type: mcp_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Artifact 6.1", used_by_capabilities: [PC-03]}
-  - {name: create_appointment, type: mcp_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Artifact 6.1", used_by_capabilities: [PC-03]}
-  - {name: lookup_appointment, type: mcp_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Artifact 6.1", used_by_capabilities: [PC-04]}
+  - {name: create_appointment_draft, type: agent_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Canonical Content", used_by_capabilities: [PC-03]}
+  - {name: submit_appointment_request, type: agent_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Canonical Content", used_by_capabilities: [PC-03]}
+  - {name: get_patient_appointments, type: agent_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Canonical Content", used_by_capabilities: [PC-04]}
+  - {name: get_appointment_request_status, type: agent_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Canonical Content", used_by_capabilities: [PC-04]}
   - {name: detect_pii, type: mcp_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Artifact 6.1", used_by_capabilities: [PC-01, PC-02, PC-03, PC-04]}
   - {name: log_conversation, type: mcp_tool, artifact_id: INT-06, artifact_file: docs/artifacts/interface/tool-contracts.md, source_section: "Artifact 6.1", used_by_capabilities: [PC-01, PC-02, PC-03, PC-04]}
   - {name: UnifiedErrorEnvelope, type: error, artifact_id: INT-07, artifact_file: docs/artifacts/interface/error-contracts.md, source_section: "Artifact 7.1", used_by_capabilities: [PC-01, PC-02, PC-03, PC-04]}

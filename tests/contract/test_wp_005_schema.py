@@ -61,4 +61,31 @@ def test_migration_preserves_pii_and_retention_boundaries():
     assert "interval '90 days'" in migration
     assert "interval '180 days'" in migration
     assert "interval '365 days'" in migration
+
+
+def test_additive_hybrid_search_migration_exists_and_contains_assertions():
+    path = ROOT / "supabase" / "migrations" / "202607180004_wp005_hybrid_search.sql"
+    assert path.is_file()
+    sql = path.read_text(encoding="utf-8")
+    assert "-- === TASK:WP-005:START ===" in sql
+    assert "RAISE EXCEPTION" in sql
+    assert "ALTER TABLE knowledge_chunks ALTER COLUMN embedding TYPE vector(1536)" in sql
+    assert "GENERATED ALWAYS AS" in sql
+    assert "to_tsvector('simple'" in sql
+    assert "USING ivfflat" in sql
+    assert "USING gin" in sql
+    assert "-- === TASK:WP-005:END ===" in sql
+
+
+def test_forward_jina_profile_migration_is_safe_and_canonical():
+    path = ROOT / "supabase" / "migrations" / "202607180005_wp005_jina_1024_profile.sql"
+    assert path.is_file()
+    sql = path.read_text(encoding="utf-8")
+    assert "RAISE EXCEPTION" in sql
+    assert "embedding IS NOT NULL" in sql
+    assert "DROP INDEX IF EXISTS knowledge_chunks_embedding_idx" in sql
+    assert "ALTER COLUMN embedding TYPE vector(1024)" in sql
+    assert "USING ivfflat" in sql
+    assert "vector_cosine_ops" in sql
+    assert "-- === TASK:WP-005:END ===" in sql
 # === TASK:WP-005:END ===

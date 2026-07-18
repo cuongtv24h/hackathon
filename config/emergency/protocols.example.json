@@ -1,0 +1,18 @@
+{
+  "protocols": {
+    "HIGH": {
+      "protocol_id": "PROTO-HIGH-001",
+      "message": "CẢNH BÁO NGUY HIỂM: Bạn đang báo cáo một tình huống y tế khẩn cấp. Vui lòng gọi ngay số 115 hoặc di chuyển đến cơ sở y tế gần nhất ngay lập tức. Không tiếp tục chat.",
+      "channels": ["115", "phòng cấp cứu bệnh viện"],
+      "approval_status": "mock"
+    },
+    "CAUTION_FALLBACK": {
+      "protocol_id": "PROTO-CAUTION-001",
+      "message": "CHÚ Ý: Câu hỏi của bạn có thể chứa thông tin nhạy cảm liên quan đến an toàn sức khỏe. Chúng tôi cần tạm ngừng các tác vụ thông thường. Vui lòng liên hệ hotline hỗ trợ nếu cần.",
+      "approval_status": "mock"
+    }
+  },
+  "version": "1.0.0",
+  "effective_date": "2026-07-18",
+  "approval_status": "mock"
+}

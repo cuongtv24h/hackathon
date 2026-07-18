@@ -233,6 +233,156 @@ def make_confirmation_required_envelope(
     )
 
 
+@dataclass(frozen=True)
+class SafetyDecisionDTO:
+    risk: Literal["HIGH", "CAUTION", "LOW"]
+    subject: Optional[str] = None
+    temporality: Optional[str] = None
+    assertion: Optional[str] = None
+    reason_code: Optional[str] = None
+    evidence_spans: List[str] = field(default_factory=list)
+    clarification_id: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "risk": self.risk,
+            "subject": self.subject,
+            "temporality": self.temporality,
+            "assertion": self.assertion,
+            "reason_code": self.reason_code,
+            "evidence_spans": list(self.evidence_spans),
+            "clarification_id": self.clarification_id,
+        }
+
+
+@dataclass(frozen=True)
+class RuleEvidenceDTO:
+    rule_id: str
+    evidence_span: str
+    matched_text: str
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "rule_id": self.rule_id,
+            "evidence_span": self.evidence_span,
+            "matched_text": self.matched_text,
+        }
+
+
+@dataclass(frozen=True)
+class ExecutionBudgetDTO:
+    max_tool_calls: int
+    elapsed_time_seconds: float
+    deadline_timestamp: float
+    call_count: int
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "max_tool_calls": self.max_tool_calls,
+            "elapsed_time_seconds": self.elapsed_time_seconds,
+            "deadline_timestamp": self.deadline_timestamp,
+            "call_count": self.call_count,
+        }
+
+
+@dataclass(frozen=True)
+class SearchCandidateDTO:
+    chunk_id: str
+    content: str
+    score: float
+    domain: str
+    sub_topic: str
+    source_id: str
+    source_path: str
+    version: str
+    vector_rank: Optional[int] = None
+    lexical_rank: Optional[int] = None
+    fused_rank: Optional[int] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "chunk_id": self.chunk_id,
+            "content": self.content,
+            "score": self.score,
+            "domain": self.domain,
+            "sub_topic": self.sub_topic,
+            "source_id": self.source_id,
+            "source_path": self.source_path,
+            "version": self.version,
+            "vector_rank": self.vector_rank,
+            "lexical_rank": self.lexical_rank,
+            "fused_rank": self.fused_rank,
+        }
+
+
+@dataclass(frozen=True)
+class SearchResultDTO:
+    sufficient: bool
+    candidates: List[SearchCandidateDTO] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "sufficient": self.sufficient,
+            "candidates": [c.to_dict() for c in self.candidates],
+            "metadata": dict(self.metadata),
+        }
+
+
+@dataclass(frozen=True)
+class CitationDTO:
+    chunk_id: str
+    source_id: str
+    source_path: str
+    source_section: str
+    source_page: str
+    version: str
+    matched_text: str
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "chunk_id": self.chunk_id,
+            "source_id": self.source_id,
+            "source_path": self.source_path,
+            "source_section": self.source_section,
+            "source_page": self.source_page,
+            "version": self.version,
+            "matched_text": self.matched_text,
+        }
+
+
+@dataclass(frozen=True)
+class DegradationMetadataDTO:
+    provider_failure: bool = False
+    model_failure: bool = False
+    reranker_failure: bool = False
+    fallback_active: bool = False
+    reason: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "provider_failure": self.provider_failure,
+            "model_failure": self.model_failure,
+            "reranker_failure": self.reranker_failure,
+            "fallback_active": self.fallback_active,
+            "reason": self.reason,
+        }
+
+
+@dataclass(frozen=True)
+class MockBookingReceiptDTO:
+    appointment_id: str
+    status: Literal["mock_pending", "mock_unavailable"]
+    detail: str
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "appointment_id": self.appointment_id,
+            "status": self.status,
+            "detail": self.detail,
+        }
+
+
 __all__ = [
     "CapabilityResponseEnvelope",
     "ClientContextDTO",
@@ -241,5 +391,13 @@ __all__ = [
     "make_success_envelope",
     "make_error_envelope_from_dto",
     "make_confirmation_required_envelope",
+    "SafetyDecisionDTO",
+    "RuleEvidenceDTO",
+    "ExecutionBudgetDTO",
+    "SearchCandidateDTO",
+    "SearchResultDTO",
+    "CitationDTO",
+    "DegradationMetadataDTO",
+    "MockBookingReceiptDTO",
 ]
 # === TASK:WP-009:END ===

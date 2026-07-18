@@ -21,14 +21,14 @@ Lifetime, ownership và content của sáu runtime contexts.
 |---|---|---|---|
 | ConversationContext | Session; 20 lượt sliding window | Frontend + backend session | message_history, session_id |
 | BusinessContext | Một business flow | LLM Orchestrator | flow, step, booking fields, collected_fields |
-| WorkingContext | Một turn | LLM Orchestrator | intent, planned_tools, tool_results, chunks, citations |
+| WorkingContext | Một graph run/checkpoint thread | LangGraph runtime | messages, visible_tools, pending_tool_calls, validated observations, budget, workflow_state, citations |
 | KnowledgeContext | Một turn | RAG Engine → Orchestrator | chunks, scores, sources, domains, sufficient flag |
 | EmergencyContext | Session, không reset sau trigger | Pre-filter/LLM tool → Gateway | triggered, level, path, time, banner |
 | SystemContext | Persistent cached config | Backend configuration | prompt, tools, hospital config, providers, keywords |
 
 ### Lifecycle
 
-Gateway loads Conversation/System contexts and parses BusinessContext. Pre-filter runs without context. Critical creates EmergencyContext immediately. Normal/caution initializes WorkingContext; RAG creates KnowledgeContext; after response turn-scoped contexts are disposed and ConversationContext is updated.
+Gateway loads Conversation/System contexts and parses BusinessContext. Pre-filter runs before the graph. Critical creates EmergencyContext immediately. Normal/caution starts or resumes a LangGraph thread; the backend resolves visible tools, the model selects the next action, and policy is rechecked before execution. RAG creates KnowledgeContext. Checkpoints follow explicit retention and must not contain secrets, raw credentials or hidden chain-of-thought.
 
 ## Key Constraints
 
@@ -41,4 +41,3 @@ Gateway loads Conversation/System contexts and parses BusinessContext. Pre-filte
 
 - `docs/artifacts/interface/data-contracts.md`
 - `docs/artifacts/interface/ai-behavior-contracts.md`
-
