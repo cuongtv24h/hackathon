@@ -12,6 +12,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     envDir,
+    // The Admin build is served by FastAPI below /admin/ in the VPS setup.
+    base: '/admin/',
     plugins: [react()],
     server: {
       proxy: {

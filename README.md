@@ -77,3 +77,29 @@ npx playwright test --config=playwright.config.ts mvp-live-capabilities.spec.ts
 it prevents the runner from selecting or resolving arbitrary Pilot content.
 
 Không commit `.env`, chuỗi kết nối cơ sở dữ liệu, hoặc khoá nhà cung cấp AI.
+## VPS deployment without Nginx
+
+For the MVP VPS topology, FastAPI serves the production web builds directly:
+
+- `http://<server>:8000/` — Chat application
+- `http://<server>:8000/admin/` — Admin application
+- `http://<server>:8000/v1/` — capability and foundation APIs
+- `http://127.0.0.1:8001/` — Mock HIS, internal-only
+
+Build both frontend applications before starting the API:
+
+```bash
+cd apps/chat-web && npm ci && npm run build
+cd ../admin-web && npm ci && npm run build
+```
+
+Then start Mock HIS on loopback and FastAPI publicly:
+
+```bash
+python -m uvicorn apps.mock_his.main:app --host 127.0.0.1 --port 8001
+python -m uvicorn apps.api.main:app --host 0.0.0.0 --port 8000
+```
+
+Set `MOCK_HIS_BASE_URL=http://127.0.0.1:8001` on the VPS. Do not expose port
+8001 publicly. This no-Nginx setup is suitable for Pilot/demo use; put the
+service behind HTTPS before accepting real patient data over the Internet.
