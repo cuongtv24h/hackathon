@@ -1,4 +1,4 @@
-# === TASK:WP-302:START ===
+﻿# === TASK:WP-302:START ===
 """AI orchestration core service (ARCH-05, ARCH-07, INT-05, INT-07).
 
 This module provides the core orchestration logic that coordinates context,
@@ -79,7 +79,7 @@ class ConfidenceBand(str, Enum):
 class ConversationContext:
     """Conversation context per INT-05 (max 20 turns)."""
     turns: List[Dict[str, str]] = field(default_factory=list)
-    
+
     def __post_init__(self) -> None:
         if len(self.turns) > 20:
             raise ValueError("ConversationContext cannot exceed 20 turns")
@@ -107,7 +107,7 @@ class SystemContext:
 @dataclass(frozen=True)
 class OrchestrationInput:
     """Input to the orchestration service.
-    
+
     Per INT-05: Message + max 20 ConversationContext turns + BusinessContext +
     caution flags + trusted SystemContext + validated tool observations.
     """
@@ -122,13 +122,13 @@ class OrchestrationInput:
 @dataclass(frozen=True)
 class PlanningResultDTO:
     """Planning result per INT-05.
-    
+
     Contains goal and ordered tool steps with dependencies/status.
     """
     goal: str
     tool_steps: List[Dict[str, Any]] = field(default_factory=list)
     status: str = "pending"
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "goal": self.goal,
@@ -140,7 +140,7 @@ class PlanningResultDTO:
 @dataclass(frozen=True)
 class ObservationResultDTO:
     """Observation result per INT-05.
-    
+
     Contains tool call/name/status, result reference, citations,
     freshness, conflict and error.
     """
@@ -152,7 +152,7 @@ class ObservationResultDTO:
     freshness_seconds: Optional[int] = None
     conflict: bool = False
     error: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "tool_name": self.tool_name,
@@ -169,7 +169,7 @@ class ObservationResultDTO:
 @dataclass(frozen=True)
 class ConversationResultDTO:
     """Conversation result per INT-05.
-    
+
     Contains message, response_type, disclaimers, actions, streaming flag.
     """
     message: str
@@ -177,7 +177,7 @@ class ConversationResultDTO:
     disclaimers: List[str] = field(default_factory=list)
     actions: List[Dict[str, Any]] = field(default_factory=list)
     streaming: bool = False
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "message": self.message,
@@ -191,7 +191,7 @@ class ConversationResultDTO:
 @dataclass(frozen=True)
 class ExplainabilityResultDTO:
     """Explainability result per INT-05.
-    
+
     Contains citations and public fallback/refusal/safety evidence.
     Never exposes chain-of-thought or internal reasoning.
     """
@@ -200,7 +200,7 @@ class ExplainabilityResultDTO:
     refusal_reason: Optional[str] = None
     safety_evidence: Optional[str] = None
     confidence_band: str = "medium"
-    
+
     def to_dict(self) -> Dict[str, Any]:
         result: Dict[str, Any] = {
             "citations": list(self.citations),
@@ -218,23 +218,29 @@ class ExplainabilityResultDTO:
 @dataclass(frozen=True)
 class GroundingFallbackBehavior:
     """Grounding and fallback behavior per INT-05.
-    
+
     Defines what happens when grounding is insufficient or conflicts occur.
     """
     grounded: bool = True
     chunks_used: int = 0
     fallback_triggered: bool = False
+    fallback_reason: Optional[str] = None
     fallback_channel: Optional[str] = None
     static_message: Optional[str] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
-        return {
+        result: Dict[str, Any] = {
             "grounded": self.grounded,
             "chunks_used": self.chunks_used,
             "fallback_triggered": self.fallback_triggered,
-            "fallback_channel": self.fallback_channel,
-            "static_message": self.static_message,
         }
+        if self.fallback_reason is not None:
+            result["fallback_reason"] = self.fallback_reason
+        if self.fallback_channel is not None:
+            result["fallback_channel"] = self.fallback_channel
+        if self.static_message is not None:
+            result["static_message"] = self.static_message
+        return result
 
 
 @dataclass(frozen=True)
@@ -247,7 +253,7 @@ class OrchestrationResult:
     explainability: Optional[ExplainabilityResultDTO] = None
     grounding: Optional[GroundingFallbackBehavior] = None
     error: Optional[UnifiedErrorEnvelope] = None
-    
+
     def to_dict(self) -> Dict[str, Any]:
         result: Dict[str, Any] = {}
         if self.reasoning is not None:
@@ -275,14 +281,14 @@ class OrchestrationResult:
 @runtime_checkable
 class EmergencyPrefilterProtocol(Protocol):
     """Protocol for emergency prefilter (WP-202)."""
-    
+
     def check(self, message: str, context: ConversationContext) -> Dict[str, Any]:
         """Check if message indicates emergency.
-        
+
         Args:
             message: The user message.
             context: Conversation context.
-            
+
         Returns:
             Dict with 'is_emergency', 'protocol_key', 'urgency_level'.
         """
@@ -292,7 +298,7 @@ class EmergencyPrefilterProtocol(Protocol):
 @runtime_checkable
 class KnowledgeSearchProtocol(Protocol):
     """Protocol for knowledge search tool (WP-201)."""
-    
+
     def search(
         self,
         query: str,
@@ -301,12 +307,12 @@ class KnowledgeSearchProtocol(Protocol):
         filters: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Search knowledge base.
-        
+
         Args:
             query: Search query.
             top_k: Maximum results.
             filters: Optional filters.
-            
+
         Returns:
             Dict with 'chunks', 'total', 'query_vector'.
         """
@@ -316,13 +322,13 @@ class KnowledgeSearchProtocol(Protocol):
 @runtime_checkable
 class LLMProviderProtocol(Protocol):
     """Protocol for LLM provider (WP-301)."""
-    
+
     def generate(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """Generate LLM response.
-        
+
         Args:
             request: LLM request dict.
-            
+
         Returns:
             LLM response dict.
         """
@@ -332,26 +338,26 @@ class LLMProviderProtocol(Protocol):
 @runtime_checkable
 class GuardrailServiceProtocol(Protocol):
     """Protocol for guardrail service (WP-204/WP-302)."""
-    
+
     def check_input(self, message: str, context: ConversationContext) -> Dict[str, Any]:
         """Check input for violations.
-        
+
         Args:
             message: User message.
             context: Conversation context.
-            
+
         Returns:
             Dict with 'allowed', 'violations', 'redacted_message'.
         """
         ...
-    
+
     def check_output(self, response: str, observations: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Check output for violations.
-        
+
         Args:
             response: Generated response.
             observations: Tool observations used.
-            
+
         Returns:
             Dict with 'allowed', 'violations', 'redacted_response'.
         """
@@ -365,35 +371,35 @@ class GuardrailServiceProtocol(Protocol):
 
 class OrchestrationService:
     """Core orchestration service coordinating AI components.
-    
+
     This service implements the orchestration logic defined in:
     - docs/artifacts/architecture/ai-capability-mapping.md (ARCH-05)
     - docs/artifacts/architecture/context-design.md (ARCH-07)
     - docs/artifacts/interface/ai-behavior-contracts.md (INT-05)
-    
+
     Emergency prefilter runs before reasoning (INT-05 requirement).
     Output has grounding/explainability without exposing chain-of-thought.
     """
-    
+
     # Static fallback message per INT-07
     STATIC_FALLBACK_MESSAGE = (
         "Xin lỗi, hệ thống đang gặp sự cố kỹ thuật. "
         "Vui lòng gọi đường dây nóng 1900-xxxx để được hỗ trợ."
     )
-    
+
     # Medical advice refusal message per INT-05
     MEDICAL_REFUSAL_MESSAGE = (
         "Xin lỗi, tôi không thể đưa ra lời khuyên y tế, chẩn đoán hoặc "
         "khuyến nghị điều trị. Vui lòng tham khảo ý kiến bác sĩ hoặc "
         "gọi đường dây nóng 1900-xxxx để được hỗ trợ."
     )
-    
+
     # Out of scope message per INT-05
     OUT_OF_SCOPE_MESSAGE = (
         "Câu hỏi của bạn nằm ngoài phạm vi hỗ trợ của hệ thống. "
         "Vui lòng liên hệ tổng đài 1900-xxxx để được hỗ trợ."
     )
-    
+
     def __init__(
         self,
         *,
@@ -404,7 +410,7 @@ class OrchestrationService:
         fallback_message: Optional[str] = None,
     ):
         """Initialize orchestration service.
-        
+
         Args:
             emergency_prefilter: Emergency prefilter implementation (WP-202).
             knowledge_search: Knowledge search implementation (WP-201).
@@ -417,13 +423,13 @@ class OrchestrationService:
         self._llm_provider = llm_provider
         self._guardrail_service = guardrail_service
         self._fallback_message = fallback_message or self.STATIC_FALLBACK_MESSAGE
-    
+
     def orchestrate(
         self,
         input_data: OrchestrationInput,
     ) -> OrchestrationResult:
         """Execute orchestration for a single user message.
-        
+
         This is the main entry point that:
         1. Runs emergency prefilter first (INT-05 requirement)
         2. Applies input guardrails
@@ -433,26 +439,26 @@ class OrchestrationService:
         6. Applies output guardrails
         7. Builds explainability
         8. Handles fallback if needed
-        
+
         Args:
             input_data: The orchestration input.
-            
+
         Returns:
             OrchestrationResult with all DTOs populated.
         """
         trace_id = str(uuid.uuid4())
-        
+
         try:
             # Step 1: Emergency prefilter runs first (INT-05)
             emergency_result = self._run_emergency_prefilter(input_data)
             if emergency_result is not None:
                 return emergency_result
-            
+
             # Step 2: Input guardrails
             guardrail_result = self._run_input_guardrails(input_data)
             if guardrail_result is not None:
                 return guardrail_result
-            
+
             # Step 3: Planning
             planning = self._plan(input_data)
             if planning is None:
@@ -461,28 +467,28 @@ class OrchestrationService:
                     message="Tôi có thể giúp gì cho bạn?",
                     disclaimers=["Đây là hệ thống hỗ trợ thông tin bệnh viện."],
                 )
-            
+
             # Step 4: Execute tools
             observations = self._execute_tools(input_data, planning)
-            
+
             # Step 5: Check grounding
             grounding = self._check_grounding(observations)
             if not grounding.grounded:
                 return self._create_fallback_result(grounding)
-            
+
             # Step 6: Generate response
             conversation = self._generate_response(input_data, observations, planning)
             if conversation is None:
                 return self._create_provider_failure_result(trace_id)
-            
+
             # Step 7: Output guardrails
             output_guard = self._run_output_guardrails(conversation.message, observations)
             if output_guard is not None:
                 return output_guard
-            
+
             # Step 8: Build explainability
             explainability = self._build_explainability(observations, grounding)
-            
+
             return OrchestrationResult(
                 planning=planning,
                 observations=observations,
@@ -490,7 +496,7 @@ class OrchestrationService:
                 explainability=explainability,
                 grounding=grounding,
             )
-            
+
         except Exception as e:
             logger.error(f"Orchestration failed: {e}")
             return OrchestrationResult(
@@ -502,34 +508,34 @@ class OrchestrationService:
                     retry_after_seconds=5,
                 )
             )
-    
+
     def _run_emergency_prefilter(
         self,
         input_data: OrchestrationInput,
     ) -> Optional[OrchestrationResult]:
         """Run emergency prefilter before reasoning (INT-05).
-        
+
         Emergency priority is the first planning rule per INT-05.
-        
+
         Args:
             input_data: Orchestration input.
-            
+
         Returns:
             OrchestrationResult if emergency detected, None otherwise.
         """
         if self._emergency_prefilter is None:
             return None
-        
+
         try:
             emergency = self._emergency_prefilter.check(
                 input_data.message,
                 input_data.conversation_context,
             )
-            
+
             if emergency.get("is_emergency", False):
                 protocol_key = emergency.get("protocol_key", "default")
                 urgency_level = emergency.get("urgency_level", "high")
-                
+
                 # Emergency response uses approved protocol, not free generation (INT-05)
                 return OrchestrationResult(
                     conversation=ConversationResultDTO(
@@ -557,30 +563,30 @@ class OrchestrationService:
         except Exception as e:
             logger.warning(f"Emergency prefilter failed: {e}")
             # Don't block on prefilter failure, continue with normal flow
-        
+
         return None
-    
+
     def _run_input_guardrails(
         self,
         input_data: OrchestrationInput,
     ) -> Optional[OrchestrationResult]:
         """Run input guardrails.
-        
+
         Args:
             input_data: Orchestration input.
-            
+
         Returns:
             OrchestrationResult if blocked, None otherwise.
         """
         if self._guardrail_service is None:
             return None
-        
+
         try:
             guard_result = self._guardrail_service.check_input(
                 input_data.message,
                 input_data.conversation_context,
             )
-            
+
             if not guard_result.get("allowed", True):
                 violations = guard_result.get("violations", [])
                 return OrchestrationResult(
@@ -596,27 +602,27 @@ class OrchestrationService:
                 )
         except Exception as e:
             logger.warning(f"Input guardrail check failed: {e}")
-        
+
         return None
-    
+
     def _plan(self, input_data: OrchestrationInput) -> Optional[PlanningResultDTO]:
         """Create execution plan.
-        
+
         Planning rules per INT-05:
         1. Emergency priority (already handled)
         2. Factual information requires Knowledge Search
         3. Only registry tools and validated inputs
         4. Write tools require confirmation/idempotency
         5. Ask minimal clarification; never fill missing data
-        
+
         Args:
             input_data: Orchestration input.
-            
+
         Returns:
             PlanningResultDTO or None if no planning needed.
         """
         message_lower = input_data.message.lower()
-        
+
         # Determine if knowledge search is needed (INT-05: factual information)
         needs_knowledge = any(
             keyword in message_lower
@@ -625,22 +631,22 @@ class OrchestrationService:
                 "chi phí", "giá", "địa chỉ", "đường", "quy trình", "thủ tục",
             ]
         )
-        
+
         # Determine if appointment-related
         is_appointment = any(
             keyword in message_lower
             for keyword in ["đặt lịch", "đặt hẹn", "lịch khám", "hẹn khám"]
         )
-        
+
         tool_steps = []
-        
+
         if needs_knowledge:
             tool_steps.append({
                 "tool": "knowledge_search",
                 "params": {"query": input_data.message, "top_k": 5},
                 "status": "pending",
             })
-        
+
         if is_appointment:
             tool_steps.append({
                 "tool": "appointment_check",
@@ -648,43 +654,43 @@ class OrchestrationService:
                 "status": "pending",
                 "requires_confirmation": True,
             })
-        
+
         if not tool_steps:
             return None
-        
+
         return PlanningResultDTO(
             goal="Provide helpful response based on available tools",
             tool_steps=tool_steps,
             status="planned",
         )
-    
+
     def _execute_tools(
         self,
         input_data: OrchestrationInput,
         planning: PlanningResultDTO,
     ) -> List[ObservationResultDTO]:
         """Execute planned tool calls.
-        
+
         Args:
             input_data: Orchestration input.
             planning: Execution plan.
-            
+
         Returns:
             List of observation results.
         """
         observations = []
-        
+
         for step in planning.tool_steps:
             tool_name = step.get("tool", "")
             params = step.get("params", {})
-            
+
             if tool_name == "knowledge_search" and self._knowledge_search:
                 try:
                     result = self._knowledge_search.search(
                         params.get("query", input_data.message),
                         top_k=params.get("top_k", 5),
                     )
-                    
+
                     chunks = result.get("chunks", [])
                     observations.append(ObservationResultDTO(
                         tool_name="knowledge_search",
@@ -711,50 +717,32 @@ class OrchestrationService:
                     status="skipped",
                     error="Tool not available",
                 ))
-        
+
         return observations
-    
+
     def _check_grounding(
         self,
         observations: List[ObservationResultDTO],
     ) -> GroundingFallbackBehavior:
         """Check if response is properly grounded.
-        
+
         Per INT-05:
         - Only active + approved + effective chunks
         - Insufficient information or conflict forbids factual synthesis
         - Fallback = acknowledge limit + explain reason + specific approved channel
-        
+
         Args:
             observations: Tool observations.
-            
+
         Returns:
             GroundingFallbackBehavior indicating grounding status.
         """
-        successful_observations = [
-            o for o in observations
-            if o.status == "success" and not o.conflict
-        ]
-        
-        total_citations = sum(
-            len(o.citations) for o in successful_observations
-        )
-        
-        if total_citations == 0:
-            return GroundingFallbackBehavior(
-                grounded=False,
-                chunks_used=0,
-                fallback_triggered=True,
-                fallback_channel="static_message",
-                static_message=self._fallback_message,
-            )
-        
-        # Check for conflicts
+        # Check for conflicts first (across ALL observations)
         has_conflict = any(o.conflict for o in observations)
         if has_conflict:
             return GroundingFallbackBehavior(
                 grounded=False,
-                chunks_used=total_citations,
+                chunks_used=0,
                 fallback_triggered=True,
                 fallback_reason="knowledge_conflict",
                 fallback_channel="static_message",
@@ -763,12 +751,31 @@ class OrchestrationService:
                     "Vui lòng liên hệ tổng đài 1900-xxxx để được hỗ trợ."
                 ),
             )
-        
+
+        successful_observations = [
+            o for o in observations
+            if o.status == "success"
+        ]
+
+        total_citations = sum(
+            len(o.citations) for o in successful_observations
+        )
+
+        if total_citations == 0:
+            return GroundingFallbackBehavior(
+                grounded=False,
+                chunks_used=0,
+                fallback_triggered=True,
+                fallback_reason="insufficient_grounding",
+                fallback_channel="static_message",
+                static_message=self._fallback_message,
+            )
+
         return GroundingFallbackBehavior(
             grounded=True,
             chunks_used=total_citations,
         )
-    
+
     def _generate_response(
         self,
         input_data: OrchestrationInput,
@@ -776,12 +783,12 @@ class OrchestrationService:
         planning: PlanningResultDTO,
     ) -> Optional[ConversationResultDTO]:
         """Generate response using LLM provider.
-        
+
         Args:
             input_data: Orchestration input.
             observations: Tool observations.
             planning: Execution plan.
-            
+
         Returns:
             ConversationResultDTO or None if generation failed.
         """
@@ -792,14 +799,14 @@ class OrchestrationService:
                 response_type="text",
                 disclaimers=["Đây là hệ thống hỗ trợ thông tin bệnh viện."],
             )
-        
+
         try:
             # Build context from observations
             context_parts = []
             for obs in observations:
                 if obs.status == "success":
                     context_parts.append(f"Tool {obs.tool_name}: {obs.result_reference}")
-            
+
             llm_request = {
                 "messages": [
                     {"role": "system", "content": "Bạn là trợ lý hỗ trợ bệnh viện."},
@@ -807,17 +814,17 @@ class OrchestrationService:
                 ],
                 "context": "\n".join(context_parts) if context_parts else None,
             }
-            
+
             response = self._llm_provider.generate(llm_request)
             content = response.get("content", "")
-            
+
             # Add BHYT/price disclaimer if relevant (INT-05)
             disclaimers = ["Đây là thông tin tham khảo, không thay thế tư vấn y tế."]
             if any(o.tool_name == "knowledge_search" for o in observations):
                 disclaimers.append(
                     "Thông tin về BHYT, giá dịch vụ và quy trình có thể thay đổi."
                 )
-            
+
             return ConversationResultDTO(
                 message=content,
                 response_type="text",
@@ -826,30 +833,30 @@ class OrchestrationService:
         except Exception as e:
             logger.error(f"LLM generation failed: {e}")
             return None
-    
+
     def _run_output_guardrails(
         self,
         response: str,
         observations: List[ObservationResultDTO],
     ) -> Optional[OrchestrationResult]:
         """Run output guardrails.
-        
+
         Args:
             response: Generated response text.
             observations: Tool observations used.
-            
+
         Returns:
             OrchestrationResult if blocked, None otherwise.
         """
         if self._guardrail_service is None:
             return None
-        
+
         try:
             guard_result = self._guardrail_service.check_output(
                 response,
                 [o.to_dict() for o in observations],
             )
-            
+
             if not guard_result.get("allowed", True):
                 return OrchestrationResult(
                     conversation=ConversationResultDTO(
@@ -863,35 +870,35 @@ class OrchestrationService:
                 )
         except Exception as e:
             logger.warning(f"Output guardrail check failed: {e}")
-        
+
         return None
-    
+
     def _build_explainability(
         self,
         observations: List[ObservationResultDTO],
         grounding: GroundingFallbackBehavior,
     ) -> ExplainabilityResultDTO:
         """Build explainability result.
-        
+
         Per INT-05: citations and public fallback/refusal/safety evidence.
         Never exposes chain-of-thought.
-        
+
         Args:
             observations: Tool observations.
             grounding: Grounding status.
-            
+
         Returns:
             ExplainabilityResultDTO.
         """
         citations = []
         for obs in observations:
             citations.extend(obs.citations)
-        
+
         return ExplainabilityResultDTO(
             citations=citations[:5],  # Limit citations
             confidence_band="medium" if grounding.grounded else "low",
         )
-    
+
     def _create_conversation_result(
         self,
         message: str,
@@ -904,13 +911,13 @@ class OrchestrationService:
                 disclaimers=disclaimers or [],
             ),
         )
-    
+
     def _create_fallback_result(
         self,
         grounding: GroundingFallbackBehavior,
     ) -> OrchestrationResult:
         """Create fallback result per INT-05/INT-07.
-        
+
         Fallback = acknowledge limit + explain reason + specific approved channel.
         """
         return OrchestrationResult(
@@ -928,7 +935,7 @@ class OrchestrationService:
             ),
             grounding=grounding,
         )
-    
+
     def _create_provider_failure_result(self, trace_id: str) -> OrchestrationResult:
         """Create result for provider failure per INT-07."""
         return OrchestrationResult(
@@ -948,10 +955,10 @@ class OrchestrationService:
                 retry_after_seconds=30,
             ),
         )
-    
+
     def _get_emergency_protocol_message(self, protocol_key: str) -> str:
         """Get emergency protocol message.
-        
+
         Emergency response uses approved protocol, not free generation (INT-05).
         """
         protocols = {
@@ -976,13 +983,13 @@ def create_mock_orchestration_service(
     guardrail_allow: bool = True,
 ) -> OrchestrationService:
     """Create an orchestration service with mock dependencies for testing.
-    
+
     Args:
         emergency_response: Mock emergency prefilter response.
         search_results: Mock knowledge search results.
         llm_response: Mock LLM response content.
         guardrail_allow: Whether guardrails should allow.
-        
+
     Returns:
         OrchestrationService with mock dependencies.
     """
@@ -990,15 +997,15 @@ def create_mock_orchestration_service(
     class MockEmergencyPrefilter:
         def __init__(self, response: Optional[Dict[str, Any]]):
             self._response = response or {"is_emergency": False}
-        
+
         def check(self, message: str, context: ConversationContext) -> Dict[str, Any]:
             return self._response
-    
+
     # Create mock knowledge search
     class MockKnowledgeSearch:
         def __init__(self, results: Optional[List[Dict[str, Any]]]):
             self._results = results or []
-        
+
         def search(
             self,
             query: str,
@@ -1011,26 +1018,26 @@ def create_mock_orchestration_service(
                 "total": len(self._results),
                 "query": query,
             }
-    
+
     # Create mock LLM provider
     class MockLLMProvider:
         def __init__(self, response: Optional[str]):
             self._response = response or "This is a mock response."
-        
+
         def generate(self, request: Dict[str, Any]) -> Dict[str, Any]:
             return {"content": self._response, "provider": "mock"}
-    
+
     # Create mock guardrail service
     class MockGuardrailService:
         def __init__(self, allow: bool):
             self._allow = allow
-        
+
         def check_input(self, message: str, context: ConversationContext) -> Dict[str, Any]:
             return {"allowed": self._allow, "violations": []}
-        
+
         def check_output(self, response: str, observations: List[Dict[str, Any]]) -> Dict[str, Any]:
             return {"allowed": self._allow, "violations": []}
-    
+
     return OrchestrationService(
         emergency_prefilter=MockEmergencyPrefilter(emergency_response),
         knowledge_search=MockKnowledgeSearch(search_results),
