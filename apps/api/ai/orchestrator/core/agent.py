@@ -27,7 +27,6 @@ from apps.api.ai.rag import (
     search_hospital_information,
     supported_response_text,
 )
-from apps.api.foundation.appointments.tools import book_appointment_mock, MockBookingRequest
 
 ROOT = Path(__file__).resolve().parents[5]
 BUDGET_EXHAUSTED_MESSAGE = "Xin lỗi, thời gian thực thi của tác vụ đã vượt quá giới hạn cho phép."
@@ -79,26 +78,6 @@ def search_hospital_information_tool(query: str, config: RunnableConfig) -> Dict
         rrf_k=configurable.get("rrf_k", 60)
     )
     return result.to_dict()
-
-
-@tool
-def book_appointment_mock_tool(
-    doctor_id: str,
-    patient_name: str,
-    patient_phone: str,
-    schedule_date: str,
-    time_slot: str
-) -> Dict[str, Any]:
-    """Book a mock appointment with a doctor."""
-    req = MockBookingRequest(
-        doctor_id=doctor_id,
-        patient_name=patient_name,
-        patient_phone=patient_phone,
-        schedule_date=schedule_date,
-        time_slot=time_slot
-    )
-    result = book_appointment_mock(req)
-    return result
 
 
 def has_safety_hint(text: str) -> bool:
@@ -290,8 +269,9 @@ def llm_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
         llm_options["timeout"] = max(0.1, remaining)
     llm = ChatOpenAI(**llm_options)
 
-    # Bind only the two general agent tools
-    tools = [search_hospital_information_tool, book_appointment_mock_tool]
+    # PC-01 is retrieval-only. Appointment creation belongs exclusively to
+    # PC-03, which enforces the guided form, confirmation and idempotency.
+    tools = [search_hospital_information_tool]
     llm_with_tools = llm.bind_tools(tools)
 
     # System instruction prompt loaded from file
@@ -367,7 +347,6 @@ def tool_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
 
     new_messages = []
     observations = list(state.get("observations", []))
-    booking_result = state.get("booking_result")
     call_count = state.get("call_count", 0)
 
     for tc in tool_calls:
@@ -399,16 +378,11 @@ def tool_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
             # Record observations
             observations.append(res)
             new_messages.append(ToolMessage(content=str(res), tool_call_id=tc_id))
-        elif name == "book_appointment_mock_tool":
-            res = book_appointment_mock_tool.invoke(args, config)
-            booking_result = res
-            new_messages.append(ToolMessage(content=str(res), tool_call_id=tc_id))
         call_count += 1
 
     return {
         "messages": state.get("messages", []) + new_messages,
         "observations": observations,
-        "booking_result": booking_result,
         "call_count": call_count
     }
 
@@ -423,18 +397,6 @@ def route_tool(state: AgentState) -> str:
 def grounding_verification_node(state: AgentState) -> Dict[str, Any]:
     last_msg = state.get("messages", [])[-1]
     response_text = last_msg.content
-
-    if state.get("booking_result"):
-        booking_result = state["booking_result"]
-        appointment = booking_result.get("appointment") or {}
-        detail = appointment.get("detail")
-        rendered = booking_result.get("message", "")
-        if detail:
-            rendered = f"{rendered}\n\n{detail}"
-        return {
-            "final_response": rendered,
-            "citations": [],
-        }
 
     if not state.get("observations"):
         issues = citation_validation_issues(response_text, [])

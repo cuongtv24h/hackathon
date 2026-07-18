@@ -23,6 +23,19 @@ const quickActions = [
   { id: 'emergency', icon: '!', title: 'Tình huống khẩn cấp', prompt: 'Tôi cần hỗ trợ khẩn cấp.' },
 ]
 
+function normaliseIntentText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .toLowerCase()
+}
+
+function isBookingIntent(value: string) {
+  const text = normaliseIntentText(value)
+  return /\b(dat\s*(lich|hen)|muon\s+dat|hen\s*kham)\b/.test(text)
+}
+
 function App() {
   const [input, setInput] = useState('')
   const [mode, setMode] = useState<'chat' | 'booking' | 'status'>('chat')
@@ -95,6 +108,19 @@ function App() {
     event.preventDefault()
     if (!input.trim() || loading) return
     const value = input.trim(); setInput('')
+    // Booking is a deterministic, guided business flow. Never send an
+    // explicit booking intent to the general information/LLM capability.
+    if (isBookingIntent(value)) {
+      addUser(value)
+      setMessages((current) => [...current, {
+        id: crypto.randomUUID(),
+        side: 'assistant',
+        text: 'Tôi sẽ hỗ trợ bạn đặt lịch khám. Hãy bắt đầu bằng việc chọn chuyên khoa.',
+      }])
+      setMode('booking')
+      setBookingStep('specialty')
+      return
+    }
     await execute('information_assistance', value)
   }
 

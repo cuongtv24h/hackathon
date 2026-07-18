@@ -20,7 +20,6 @@ from apps.api.ai.orchestrator.core.service import (
 from apps.api.ai.orchestrator.core.agent import (
     AgentState,
     agent_graph,
-    book_appointment_mock_tool,
     search_hospital_information_tool,
 )
 
@@ -39,6 +38,5 @@ __all__ = [
     "create_mock_orchestration_service",
     "AgentState",
     "agent_graph",
-    "book_appointment_mock_tool",
     "search_hospital_information_tool",
 ]
