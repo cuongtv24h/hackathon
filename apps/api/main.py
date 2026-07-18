@@ -17,7 +17,9 @@ from dotenv import load_dotenv
 from apps.api.core.settings import Settings
 from apps.api.core.runtime_dependencies import (
     RuntimeDependencyError,
-    build_information_assistance_pipeline,
+)
+from apps.api.ai.orchestrator.core.web_adapter import (
+    build_agent_information_assistance_adapter,
 )
 from apps.api.core.runtime_persistence import build_operational_runtime
 from apps.api.gateway.capabilities.information_assistance.router import (
@@ -71,8 +73,8 @@ async def lifespan(app_instance: FastAPI):
         logger.error("Operational persistence dependency is unavailable", exc_info=False)
 
     try:
-        set_information_assistance_pipeline(build_information_assistance_pipeline())
-        logger.info("Configured PC-01 runtime dependencies: Supabase RAG, guardrails and LLM fallback chain")
+        set_information_assistance_pipeline(build_agent_information_assistance_adapter())
+        logger.info("Configured PC-01 with the LangGraph hospital agent")
     except (RuntimeDependencyError, ValueError):
         logger.warning("PC-01 runtime dependencies are unavailable; requests use safe grounded fallback")
 

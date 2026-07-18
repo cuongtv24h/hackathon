@@ -1,6 +1,8 @@
 """Admin operational dashboard APIs backed only by Supabase."""
 
 import os
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
@@ -62,11 +64,11 @@ class DraftCreate(BaseModel):
     author: str = "demo-admin"
 
 class DraftPatch(BaseModel):
-    content: str | None = None
-    sub_topic: str | None = None
-    tags: list[str] | None = None
-    source_section: str | None = None
-    source_page: str | None = None
+    content: Optional[str] = None
+    sub_topic: Optional[str] = None
+    tags: Optional[list[str]] = None
+    source_section: Optional[str] = None
+    source_page: Optional[str] = None
 
 class DraftActor(BaseModel):
     actor: str = Field(min_length=1, max_length=200)

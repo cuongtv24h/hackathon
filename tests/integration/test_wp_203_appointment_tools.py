@@ -300,7 +300,7 @@ class FakeMockHISClient:
 
         self._appointment_counter += 1
         appointment_id = f"HEN-2024-{self._appointment_counter:04d}"
-        
+
         appointment = {
             "appointment_id": appointment_id,
             "doctor_id": doctor_id,

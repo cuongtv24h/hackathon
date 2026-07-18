@@ -1,0 +1,14 @@
+﻿{
+    "session_id":  "stream-diagnostic",
+    "message":  "Giá khám chuyên khoa là bao nhiêu?",
+    "client_context":  {
+                           "channel":  "web_page",
+                           "timezone":  "Asia/Bangkok",
+                           "locale":  "vi-VN"
+                       },
+    "response_mode":  "stream",
+    "request_id":  "stream-diagnostic",
+    "conversation_history":  [
+
+                             ]
+}

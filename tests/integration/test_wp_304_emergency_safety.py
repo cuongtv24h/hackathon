@@ -714,7 +714,7 @@ class TestINT05Compliance:
         message_lower = response.message.lower()
         for term in prohibited_terms:
             assert term not in message_lower, f"Prohibited term '{term}' found in response"
-        
+
         # "chẩn đoán" should only appear in negative context
         assert "chẩn đoán" not in message_lower or "không phải chẩn đoán" in message_lower
 

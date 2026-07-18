@@ -1,0 +1,12 @@
+{
+  "templates": [
+    {
+      "clarification_id": "CLAR-EMERGENCY-001",
+      "question": "Bạn có đang gặp phải tình trạng nguy kịch hoặc cấp cứu khẩn cấp không? Vui lòng trả lời CÓ hoặc KHÔNG.",
+      "approval_status": "mock"
+    }
+  ],
+  "version": "1.0.0",
+  "effective_date": "2026-07-18",
+  "approval_status": "mock"
+}
