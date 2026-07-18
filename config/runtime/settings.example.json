@@ -1,5 +1,6 @@
 {
   "_comment": "Example runtime settings. Copy to settings.json and adjust values.",
+  "x-task-region-markers": ["TASK:WP-009:START", "TASK:WP-009:END"],
   "app_env": "development",
   "retention": {
     "context_idle_seconds": 1800,

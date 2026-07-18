@@ -4,6 +4,7 @@ fastapi
 uvicorn[standard]
 pydantic
 pydantic-settings
+python-dotenv
 
 # Direct PostgreSQL/pgvector connection to Supabase and provider adapters.
 psycopg[binary]

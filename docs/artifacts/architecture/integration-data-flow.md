@@ -19,7 +19,7 @@ Trust boundaries và canonical flows giữa browser, backend, AI providers, Supa
 
 ### RAG query
 
-User query → query normalization → parallel retrieval over approved/effective chunks: (a) embedding API → 768-d query vector → pgvector cosine candidates and (b) PostgreSQL full-text search candidates → Reciprocal Rank Fusion (RRF) → rerank fused candidates → final top-k chunks → KnowledgeContext → grounded response + citations. Reranker timeout/unavailability degrades to the RRF order; failure of one retrieval lane may use the other lane and must be reported in search metadata.
+User query → Jina `jina-embeddings-v5-text-small` API → 1024-d query vector → pgvector cosine search with domain filter/threshold → ranked approved chunks → KnowledgeContext → grounded response + citations.
 
 ### Emergency keyword path
 
@@ -47,9 +47,7 @@ Message/response metadata → `detect_pii` → anonymized record → async Analy
 ## Key Constraints
 
 - Approved chunks only.
-- Hybrid retrieval is the MVP default: vector and lexical candidate sets, RRF fusion, then reranking.
-- Metadata filters apply consistently to both retrieval lanes before fusion.
-- Reranker is fail-open to RRF ranking, never fail-open to unapproved or ineffective content.
+- Embedding model is `jina-embeddings-v5-text-small`, with exactly 1024 numeric dimensions. Documents use task `retrieval.passage`; user queries use task `retrieval.query` so both vectors share the retrieval space.
 - Provider output and tool content are untrusted until validated.
 - PII anonymization failure must not result in raw conversation storage.
 - Integration errors degrade to configured channel/hotline.

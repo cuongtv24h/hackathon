@@ -19,7 +19,7 @@ zones:
   - {id: AI-RAG, path: apps/api/ai/rag/, primary_pool: AI-CORE, write_mode: exclusive}
   - {id: EMERGENCY-PREFILTER, path: apps/api/capabilities/emergency/prefilter/, primary_pool: AI-CORE, write_mode: exclusive}
   - {id: EMERGENCY-PROTOCOLS, path: apps/api/capabilities/emergency/protocols/, primary_pool: API, write_mode: exclusive}
-  - {id: MOCK-HIS, path: apps/mock-his/, primary_pool: API, write_mode: exclusive}
+  - {id: MOCK-HIS, path: apps/mock_his/, primary_pool: API, write_mode: exclusive}
   - {id: LOGGING, path: apps/api/logging/, primary_pool: API, write_mode: subdivided}
   - {id: CHAT-WEB, path: apps/chat-web/, primary_pool: FE, write_mode: subdivided}
   - {id: ADMIN-WEB, path: apps/admin-web/, primary_pool: FE, write_mode: subdivided}

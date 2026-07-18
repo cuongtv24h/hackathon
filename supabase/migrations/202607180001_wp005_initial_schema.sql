@@ -27,7 +27,7 @@ create table if not exists knowledge_chunks (
   page_numbers jsonb not null default '[]'::jsonb,
   tags jsonb not null default '[]'::jsonb,
   metadata jsonb not null default '{}'::jsonb,
-  embedding vector(768),
+  embedding vector(1024),
   is_active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),

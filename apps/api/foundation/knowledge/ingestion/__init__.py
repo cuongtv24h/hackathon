@@ -9,6 +9,7 @@ Public surface
 * ingest_knowledge — full pipeline: load, process, embed, persist.
 * generate_dry_run_report — produce a dry-run summary.
 * make_deterministic_uuid — stable UUID v5 from external chunk ID.
+* make_embedding_provider — Jina embedding provider configured at runtime.
 * split_markdown_chunks — split a markdown file into sections.
 """
 
@@ -20,6 +21,7 @@ from .importer import (
     ingest_knowledge,
     load_knowledge_base,
     load_seed_registry,
+    make_embedding_provider,
     make_deterministic_uuid,
     process_chunks,
     split_markdown_chunks,
@@ -33,6 +35,7 @@ __all__ = [
     "ingest_knowledge",
     "load_knowledge_base",
     "load_seed_registry",
+    "make_embedding_provider",
     "make_deterministic_uuid",
     "process_chunks",
     "split_markdown_chunks",

@@ -65,7 +65,7 @@ def search_hospital_information_tool(query: str, config: RunnableConfig) -> Dict
     configurable = config.get("configurable", {})
     cur = configurable.get("db_cursor")
     embedder = configurable.get("embedder")
-    
+
     # Run the retrieval engine
     result = search_hospital_information(
         cur=cur,
@@ -140,10 +140,10 @@ def direct_safety_node(state: AgentState, config: RunnableConfig) -> Dict[str, A
         "grounding_retry_reasons": [],
         "booking_result": None,
     }
-        
+
     last_msg = messages[-1].content
     rules, _, _ = load_emergency_configs()
-    
+
     if pending_caution is not None:
         return turn_reset
 
@@ -171,14 +171,14 @@ def direct_safety_node(state: AgentState, config: RunnableConfig) -> Dict[str, A
 def semantic_safety_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
     if state.get("safety_result") is not None:
         return {}
-        
+
     messages = state.get("messages", [])
     if not messages:
         return {}
-        
+
     last_msg = messages[-1].content
     provider = OpenAIProvider(api_key=config.get("configurable", {}).get("openai_api_key"))
-    
+
     try:
         decision = provider.evaluate_safety(last_msg)
         return {"safety_result": decision.to_dict()}
@@ -221,7 +221,7 @@ def high_response_node(state: AgentState) -> Dict[str, Any]:
 def caution_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
     count = state.get("clarification_count", 0)
     messages = state.get("messages", [])
-    
+
     if count == 0:
         question = "Bạn có đang gặp phải tình trạng nguy kịch hoặc cấp cứu khẩn cấp không? Vui lòng trả lời CÓ hoặc KHÔNG."
         return {
@@ -229,12 +229,12 @@ def caution_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
             "final_response": question,
             "messages": messages + [AIMessage(content=question)]
         }
-        
+
     # Re-evaluate clarification answer
     import re
     last_ans = messages[-1].content.strip().lower()
     words = re.findall(r'\b\w+\b', last_ans)
-    
+
     # Heuristics for Vietnamese clarification reply
     if any(w in words for w in ["có", "phải", "đúng", "yes", "co"]):
         return {
@@ -278,8 +278,8 @@ def llm_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
             "final_response": fallback,
             "messages": state.get("messages", []) + [AIMessage(content=fallback)]
         }
-        
-    model_name = os.environ.get("LLM_MODEL", "gpt-4o-mini")
+
+    model_name = os.environ.get("AGENT_MODEL", "gpt-5-mini")
     openai_key = config.get("configurable", {}).get("openai_api_key")
     llm_options = {
         "model": model_name,
@@ -289,17 +289,17 @@ def llm_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
     if remaining is not None:
         llm_options["timeout"] = max(0.1, remaining)
     llm = ChatOpenAI(**llm_options)
-    
+
     # Bind only the two general agent tools
     tools = [search_hospital_information_tool, book_appointment_mock_tool]
     llm_with_tools = llm.bind_tools(tools)
-    
+
     # System instruction prompt loaded from file
     prompt_path = ROOT / "config" / "prompts" / "hospital-agent.md"
     system_instruction = prompt_path.read_text(encoding="utf-8")
-    
+
     input_msgs = [SystemMessage(content=system_instruction)] + state.get("messages", [])
-    
+
     # If this is a repair attempt, append the repair prompt
     if state.get("repair_attempted", False) and not state.get("final_response"):
         if not state.get("observations"):
@@ -314,11 +314,11 @@ def llm_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
                 "End every factual sentence or bullet with one or more [[chunk_id]] markers."
             )
         input_msgs.append(SystemMessage(content=repair_instruction))
-        
+
     started_at = time.monotonic()
     response = llm_with_tools.invoke(input_msgs)
     elapsed = state.get("elapsed_time_seconds", 0.0) + (time.monotonic() - started_at)
-    
+
     # Validate duplicate tool call prevention
     if response.tool_calls:
         if call_count + len(response.tool_calls) > max_calls:
@@ -339,13 +339,13 @@ def llm_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
                     "messages": state.get("messages", []) + [AIMessage(content=fallback)]
                 }
             new_fingerprints.append(fingerprint)
-            
+
         return {
             "messages": state.get("messages", []) + [response],
             "call_fingerprints": seen + new_fingerprints,
             "elapsed_time_seconds": elapsed
         }
-        
+
     return {
         "messages": state.get("messages", []) + [response],
         "elapsed_time_seconds": elapsed
@@ -364,12 +364,12 @@ def route_llm(state: AgentState) -> str:
 def tool_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
     last_msg = state.get("messages", [])[-1]
     tool_calls = last_msg.tool_calls
-    
+
     new_messages = []
     observations = list(state.get("observations", []))
     booking_result = state.get("booking_result")
     call_count = state.get("call_count", 0)
-    
+
     for tc in tool_calls:
         remaining = deadline_remaining(state)
         if remaining is not None and remaining <= 0:
@@ -383,7 +383,7 @@ def tool_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
         name = tc["name"]
         args = tc["args"]
         tc_id = tc["id"]
-        
+
         if name == "search_hospital_information_tool":
             # Preserve exact service names and codes from the user's latest turn.
             latest_user_query = next(
@@ -435,7 +435,7 @@ def grounding_verification_node(state: AgentState) -> Dict[str, Any]:
             "final_response": rendered,
             "citations": [],
         }
-    
+
     if not state.get("observations"):
         issues = citation_validation_issues(response_text, [])
         if issues and not state.get("repair_attempted", False):
@@ -460,7 +460,7 @@ def grounding_verification_node(state: AgentState) -> Dict[str, Any]:
             "final_response": response_text,
             "citations": []
         }
-        
+
     # Extract candidates from observations
     candidates = []
     for obs in state.get("observations", []):
@@ -475,9 +475,9 @@ def grounding_verification_node(state: AgentState) -> Dict[str, Any]:
                 source_path=c_dict["source_path"],
                 version=c_dict["version"]
             ))
-            
+
     grounded, citations = map_citations_to_response(response_text, candidates)
-    
+
     if grounded:
         rendered_response = render_citation_markers(response_text, citations)
         return {

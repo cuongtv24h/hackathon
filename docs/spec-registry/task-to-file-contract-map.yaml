@@ -7,6 +7,8 @@ rules:
   - A work-package owner may create only its exact pytest companion path under tests/unit/, tests/integration/ or tests/contract/; QA reviews that test.
   - UPDATE requires the exact TASK marker; FULL_FILE is only for a new file or approved exception.
   - Cross-zone edits require a Human Lead exception recorded on the board.
+  - Runtime/language/test requirements in docs/spec-registry/runtime-test-policy.yaml are mandatory and override a generic pytest instruction in any older packet.
+  - A frontend directory_zone never permits Python files; a backend directory_zone never permits TypeScript files.
 work_packages:
   - id: WP-001
     owner_pool: OTHER
@@ -119,6 +121,10 @@ work_packages:
         path_kind: directory_zone
         operation: CREATE
         region: DIRECTORY_ZONE
+      - path: supabase/migrations/202607180004_wp008_jina_embedding_dimension.sql
+        path_kind: file
+        operation: CREATE
+        region: {TASK:WP-008}
       - path: tests/integration/test_wp_008_knowledge_ingestion.py
         path_kind: file
         operation: CREATE
@@ -141,6 +147,30 @@ work_packages:
         operation: CREATE
         region: {TASK:WP-009}
         test_companion: true
+  - id: WP-010
+    owner_pool: API
+    suggested_branch: task/WP-010
+    files:
+      - {path: apps/api/main.py, path_kind: file, operation: CREATE, region: "{TASK:WP-010}"}
+      - {path: apps/api/core/__init__.py, path_kind: file, operation: CREATE, region: "{TASK:WP-010}"}
+      - {path: apps/api/core/settings.py, path_kind: file, operation: CREATE, region: "{TASK:WP-010}"}
+      - {path: tests/unit/test_wp_010_backend_scaffold.py, path_kind: file, operation: CREATE, region: "{TASK:WP-010}", test_companion: true}
+  - id: WP-500
+    owner_pool: FE
+    suggested_branch: task/WP-500
+    files:
+      - {path: apps/chat-web/package.json, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/chat-web/tsconfig.json, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/chat-web/vite.config.ts, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/chat-web/src/main.tsx, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/chat-web/src/App.tsx, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/chat-web/src/test/setup.ts, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/admin-web/package.json, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/admin-web/tsconfig.json, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/admin-web/vite.config.ts, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/admin-web/src/main.tsx, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/admin-web/src/App.tsx, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
+      - {path: apps/admin-web/src/test/setup.ts, path_kind: file, operation: CREATE, region: "{TASK:WP-500}"}
   - id: WP-101
     owner_pool: API
     suggested_branch: task/WP-101
@@ -204,7 +234,7 @@ work_packages:
         path_kind: directory_zone
         operation: CREATE
         region: DIRECTORY_ZONE
-      - path: apps/mock-his/
+      - path: apps/mock_his/
         path_kind: directory_zone
         operation: CREATE
         region: DIRECTORY_ZONE

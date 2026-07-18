@@ -19,16 +19,16 @@ class SafetyEvaluationOutput(BaseModel):
 
 
 class OpenAIProvider:
-    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4o-mini", timeout: float = 10.0):
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None, timeout: Optional[float] = None):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
-        self.model = model
-        self.timeout = timeout
-        
+        self.model = model or os.environ.get("SAFETY_MODEL", "gpt-4o-mini")
+        self.timeout = timeout or float(os.environ.get("SAFETY_TIMEOUT_SECONDS", "10.0"))
+
         # In a real run, if the API key is missing we raise ConfigurationError
         # (which is a ValueError as per our error contracts)
         if not self.api_key:
             raise ValueError("OPENAI_API_KEY is not configured in the environment.")
-            
+
         self.client = OpenAI(api_key=self.api_key)
 
     def evaluate_safety(

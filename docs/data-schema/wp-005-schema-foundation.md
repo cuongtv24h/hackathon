@@ -29,16 +29,6 @@ Migration `202607180001_wp005_initial_schema.sql` establishes the MVP Pilot pers
 ## Migration requirements
 
 - Supabase PostgreSQL must have `pgcrypto` and `vector` extensions available.
-- The baseline migration starts with `vector(768)` for migration-history compatibility; after the complete supported migration sequence, the canonical MVP dimension is `vector(1024)`.
+- The original WP-005 migration used `vector(768)`. It is superseded for the Pilot by WP-008 migration `202607180004_wp008_jina_embedding_dimension.sql`, which upgrades an empty knowledge index to `vector(1024)` for Jina `jina-embeddings-v5-text-small`. Existing non-null vectors must be explicitly re-embedded; the compatibility migration must stop rather than silently discard them.
 - Apply on an empty database before seed import/indexing work in WP-008.
-
-## Hybrid Search and Jina Profile Additions
-
-- **Vector Profile Upgrade:** Migration `004` establishes hybrid-search readiness; migration `005` sets the final column to `vector(1024)` for Jina `jina-embeddings-v5-text-small`. The cosine index uses IVFFlat with cosine operations.
-- **Full-Text Search (FTS):** The generated column `search_document` concatenated from `content`, `sub_topic`, `source_id`, and `source_path` is indexed via a `GIN` index (`knowledge_chunks_search_document_idx`) using the PostgreSQL `simple` text-search configuration.
-- **Clean-Install Ordering:**
-  1. `202607180001_wp005_initial_schema.sql` (baseline schema)
-  2. `202607180004_wp005_hybrid_search.sql` (additive migration)
-  3. `202607180005_wp005_jina_1024_profile.sql` (canonical Jina profile)
-- **Forward-Rollback Guidance:** Dimension migrations fail closed when embeddings exist. Switching profile requires re-embedding and a new forward migration; never edit applied migration history.
 <!-- === TASK:WP-005:END === -->

@@ -21,7 +21,7 @@ input_documents:
 
 ## Mission
 
-Fix the rejected WP-008 implementation. The completed result must persist approved, answerable RAG chunks into Supabase, generate/store 768-dimension embeddings, be safely repeatable, and make all seven approved BHYT bootstrap sources answerable at runtime. The current implementation only validates JSON and creates a duplicate vector index; that is insufficient.
+Fix the rejected WP-008 implementation. The completed result must persist approved, answerable RAG chunks into Supabase, generate/store 1024-dimension embeddings from Jina `jina-embeddings-v5-text-small`, be safely repeatable, and make all seven approved BHYT bootstrap sources answerable at runtime. The current implementation only validates JSON and creates a duplicate vector index; that is insufficient.
 
 ## Review Findings That Must Be Fixed
 
@@ -40,7 +40,7 @@ Fix the rejected WP-008 implementation. The completed result must persist approv
 2. `docs/spec-registry/task-to-file-contract-map.yaml`
    - Purpose: allowed write zones for WP-008.
 3. `docs/artifacts/architecture/integration-data-flow.md`
-   - Purpose: 768-d pgvector RAG flow and approved-chunk-only constraint.
+   - Purpose: Jina 1024-d pgvector RAG flow and approved-chunk-only constraint.
 4. `docs/artifacts/architecture/deployment-resilience.md`
    - Purpose: provider/config/secret and degradation constraints.
 5. `docs/artifacts/interface/data-contracts.md`
@@ -95,10 +95,10 @@ Do not modify:
 
 - Add a public ingestion entry point that accepts a database connection string and an embedding provider/callable. It must support a dry-run mode that performs no database write.
 - The non-dry-run path must use a transaction. If a chunk, embedding or database operation fails, roll back the whole attempted batch and return/raise actionable failure evidence.
-- Generate exactly 768 numeric embedding values per persisted chunk. Reject an embedding of any other dimension before database write.
-- Read `DATABASE_URL`, provider key and embedding-model configuration from environment only at execution time. Never log, return or write secrets.
+- Generate exactly 1024 numeric embedding values per persisted chunk. Reject an embedding of any other dimension before database write.
+- Use Jina `jina-embeddings-v5-text-small` through the configured `EMBEDDING_BASE_URL`, with `task: retrieval.passage`, `dimensions: 1024` and normalized output. Read `DATABASE_URL`, `JINA_API_KEY`, `EMBEDDING_MODEL`, `EMBEDDING_DIMENSIONS` and `EMBEDDING_BASE_URL` from environment only at execution time. Never log, return or write secrets.
 - Tests must use an injected fake embedding provider; they must not call a paid/external API.
-- After a successful batch, run the required database maintenance for the existing WP-005 vector index. Do not create a second ivfflat index.
+- After a successful batch, run `ANALYZE public.knowledge_chunks` to refresh planner statistics for the existing WP-005 vector index. Do not rebuild the ivfflat index per import and do not create a second index.
 
 ### 4. Remove duplicate index ownership
 
@@ -114,7 +114,7 @@ Update `tests/integration/test_wp_008_knowledge_ingestion.py` to cover at minimu
 3. Identical rerun yields identical UUIDs/content hashes and does not create duplicate persistence records.
 4. Persisted record mapping matches WP-005 columns and stores source metadata/content hash in the approved locations.
 5. Only approved, active, answerable content is persisted for retrieval.
-6. Unknown source, non-ingestible source, missing document, empty content and invalid 767/769-d embedding fail safely.
+6. Unknown source, non-ingestible source, missing document, empty content and invalid 1023/1025-d embedding fail safely.
 7. A database write failure rolls back the batch.
 8. Dry-run performs no write.
 9. The final SQL does not create the duplicate `idx_knowledge_chunks_embedding` index.
@@ -148,7 +148,7 @@ Then report:
 - [ ] Every persisted chunk has traceable source, version, approval, effective-date and content-hash metadata.
 - [ ] Approved, active and answerable chunks persist idempotently to Supabase.
 - [ ] All seven approved BHYT bootstrap sources become answerable runtime chunks.
-- [ ] Embeddings are exactly 768-dimensional; malformed vectors are rejected before write.
+- [ ] Embeddings are exactly 1024-dimensional from Jina `jina-embeddings-v5-text-small`; malformed vectors are rejected before write.
 - [ ] Duplicate vector index is removed; WP-005 remains the sole index owner.
 - [ ] Repeated import does not create duplicate rows.
 - [ ] Failed batch rolls back; dry-run performs no write.
