@@ -66,5 +66,8 @@ Desktop.ini
 scripts/*.zip
 
 /openspec
+<<<<<<< HEAD
 .agent/
 .codex/
+=======
+>>>>>>> 3ea3bf6b87d82b83ff19db344bf983e9ee6fa875
