@@ -24,6 +24,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone as dt_timezone
 from typing import Any, Dict, List, Literal, Mapping, Optional
 
+import httpx
+
 from packages.contracts import (
     UnifiedErrorEnvelope,
     make_error_envelope,
@@ -288,7 +290,7 @@ class MockHISClient:
     and translates responses into domain DTOs.
     """
 
-    def __init__(self, base_url: str = "http://localhost:8100"):
+    def __init__(self, base_url: str = "http://127.0.0.1:8001"):
         self.base_url = base_url.rstrip("/")
         self._timeout_seconds = 5.0
 
@@ -297,11 +299,41 @@ class MockHISClient:
     ) -> Dict[str, Any]:
         """Make an HTTP request to the Mock HIS service.
 
-        This is a simplified implementation for testing. In production,
-        this would use httpx or requests library.
+        Domain-level errors returned by Mock HIS (for example a booked slot or
+        a missing appointment) are returned as their documented payload.  A
+        transport failure or an unexpected HTTP failure is raised so the
+        caller can convert it to the canonical integration-unavailable error.
         """
-        # This method is designed to be mocked in tests
-        raise NotImplementedError("MockHISClient._make_request must be mocked in tests")
+        url = f"{self.base_url}{path}"
+        try:
+            response = httpx.request(
+                method=method,
+                url=url,
+                json=json_body,
+                timeout=self._timeout_seconds,
+                headers={"Accept": "application/json"},
+            )
+        except httpx.HTTPError as exc:
+            raise RuntimeError("Mock HIS request failed") from exc
+
+        try:
+            payload = response.json()
+        except ValueError as exc:
+            raise RuntimeError("Mock HIS returned a non-JSON response") from exc
+
+        if not isinstance(payload, dict):
+            raise RuntimeError("Mock HIS returned an invalid response payload")
+
+        if response.is_error and payload.get("error_code") not in {
+            "SLOT_UNAVAILABLE",
+            "APPOINTMENT_NOT_FOUND",
+        }:
+            try:
+                response.raise_for_status()
+            except httpx.HTTPStatusError as exc:
+                raise RuntimeError("Mock HIS returned an unexpected error") from exc
+
+        return payload
 
     def list_specialties(
         self, page: int = 1, page_size: int = 20, is_active: Optional[bool] = None

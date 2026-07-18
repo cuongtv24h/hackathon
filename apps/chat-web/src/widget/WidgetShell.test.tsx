@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { WidgetShell } from './WidgetShell'
 import type { ChatClient } from '../shared/ChatClient'
+import { ChatClient as BrowserChatClient } from '../shared/ChatClient'
 import { SSEClient } from '../shared/SSEClient'
 
 function createClient(send: ChatClient['send']): ChatClient {
@@ -71,6 +72,26 @@ describe('WidgetShell', () => {
     listeners.completed(new MessageEvent('completed', { data: '{"outcome":"answered"}' }))
 
     expect(onMessage).toHaveBeenCalledWith({ event: 'completed', data: { outcome: 'answered' } })
+  })
+
+  it('uses the canonical capability execute endpoint', async () => {
+    const fetcher = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ trace_id: 'trace', capability: 'information_assistance', outcome: 'answered', result: {}, warnings: [], errors: [], timestamp: '2026-07-18T00:00:00Z' }),
+    })
+    const client = new BrowserChatClient({ baseUrl: 'https://pilot.example', fetcher })
+
+    await client.send({
+      capability: 'information_assistance',
+      payload: { request_id: 'req', session_id: 'ses', message: 'Giờ khám?' },
+      context: { channel: 'web_widget', locale: 'vi-VN' },
+    })
+
+    expect(fetcher).toHaveBeenCalledWith(
+      'https://pilot.example/v1/capabilities/information-assistance:execute',
+      expect.any(Object),
+    )
   })
 })
 // === TASK:WP-501:END ===

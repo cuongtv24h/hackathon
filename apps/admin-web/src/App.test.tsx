@@ -6,7 +6,7 @@ import App from './App'
 describe('App', () => {
   it('renders heading', () => {
     render(<App />)
-    expect(screen.getByRole('heading', { name: /admin web/i })).toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent(/đang tải dashboard/i)
   })
 })
 // === TASK:WP-500:END ===

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import secrets
 import time
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone as dt_timezone
 from typing import Any, Dict, List, Literal, Mapping, Optional
@@ -33,6 +34,7 @@ from packages.contracts import (
     FIELD_REQUIRED,
 )
 from apps.api.foundation.database.connection import DatabaseClient, DatabaseError
+from apps.api.foundation.operational_repository import OperationalRepository
 
 
 # ---------------------------------------------------------------------------
@@ -397,11 +399,16 @@ class SessionService:
     def __init__(
         self,
         db: Optional[DatabaseClient] = None,
+        repository: Optional[OperationalRepository] = None,
         *,
         idle_seconds: int = 1800,  # 30 minutes
         max_seconds: int = 86400,  # 24 hours
     ) -> None:
         self._db = db
+        self._repository = repository or (
+            OperationalRepository(os.environ["DATABASE_URL"])
+            if os.environ.get("DATABASE_URL") else None
+        )
         self._idle_seconds = idle_seconds
         self._max_seconds = max_seconds
         self._memory = _InMemorySessionStore()
@@ -442,18 +449,25 @@ class SessionService:
             metadata=dict(request.metadata),
         )
 
-        # Persist context
+        # Tests inject/use the explicit in-memory store. Runtime persistence is
+        # selected whenever DATABASE_URL is configured; it never silently
+        # falls back after a repository error.
+        if self._repository is not None:
+            context = SessionContextDTO(session_id=session_id, actor_tag=request.actor_tag,
+                channel=request.channel, created_at=session.created_at, expires_at=session.expires_at,
+                locale=request.locale, timezone=request.timezone, metadata=dict(request.metadata))
+            metadata = dict(request.metadata)
+            metadata.update({"actor_tag": request.actor_tag, "locale": request.locale,
+                             "timezone": request.timezone, "session_context": context.to_dict()})
+            row = self._repository.create_session(session_id, request.channel, metadata)
+            return SessionDTO(session_id=session_id, actor_tag=request.actor_tag, channel=request.channel,
+                              created_at=row["started_at"], expires_at=row["expires_at"],
+                              locale=request.locale, timezone=request.timezone, metadata=dict(request.metadata))
         self._memory.create(
-            session_id=session_id,
-            actor_tag=request.actor_tag,
-            channel=request.channel,
-            locale=request.locale,
-            tz_str=request.timezone,
-            metadata=request.metadata,
-            idle_seconds=self._idle_seconds,
-            max_seconds=self._max_seconds,
+            session_id=session_id, actor_tag=request.actor_tag, channel=request.channel,
+            locale=request.locale, tz_str=request.timezone, metadata=request.metadata,
+            idle_seconds=self._idle_seconds, max_seconds=self._max_seconds,
         )
-
         return session
 
     # -----------------------------------------------------------------------
@@ -469,7 +483,11 @@ class SessionService:
                 field_errors={"session_id": "required"},
             )
 
-        ctx = self._memory.get(session_id)
+        if self._repository is not None:
+            row = self._repository.get_session_context(session_id)
+            ctx = self._context_from_row(session_id, row) if row else None
+        else:
+            ctx = self._memory.get(session_id)
         if ctx is None:
             raise _service_error(
                 code=CONTENT_NOT_FOUND,
@@ -494,7 +512,17 @@ class SessionService:
                 field_errors={"session_id": "required"},
             )
 
-        ctx = self._memory.patch(
+        if self._repository is not None:
+            row = self._repository.get_session_context(session_id)
+            current = self._context_from_row(session_id, row) if row else None
+            ctx = self._apply_patch(current, patch) if current else None
+            if ctx is not None:
+                metadata = dict(row["metadata"])
+                metadata["session_context"] = ctx.to_dict()
+                updated = self._repository.update_session_context(session_id, metadata)
+                ctx = self._context_from_row(session_id, updated) if updated else None
+        else:
+            ctx = self._memory.patch(
             session_id=session_id,
             patch=patch,
             idle_seconds=self._idle_seconds,
@@ -508,6 +536,31 @@ class SessionService:
             )
 
         return ctx
+
+    def _context_from_row(self, session_id, row):
+        data = dict((row or {}).get("metadata") or {}).get("session_context") or {}
+        if not data:
+            return None
+        return SessionContextPatchRequest.from_dict(data) and SessionContextDTO(
+            session_id=session_id, actor_tag=data.get("actor_tag", row["metadata"].get("actor_tag", "")),
+            channel=row["channel"], created_at=row["started_at"], expires_at=row["expires_at"],
+            locale=data.get("locale", row["metadata"].get("locale", "vi-VN")),
+            timezone=data.get("timezone", row["metadata"].get("timezone", "Asia/Bangkok")),
+            messages=SessionContextPatchRequest.from_dict(data).messages or [],
+            emergency_context=SessionContextPatchRequest.from_dict(data).emergency_context or EmergencyContextDTO(),
+            booking_flow=SessionContextPatchRequest.from_dict(data).booking_flow or BookingFlowStateDTO(),
+            metadata=data.get("metadata", {}),
+        )
+
+    def _apply_patch(self, ctx, patch):
+        now = datetime.now(dt_timezone.utc)
+        expires_at = (now + __import__("datetime").timedelta(seconds=self._max_seconds)).isoformat()
+        return SessionContextDTO(session_id=ctx.session_id, actor_tag=ctx.actor_tag, channel=ctx.channel,
+            created_at=ctx.created_at, expires_at=expires_at, locale=ctx.locale, timezone=ctx.timezone,
+            messages=patch.messages if patch.messages is not None else ctx.messages,
+            emergency_context=patch.emergency_context if patch.emergency_context is not None else ctx.emergency_context,
+            booking_flow=patch.booking_flow if patch.booking_flow is not None else ctx.booking_flow,
+            metadata=patch.metadata if patch.metadata is not None else ctx.metadata)
 
 
 # ---------------------------------------------------------------------------

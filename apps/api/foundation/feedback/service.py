@@ -12,6 +12,7 @@ No AI reasoning is performed; the service handles feedback submission.
 from __future__ import annotations
 
 import secrets
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Literal, Mapping, Optional
@@ -26,6 +27,7 @@ from packages.contracts import (
     INTERNAL_ERROR,
     MESSAGE_TOO_LONG,
 )
+from apps.api.foundation.operational_repository import OperationalRepository
 
 
 # ---------------------------------------------------------------------------
@@ -173,8 +175,12 @@ class _InMemoryFeedbackStore:
 class FeedbackService:
     """Foundation feedback service implementing FND-FBK-01."""
 
-    def __init__(self) -> None:
+    def __init__(self, store: Optional[_InMemoryFeedbackStore] = None, repository: Optional[OperationalRepository] = None) -> None:
         self._memory = _InMemoryFeedbackStore()
+        if store is not None:
+            self._memory = store
+        self._repository = repository or (OperationalRepository(os.environ["DATABASE_URL"])
+                                          if os.environ.get("DATABASE_URL") else None)
 
     # -----------------------------------------------------------------------
     # FND-FBK-01 CreateFeedback
@@ -207,6 +213,12 @@ class FeedbackService:
 
         feedback_id = f"fbk_{secrets.token_urlsafe(12)}"
 
+        if self._repository is not None:
+            row = self._repository.create_feedback(request.session_id, request.rating, request.comment,
+                                                    request.category, request.metadata)
+            return FeedbackReceiptDTO(feedback_id=row["feedback_id"], session_id=request.session_id,
+                rating=request.rating, comment=request.comment, category=request.category,
+                created_at=row["created_at"], metadata=dict(request.metadata))
         return self._memory.create(
             feedback_id=feedback_id,
             session_id=request.session_id,
@@ -218,11 +230,22 @@ class FeedbackService:
 
     def get_feedback(self, feedback_id: str) -> Optional[FeedbackReceiptDTO]:
         """Retrieve a feedback receipt by ID (helper for tests)."""
+        if self._repository is not None:
+            row = self._repository.feedback_by_id(feedback_id)
+            return self._receipt_from_row(row) if row else None
         return self._memory.get(feedback_id)
 
     def list_feedback_by_session(self, session_id: str) -> List[FeedbackReceiptDTO]:
         """List all feedback for a session (helper for tests)."""
+        if self._repository is not None:
+            return [self._receipt_from_row(row) for row in self._repository.feedback_by_session(session_id)]
         return self._memory.list_by_session(session_id)
+
+    @staticmethod
+    def _receipt_from_row(row):
+        return FeedbackReceiptDTO(feedback_id=row["feedback_id"], session_id=row["session_id"],
+            rating=row["rating"], comment=row.get("comment_redacted"), category=row.get("category"),
+            created_at=row["created_at"], metadata=row.get("metadata") or {})
 
 
 __all__ = [

@@ -17,6 +17,12 @@ from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field, field_validator
 
+from apps.api.core.runtime_persistence import (
+    append_assistant_turn,
+    append_user_turn,
+    get_operational_runtime,
+    write_audit,
+)
 from apps.api.ai.orchestrator.appointment_status.pipeline import (
     AppointmentStatusPipeline,
     AppointmentStatusRequest,
@@ -125,6 +131,9 @@ async def execute_appointment_status(
             detail="appointment status pipeline is not configured",
         )
 
+    runtime = get_operational_runtime(request)
+    append_user_turn(runtime, payload.session_id, "appointment status lookup", intent=CAPABILITY_NAME)
+
     try:
         pipeline_response = _default_pipeline.execute(payload.to_pipeline_request())
     except ValueError as exc:
@@ -138,6 +147,7 @@ async def execute_appointment_status(
         request_id=payload.request_id,
         trace_id=trace_id,
     )
+    append_assistant_turn(runtime, payload.session_id, CAPABILITY_NAME, envelope, tools=[{"name": "appointment_status_lookup"}])
 
     if payload.response_mode == "stream":
         return StreamingResponse(

@@ -17,6 +17,12 @@ from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field, field_validator
 
+from apps.api.core.runtime_persistence import (
+    append_assistant_turn,
+    append_user_turn,
+    get_operational_runtime,
+    write_audit,
+)
 from apps.api.ai.orchestrator.appointment_booking.pipeline import (
     AppointmentBookingPipeline,
     AppointmentBookingRequest,
@@ -161,6 +167,12 @@ async def execute_appointment_booking(
     if idempotency_key:
         payload.form_data.setdefault("idempotency_key", idempotency_key)
 
+    runtime = get_operational_runtime(request)
+    append_user_turn(runtime, payload.session_id, payload.message or "appointment booking request", client_context=payload.client_context, intent=CAPABILITY_NAME)
+    create_attempt = is_create_confirmation_attempt(payload)
+    if create_attempt:
+        write_audit(runtime, "security", payload.session_id, "appointment_create_attempt", "appointment", details={"capability": CAPABILITY_NAME, "idempotency_key_present": bool(idempotency_key)})
+
     try:
         pipeline_response = _default_pipeline.execute(payload.to_pipeline_request())
     except ValueError as exc:
@@ -174,6 +186,10 @@ async def execute_appointment_booking(
         request_id=payload.request_id,
         trace_id=trace_id,
     )
+    if create_attempt:
+        outcome = "success" if envelope.get("result", {}).get("appointment") else "failure"
+        write_audit(runtime, "security", payload.session_id, f"appointment_create_{outcome}", "appointment", details={"capability": CAPABILITY_NAME, "idempotency_key_present": bool(idempotency_key)}, outcome=outcome)
+    append_assistant_turn(runtime, payload.session_id, CAPABILITY_NAME, envelope, tools=[{"name": "appointment_tools"}])
 
     if payload.response_mode == "stream":
         return StreamingResponse(

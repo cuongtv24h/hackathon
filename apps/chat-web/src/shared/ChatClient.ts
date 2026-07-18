@@ -44,6 +44,7 @@ export interface ChatClientRequest<TPayload = Record<string, unknown>> {
   capability: ChatCapability
   payload: TPayload
   context: ClientContextDTO
+  idempotencyKey?: string
 }
 
 export interface ChatClientOptions {
@@ -65,10 +66,17 @@ export class ChatClientError extends Error {
 }
 
 const capabilityPath: Record<ChatCapability, string> = {
-  information_assistance: '/v1/capabilities/information-assistance',
-  emergency_safety: '/v1/capabilities/emergency-safety',
-  appointment_booking: '/v1/capabilities/appointment-booking',
-  appointment_status: '/v1/capabilities/appointment-status',
+  information_assistance: '/v1/capabilities/information-assistance:execute',
+  emergency_safety: '/v1/capabilities/emergency-safety:execute',
+  appointment_booking: '/v1/capabilities/appointment-booking:execute',
+  appointment_status: '/v1/capabilities/appointment-status:execute',
+}
+
+export interface FoundationPage<TItem> {
+  items: TItem[]
+  total: number
+  page: number
+  page_size: number
 }
 
 const defaultClientContext: ClientContextDTO = {
@@ -83,7 +91,9 @@ export class ChatClient {
 
   constructor(options: ChatClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, '')
-    this.fetcher = options.fetcher ?? fetch
+    // Window.fetch requires its original receiver in real browsers.  Keep an
+    // injected test fetcher unchanged, but bind the browser implementation.
+    this.fetcher = options.fetcher ?? fetch.bind(globalThis)
     this.defaultContext = options.defaultContext ?? defaultClientContext
   }
 
@@ -94,6 +104,7 @@ export class ChatClient {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(request.idempotencyKey ? { 'Idempotency-Key': request.idempotencyKey } : {}),
       },
       body: JSON.stringify({
         ...request.payload,
@@ -111,6 +122,55 @@ export class ChatClient {
     }
 
     return body
+  }
+
+  async get<TResult>(path: string): Promise<TResult> {
+    const response = await this.fetcher(`${this.baseUrl}${path}`, {
+      headers: { Accept: 'application/json' },
+    })
+    const body = await response.json().catch(() => undefined) as TResult | CapabilityResponseEnvelope | undefined
+
+    if (!response.ok) {
+      const envelope = body as CapabilityResponseEnvelope | undefined
+      throw new ChatClientError(envelope?.errors?.[0]?.message ?? 'Foundation request failed', response.status, envelope)
+    }
+
+    return body as TResult
+  }
+
+  async sendStream<TPayload extends Record<string, unknown>, TResult = unknown>(
+    request: ChatClientRequest<TPayload>,
+    onEvent: (event: string, envelope: CapabilityResponseEnvelope<TResult>) => void,
+  ): Promise<void> {
+    const response = await this.fetcher(`${this.baseUrl}${capabilityPath[request.capability]}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+      body: JSON.stringify({
+        ...request.payload,
+        response_mode: 'stream',
+        client_context: { ...this.defaultContext, ...request.context },
+      }),
+    })
+    if (!response.ok || !response.body) {
+      const body = (await response.json().catch(() => undefined)) as CapabilityResponseEnvelope | undefined
+      throw new ChatClientError(body?.errors?.[0]?.message ?? 'Streaming request failed', response.status, body)
+    }
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+    while (true) {
+      const next = await reader.read()
+      if (next.done) break
+      buffer += decoder.decode(next.value, { stream: true })
+      const frames = buffer.split('\n\n')
+      buffer = frames.pop() ?? ''
+      frames.forEach((frame) => {
+        const event = frame.match(/^event:\s*(.+)$/m)?.[1] ?? 'message'
+        const raw = frame.match(/^data:\s*(.+)$/m)?.[1]
+        if (raw) onEvent(event, JSON.parse(raw) as CapabilityResponseEnvelope<TResult>)
+      })
+    }
   }
 }
 // === TASK:WP-501:END ===

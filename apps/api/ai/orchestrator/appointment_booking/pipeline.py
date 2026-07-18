@@ -251,7 +251,11 @@ class AppointmentBookingPipeline:
             state,
             patient_data=patient,
             confirmation_token=state.confirmation_token or f"confirm-{uuid.uuid4()}",
-            idempotency_key=state.idempotency_key or f"booking-{state.session_id}-{uuid.uuid4()}",
+            # The gateway copies the Idempotency-Key header into form_data.
+            # Preserve it across the confirmation retry so Mock HIS receives
+            # the same key even though this MVP pipeline is reconstructed per
+            # HTTP request.
+            idempotency_key=state.idempotency_key or data.get("idempotency_key") or f"booking-{state.session_id}-{uuid.uuid4()}",
             current_step="confirmation",
         )
 

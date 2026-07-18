@@ -1,0 +1,93 @@
+# === TASK:WP-606:START ===
+version: "1.0.0"
+work_package: "WP-606"
+release_gate_id: "mvp-pilot-vps"
+summary: "MVP Pilot VPS release gate evidence and go/no-go criteria."
+
+required_upstream_evidence:
+  - work_package: "WP-602"
+    scope: "PC-01 information assistance QA"
+    status_required: "stable_or_approved_integration_evidence"
+  - work_package: "WP-603"
+    scope: "PC-02 emergency safety QA"
+    status_required: "stable_or_approved_integration_evidence"
+  - work_package: "WP-604"
+    scope: "PC-03/PC-04 appointment QA"
+    status_required: "stable_or_approved_integration_evidence"
+  - work_package: "WP-605"
+    scope: "Admin dashboard QA"
+    status_required: "stable_or_approved_integration_evidence"
+
+pilot_targets:
+  time_to_first_token_ms: 2000
+  critical_keyword_emergency_ms: 100
+  llm_emergency_ms: 3000
+  hallucination_outside_kb_percent: 0
+  availability_business_hours_percent: 99.5
+  concurrent_sessions_min: 100
+
+security_controls:
+  tls_min_version: "1.2"
+  browser_exposed_secrets_allowed: false
+  source_committed_secrets_allowed: false
+  api_key_browser_exposure_allowed: false
+  pii_in_logs_allowed: false
+  prompt_or_chain_of_thought_exposure_allowed: false
+  auth_required_for_admin_history_analytics: true
+  short_lived_anonymous_chat_session_required: true
+  mfa_required_for_admin: true
+
+runtime_controls:
+  backend_runtime: "python_fastapi"
+  frontend_runtime: "vite_react_typescript"
+  backend_substantive_behavior_in_init_allowed: false
+  python_files_in_frontend_allowed: false
+  hyphenated_python_packages_allowed: false
+
+rate_limits:
+  messages_per_session_per_minute: 20
+  messages_per_ip_per_minute: 60
+  messages_per_session_total: 100
+  max_message_characters: 4000
+  appointment_create_per_session_per_minute: 5
+  content_write_per_user_per_minute: 30
+  analytics_read_per_user_per_minute: 60
+
+fallback_controls:
+  critical_emergency_independent_of_internet_llm_database: true
+  primary_llm_failure_behavior: "fallback_provider_chain"
+  all_llm_failure_behavior: "static_hotline_message"
+  supabase_or_kb_failure_behavior: "knowledge_fallback_to_hotline"
+  total_internet_loss_behavior: "normal_chat_unavailable_critical_local_emergency_available"
+  analytics_logger_failure_behavior: "async_retry_no_main_flow_blocking"
+
+content_controls:
+  answerable_sources:
+    - "approved_for_pilot"
+    - "workflow_approved_content"
+  block_unapproved_content_answers: true
+  block_knowledge_conflict_confident_answers: true
+  require_traceable_citations: true
+  bhyt_disclaimer_required: true
+
+mock_and_demo_controls:
+  emergency_protocol_mock_status: "requires_sign_off_before_real_demo"
+  placeholder_contact_status: "requires_sign_off_before_real_demo"
+  mock_his_patient_data_only: true
+  real_patient_data_allowed: false
+
+required_automated_commands:
+  - "py -m pytest tests/nfr/test_wp_606_release_gate.py tests/release/test_wp_606_vps_release.py -q"
+  - "npm.cmd --prefix apps/chat-web run test -- --run"
+  - "npm.cmd --prefix apps/chat-web run test:e2e"
+
+go_no_go_policy:
+  go_requires_all_automated_commands_pass: true
+  go_requires_no_committed_secrets: true
+  go_requires_mock_or_placeholder_sign_off: true
+  go_requires_approved_answer_sources_only: true
+  go_requires_frontend_e2e_coverage_for_wp_602_to_wp_604: true
+  go_requires_admin_dashboard_evidence_for_wp_605: true
+  no_go_on_incomplete_required_runtime_boundary: true
+  no_go_on_failed_release_gate_check: true
+# === TASK:WP-606:END ===

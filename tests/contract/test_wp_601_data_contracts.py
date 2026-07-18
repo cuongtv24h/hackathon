@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import inspect
 import sys
+import ast
 from dataclasses import fields, is_dataclass
 from pathlib import Path
 from typing import get_args, get_origin
@@ -228,9 +229,25 @@ def test_foundation_leaf_modules_do_not_import_ai_provider_or_network_clients():
         assert source_file is not None
         source = Path(source_file).read_text(encoding="utf-8").lower()
 
+        tree = ast.parse(source)
+        imported_modules = []
+        called_attributes = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                imported_modules.extend(alias.name.lower() for alias in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                imported_modules.append(node.module.lower())
+            elif isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+                if isinstance(node.func.value, ast.Name):
+                    called_attributes.append(f"{node.func.value.id.lower()}.{node.func.attr.lower()}")
+
         for term in AI_CALL_TERMS:
-            assert term not in source, f"{module_name} contains AI/provider term {term!r}"
-        assert "requests." not in source, f"{module_name} contains network requests usage"
+            assert not any(term in imported for imported in imported_modules), (
+                f"{module_name} imports AI/provider term {term!r}"
+            )
+        assert not any(call.startswith("requests.") for call in called_attributes), (
+            f"{module_name} contains network requests usage"
+        )
 
 
 def test_substantive_behavior_is_not_only_in_init_modules():

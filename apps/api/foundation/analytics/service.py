@@ -20,6 +20,7 @@ Key design decisions:
 from __future__ import annotations
 
 import time
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Literal
@@ -31,6 +32,7 @@ from packages.contracts import (
     UnifiedErrorEnvelope,
     make_error_envelope,
 )
+from apps.api.foundation.operational_repository import OperationalRepository
 
 
 # ---------------------------------------------------------------------------
@@ -319,8 +321,11 @@ class ConversationHistoryService:
     def __init__(
         self,
         store: Optional[_InMemoryConversationHistoryStore] = None,
+        repository: Optional[OperationalRepository] = None,
     ) -> None:
         self._store = store if store is not None else _InMemoryConversationHistoryStore()
+        self._repository = repository or (OperationalRepository(os.environ["DATABASE_URL"])
+                                          if os.environ.get("DATABASE_URL") else None)
 
     # -----------------------------------------------------------------------
     # FND-HIS-01 GetConversationHistory
@@ -402,13 +407,27 @@ class ConversationHistoryService:
             limit=limit,
             offset=offset,
         )
-        return self._store.query(query_obj)
+        if self._repository is None:
+            return self._store.query(query_obj)
+        result = self._repository.conversation_history(session_id, limit, offset, from_time, to_time)
+        items = [ConversationHistoryItem(session_id=row["session_id"], turn_id=row["turn_id"],
+            role=row["role"], content=row["content"], intent=row.get("intent"),
+            emergency_triggered=row.get("emergency_triggered", False), tool_calls=row.get("tool_calls") or [],
+            citations=row.get("citations") or [], created_at=row["created_at"]) for row in result["items"]]
+        next_offset = offset + limit
+        return ConversationHistoryPageDTO(items=items, total=result["total"], limit=limit, offset=offset,
+            has_more=next_offset < result["total"], next_cursor=str(next_offset) if next_offset < result["total"] else None)
 
     # -----------------------------------------------------------------------
     # Internal: used by conversation logger to feed history store
     # -----------------------------------------------------------------------
     def append_entry(self, entry: ConversationHistoryItem) -> None:
         """Append an entry to the history store (internal use)."""
+        if self._repository is not None:
+            self._repository.append_message(entry.session_id, entry.role, entry.content, intent=entry.intent,
+                tools_called=entry.tool_calls, citations=entry.citations,
+                emergency_triggered=entry.emergency_triggered)
+            return
         self._store.append(entry)
 
 
@@ -422,8 +441,11 @@ class AnalyticsService:
     def __init__(
         self,
         store: Optional[_InMemoryAnalyticsStore] = None,
+        repository: Optional[OperationalRepository] = None,
     ) -> None:
         self._store = store if store is not None else _InMemoryAnalyticsStore()
+        self._repository = repository or (OperationalRepository(os.environ["DATABASE_URL"])
+                                          if os.environ.get("DATABASE_URL") else None)
 
     # -----------------------------------------------------------------------
     # FND-ANA-01 GetAnalyticsSummary
@@ -479,6 +501,15 @@ class AnalyticsService:
                 category=CATEGORY_VALIDATION,
                 field_errors={"time_range": "invalid"},
             )
+
+        if self._repository is not None:
+            summary = self._repository.analytics_summary(from_time, to_time)
+            return AnalyticsSummaryDTO(time_range_from=from_time, time_range_to=to_time,
+                top_questions=summary["top_questions"], fallback_rate=round(float(summary["fallback_rate"]), 4),
+                emergency_rate=round(float(summary["emergency_rate"]), 4),
+                feedback_score=round(float(summary["feedback_score"]), 2) if summary["feedback_score"] else None,
+                total_conversations=summary["conversations"], total_turns=summary["turns"],
+                generated_at=datetime.now(timezone.utc).isoformat())
 
         # Fetch data in time range
         conversation_logs = self._store.get_conversation_logs(from_time, to_time)

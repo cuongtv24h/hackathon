@@ -22,6 +22,7 @@ Contracts
 from __future__ import annotations
 
 import time
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -32,6 +33,7 @@ from packages.contracts import (
     UnifiedErrorEnvelope,
     make_error_envelope,
 )
+from apps.api.foundation.operational_repository import OperationalRepository
 
 
 # ---------------------------------------------------------------------------
@@ -178,8 +180,11 @@ class AuditLogService:
     def __init__(
         self,
         store: Optional[_InMemoryAuditStore] = None,
+        repository: Optional[OperationalRepository] = None,
     ) -> None:
         self._store = store if store is not None else _InMemoryAuditStore()
+        self._repository = repository or (OperationalRepository(os.environ["DATABASE_URL"])
+                                          if os.environ.get("DATABASE_URL") else None)
 
     # -------------------------------------------------------------------
     # FND-AUD-01 WriteAuditEntry
@@ -268,7 +273,19 @@ class AuditLogService:
             session_id=session_id,
             outcome=outcome,
         )
-        self._store.append(entry)
+        if self._repository is not None:
+            category = "content" if event_type.startswith("content") else (
+                "emergency" if event_type == "emergency" else "security")
+            payload = dict(details or {})
+            payload.update({"outcome": outcome, "session_id": session_id})
+            # Keep the specific action in the database; the category is only
+            # the broad schema classification (emergency/security/content).
+            row = self._repository.write_audit(category, actor, resource, action, payload)
+            entry = AuditLogEntry(audit_id=row["audit_event_id"], event_type=event_type,
+                actor=actor, action=action, resource=resource, details=dict(details or {}),
+                session_id=session_id, outcome=outcome, created_at=row["occurred_at"])
+        else:
+            self._store.append(entry)
         return entry
 
     # -------------------------------------------------------------------
@@ -329,7 +346,14 @@ class AuditLogService:
             from_time=from_time,
             to_time=to_time,
         )
-        return self._store.query(query)
+        if self._repository is None:
+            return self._store.query(query)
+        result = self._repository.audit_log(event_type, actor, limit, offset, from_time, to_time)
+        entries = [AuditLogEntry(audit_id=item["audit_id"], event_type=item["event_type"],
+            actor=item["actor"], action=item["event_type"], resource=item["resource"],
+            details=item.get("details") or {}, outcome=(item.get("details") or {}).get("outcome", "success"),
+            created_at=item["created_at"]) for item in result["items"]]
+        return AuditLogPage(entries=entries, total=result["total"], limit=limit, offset=offset)
 
 
 # ---------------------------------------------------------------------------

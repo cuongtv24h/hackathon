@@ -23,8 +23,11 @@ from apps.api.ai.providers.llm_provider import (
     LLMResponse,
     ReasoningResultDTO,
     MockLLMProvider,
+    OpenAICompatibleLLMProvider,
+    RuntimeLLMAdapter,
     LLMProviderChain,
     create_mock_provider_chain,
+    create_runtime_provider_chain,
     LLM_TIMEOUT,
     LLM_RATE_LIMITED,
     LLM_CONTENT_FILTERED,
@@ -239,6 +242,103 @@ class TestMockLLMProvider:
         assert provider.call_count == 2
 
 
+class TestRuntimeLLMProvider:
+    """Tests for the real-provider adapter without network access."""
+
+    def test_posts_openai_compatible_payload_and_maps_response(self) -> None:
+        calls = []
+
+        class FakeResponse:
+            status_code = 200
+            headers = {}
+
+            def json(self):
+                return {
+                    "model": "provider-model",
+                    "choices": [{"message": {"content": "Grounded answer"}, "finish_reason": "stop"}],
+                    "usage": {"total_tokens": 12},
+                }
+
+        class FakeClient:
+            def __init__(self, **kwargs):
+                calls.append({"timeout": kwargs["timeout"]})
+
+            def post(self, url, headers, json):
+                calls.append({"url": url, "headers": headers, "json": json})
+                return FakeResponse()
+
+            def close(self):
+                return None
+
+        provider = OpenAICompatibleLLMProvider(
+            name="primary",
+            model="configured-model",
+            base_url="https://provider.example/v1",
+            api_key="test-key",
+            client_factory=FakeClient,
+        )
+        response = provider.generate(LLMRequest(messages=[{"role": "user", "content": "Hello"}]))
+
+        assert response.content == "Grounded answer"
+        assert response.provider == "primary"
+        assert calls[1]["url"] == "https://provider.example/v1/chat/completions"
+        assert calls[1]["json"]["model"] == "configured-model"
+        assert calls[1]["headers"]["Authorization"] == "Bearer test-key"
+
+    def test_runtime_adapter_preserves_grounded_context(self) -> None:
+        provider = MockLLMProvider(response_content="Grounded answer")
+        adapter = RuntimeLLMAdapter(LLMProviderChain([provider]))
+
+        response = adapter.generate({
+            "messages": [{"role": "user", "content": "What is the price?"}],
+            "context": "[price] Approved service price",
+        })
+
+        assert response["content"] == "Grounded answer"
+        assert provider.call_count == 1
+
+    def test_runtime_factory_uses_primary_then_diverse_fallback(self) -> None:
+        chain = create_runtime_provider_chain({
+            "GEMINI_API_KEY": "primary-key",
+            "OPENROUTER_API_KEY": "fallback-key",
+        })
+
+        assert [provider.name for provider in chain.providers] == ["gemini", "openrouter"]
+
+    def test_runtime_factory_rejects_mock_only_configuration(self) -> None:
+        with pytest.raises(ValueError, match="No real LLM provider"):
+            create_runtime_provider_chain({})
+
+    def test_runtime_factory_honors_configured_provider_order(self) -> None:
+        chain = create_runtime_provider_chain({
+            "LLM_PROVIDER_ORDER": "groq,gemini,openrouter",
+            "LLM_GROQ_API_KEY": "groq-key",
+            "LLM_GEMINI_API_KEY": "gemini-key",
+            "LLM_OPENROUTER_API_KEY": "openrouter-key",
+        })
+
+        assert [provider.name for provider in chain.providers] == [
+            "groq", "gemini", "openrouter"
+        ]
+        assert chain.providers[0].model == "llama-3.3-70b-versatile"
+
+    def test_runtime_factory_rejects_ordered_provider_without_key(self) -> None:
+        with pytest.raises(ValueError, match="groq.*no API key"):
+            create_runtime_provider_chain({
+                "LLM_PROVIDER_ORDER": "gemini,groq",
+                "LLM_GEMINI_API_KEY": "gemini-key",
+            })
+
+    def test_runtime_factory_accepts_legacy_grok_alias_for_groq(self) -> None:
+        chain = create_runtime_provider_chain({
+            "LLM_PROVIDER_ORDER": "grok",
+            "LLM_GROK_API_KEY": "legacy-groq-key",
+            "LLM_GROK_BASE_URL": "https://api.groq.com/openai/v1",
+        })
+
+        assert [provider.name for provider in chain.providers] == ["groq"]
+
+
 class TestLLMProviderChain:
     """Tests for LLMProviderChain."""
 
@@ -299,6 +399,18 @@ class TestLLMProviderChain:
         chain = LLMProviderChain([provider])
 
         assert len(chain.providers) == 1
+
+    def test_does_not_fallback_after_content_filter(self) -> None:
+        filtered = MockLLMProvider(name="filtered", raise_error="content_filter")
+        fallback = MockLLMProvider(name="fallback", response_content="must not be used")
+        chain = LLMProviderChain([filtered, fallback])
+        request = LLMRequest(messages=[{"role": "user", "content": "Hello"}])
+
+        with pytest.raises(LLMProviderError) as exc_info:
+            chain.generate(request)
+
+        assert exc_info.value.envelope.error.code == LLM_CONTENT_FILTERED
+        assert fallback.call_count == 0
 
 
 class TestCreateMockProviderChain:

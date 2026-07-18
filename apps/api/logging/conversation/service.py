@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import re
 import time
+import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -33,6 +34,7 @@ from packages.contracts import (
     UnifiedErrorEnvelope,
     make_error_envelope,
 )
+from apps.api.foundation.operational_repository import OperationalRepository
 
 
 # ---------------------------------------------------------------------------
@@ -203,8 +205,11 @@ class ConversationLogService:
     def __init__(
         self,
         store: Optional[_InMemoryConversationStore] = None,
+        repository: Optional[OperationalRepository] = None,
     ) -> None:
         self._store = store if store is not None else _InMemoryConversationStore()
+        self._repository = repository or (OperationalRepository(os.environ["DATABASE_URL"])
+                                          if os.environ.get("DATABASE_URL") else None)
 
     # -------------------------------------------------------------------
     # FND-LOG-01 AppendLogEntry
@@ -298,7 +303,13 @@ class ConversationLogService:
             tool_calls=tool_calls or [],
             citations=citations or [],
         )
-        self._store.append(entry)
+        if self._repository is not None:
+            self._repository.append_message(session_id, role, anonymized, intent=intent,
+                tools_called=tool_calls or [], citations=citations or [],
+                emergency_triggered=emergency_triggered,
+                detection_path="keyword" if emergency_triggered else None)
+        else:
+            self._store.append(entry)
         return entry
 
     # -------------------------------------------------------------------
@@ -362,7 +373,15 @@ class ConversationLogService:
             from_time=from_time,
             to_time=to_time,
         )
-        return self._store.query(query)
+        if self._repository is None:
+            return self._store.query(query)
+        result = self._repository.conversation_history(session_id, limit, offset, from_time, to_time)
+        entries = [ConversationLogEntry(session_id=item["session_id"], turn_id=item["turn_id"],
+                   role=item["role"], content=item["content"], intent=item.get("intent"),
+                   emergency_triggered=item.get("emergency_triggered", False),
+                   tool_calls=item.get("tool_calls") or [], citations=item.get("citations") or [],
+                   created_at=item["created_at"]) for item in result["items"]]
+        return ConversationLogPage(entries=entries, total=result["total"], limit=limit, offset=offset)
 
 
 # ---------------------------------------------------------------------------

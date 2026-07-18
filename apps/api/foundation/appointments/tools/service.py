@@ -637,7 +637,7 @@ class AppointmentTools:
 
 
 def create_appointment_tools(
-    his_base_url: str = "http://localhost:8100",
+    his_base_url: str = "http://127.0.0.1:8001",
 ) -> AppointmentTools:
     """Create appointment tools with a configured HIS client.
 

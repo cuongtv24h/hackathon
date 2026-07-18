@@ -1,11 +1,12 @@
 // === TASK:WP-503:START ===
 export type AppointmentBookingOutcome =
-  | 'collecting_information'
+  | 'collecting'
   | 'confirmation_required'
+  | 'created'
   | 'appointment_pending'
-  | 'cancelled'
-  | 'redirected'
   | 'unavailable'
+  | 'redirected'
+  | 'error'
 
 export type AppointmentStatusOutcome = 'found' | 'not_found' | 'redirected' | 'unavailable'
 
@@ -23,10 +24,10 @@ export interface BookingFlowState {
 
 export interface AppointmentBookingResponse {
   outcome: AppointmentBookingOutcome
+  message?: string
   prompt?: string
-  options?: Array<{ value: string; label: string }>
   appointment?: AppointmentSummary | null
-  flow_state?: BookingFlowState
+  conversation_state?: BookingFlowState
 }
 
 export interface AppointmentStatusResponse {
@@ -41,7 +42,6 @@ export interface AppointmentFlowProps {
   statusResponse?: AppointmentStatusResponse
   onConfirmBooking?: () => void
   onCancelBooking?: () => void
-  onSelectOption?: (value: string) => void
   onNextStep?: (action: string) => void
 }
 
@@ -58,23 +58,22 @@ function AppointmentCard({ appointment }: { appointment: AppointmentSummary }) {
   )
 }
 
-function BookingState({ response, onConfirmBooking, onCancelBooking, onSelectOption }: {
+function BookingState({ response, onConfirmBooking, onCancelBooking }: {
   response: AppointmentBookingResponse
   onConfirmBooking?: () => void
   onCancelBooking?: () => void
-  onSelectOption?: (value: string) => void
 }) {
   if (response.outcome === 'confirmation_required') {
     return (
       <section aria-label="Booking confirmation">
-        <p>{response.prompt ?? 'Vui lòng xác nhận thông tin đặt lịch trước khi tạo lịch hẹn.'}</p>
+        <p>{response.message ?? response.prompt ?? 'Vui lòng cung cấp thông tin cần thiết.'}</p>
         <button type="button" onClick={onConfirmBooking}>Xác nhận đặt lịch</button>
         <button type="button" onClick={onCancelBooking}>Hủy</button>
       </section>
     )
   }
 
-  if (response.outcome === 'appointment_pending' && response.appointment) {
+  if ((response.outcome === 'created' || response.outcome === 'appointment_pending') && response.appointment) {
     return (
       <section aria-label="Pending appointment">
         <p>Lịch hẹn đã được ghi nhận và đang chờ xác nhận.</p>
@@ -83,20 +82,10 @@ function BookingState({ response, onConfirmBooking, onCancelBooking, onSelectOpt
     )
   }
 
-  if (response.outcome === 'collecting_information') {
+  if (response.outcome === 'collecting') {
     return (
       <section aria-label="Booking information collection">
-        <p>{response.prompt ?? 'Vui lòng cung cấp thông tin còn thiếu để đặt lịch.'}</p>
-        {response.flow_state?.missing_fields?.length ? (
-          <p>Thông tin cần bổ sung: {response.flow_state.missing_fields.join(', ')}</p>
-        ) : null}
-        <div>
-          {response.options?.map((option) => (
-            <button key={option.value} type="button" onClick={() => onSelectOption?.(option.value)}>
-              {option.label}
-            </button>
-          ))}
-        </div>
+        <p>{response.message}</p>
       </section>
     )
   }
@@ -139,7 +128,6 @@ export function AppointmentFlow({
   statusResponse,
   onConfirmBooking,
   onCancelBooking,
-  onSelectOption,
   onNextStep,
 }: AppointmentFlowProps) {
   if (statusResponse) {
@@ -152,7 +140,6 @@ export function AppointmentFlow({
         response={bookingResponse}
         onConfirmBooking={onConfirmBooking}
         onCancelBooking={onCancelBooking}
-        onSelectOption={onSelectOption}
       />
     )
   }

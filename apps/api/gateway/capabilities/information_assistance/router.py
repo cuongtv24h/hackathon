@@ -17,6 +17,12 @@ from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field, field_validator
 
+from apps.api.core.runtime_persistence import (
+    append_assistant_turn,
+    append_user_turn,
+    get_operational_runtime,
+    write_audit,
+)
 from apps.api.ai.orchestrator.information_assistance.pipeline import (
     InformationAssistancePipeline,
     InformationAssistanceRequest,
@@ -130,6 +136,9 @@ async def execute_information_assistance(
     """Execute the PC-01 Information Assistance capability."""
     trace_id = request.headers.get("x-trace-id") or str(uuid.uuid4())
 
+    runtime = get_operational_runtime(request)
+    append_user_turn(runtime, payload.session_id, payload.message, client_context=payload.client_context, intent=CAPABILITY_NAME)
+
     try:
         pipeline_response = _default_pipeline.execute(payload.to_pipeline_request())
     except ValueError as exc:
@@ -143,6 +152,7 @@ async def execute_information_assistance(
         request_id=payload.request_id,
         trace_id=trace_id,
     )
+    append_assistant_turn(runtime, payload.session_id, CAPABILITY_NAME, envelope, tools=[{"name": "knowledge_search"}])
 
     if payload.response_mode == "stream":
         return StreamingResponse(

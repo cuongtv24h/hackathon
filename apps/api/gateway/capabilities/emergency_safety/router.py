@@ -17,6 +17,12 @@ from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field, field_validator
 
+from apps.api.core.runtime_persistence import (
+    append_assistant_turn,
+    append_user_turn,
+    get_operational_runtime,
+    write_audit,
+)
 from apps.api.ai.orchestrator.emergency_safety.pipeline import (
     EmergencySafetyPipeline,
     EmergencySafetyRequest,
@@ -141,6 +147,9 @@ async def execute_emergency_safety(
     """Execute the PC-02 Emergency Safety capability."""
     trace_id = request.headers.get("x-trace-id") or str(uuid.uuid4())
 
+    runtime = get_operational_runtime(request)
+    append_user_turn(runtime, payload.session_id, payload.message, client_context=payload.client_context, intent=CAPABILITY_NAME, critical=False)
+
     try:
         pipeline_response = _default_pipeline.execute(payload.to_pipeline_request())
     except ValueError as exc:
@@ -154,6 +163,13 @@ async def execute_emergency_safety(
         request_id=payload.request_id,
         trace_id=trace_id,
     )
+    emergency_triggered = envelope.get("outcome") == OUTCOME_EMERGENCY_TRIGGERED
+    if emergency_triggered:
+        try:
+            write_audit(runtime, "emergency", payload.session_id, "emergency_trigger", "conversation_session", details={"capability": CAPABILITY_NAME, "triggered": True}, critical=True)
+        except Exception:
+            envelope["result"]["message"] = "Yêu cầu khẩn cấp đã được nhận. Vui lòng gọi 115 hoặc đến cơ sở cấp cứu gần nhất ngay lập tức."
+    append_assistant_turn(runtime, payload.session_id, CAPABILITY_NAME, envelope, tools=[{"name": "emergency_prefilter"}], emergency=emergency_triggered)
 
     if payload.response_mode == "stream":
         return StreamingResponse(

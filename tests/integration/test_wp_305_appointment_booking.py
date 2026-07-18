@@ -93,6 +93,22 @@ def test_collects_data_and_requires_confirmation_before_create() -> None:
     assert tools.created_inputs == []
 
 
+def test_preserves_gateway_idempotency_key_in_reconstructed_state() -> None:
+    tools = FakeAppointmentTools()
+    pipeline = AppointmentBookingPipeline(appointment_tools=tools)
+    form_data = _complete_form()
+    form_data["idempotency_key"] = "e2e-booking-key"
+
+    confirmation = pipeline.execute(_request(form_data))
+    created = pipeline.execute(
+        _request(form_data | {"confirmed": True}, message="confirm")
+    )
+
+    assert confirmation.conversation_state.idempotency_key == "e2e-booking-key"
+    assert created.outcome == "created"
+    assert tools.created_inputs[0].idempotency_key == "e2e-booking-key"
+
+
 def test_confirmed_request_creates_pending_appointment_with_contract_shape() -> None:
     tools = FakeAppointmentTools()
     pipeline = AppointmentBookingPipeline(appointment_tools=tools)

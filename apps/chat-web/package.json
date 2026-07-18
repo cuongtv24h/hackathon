@@ -1,6 +1,6 @@
 {
   "name": "chat-web",
-  "x-task-region-markers": ["TASK:WP-500:START", "TASK:WP-500:END"],
+  "x-task-region-markers": ["TASK:WP-500:START", "TASK:WP-500:END", "TASK:WP-501:START", "TASK:WP-501:END", "TASK:WP-602:START", "TASK:WP-602:END"],
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test --config=playwright.config.ts"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -17,6 +18,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@playwright/test": "^1.55.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
     "@types/react": "^18.3.12",
