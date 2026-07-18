@@ -2,6 +2,20 @@ version: "1.0.0"
 sprint: 1
 status: packet_generation_complete
 packets:
+  - id: WP-010
+    file: prompts/sprint-1/task-packets/WP-010.packet.md
+    wave: 2
+    pool: API
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
+  - id: WP-500
+    file: prompts/sprint-1/task-packets/WP-500.packet.md
+    wave: 2
+    pool: FE
+    priority: P0
+    product_code: true
+    column: Prompt Backlog
   - id: WP-005
     file: prompts/sprint-1/task-packets/WP-005.packet.md
     wave: 1
@@ -72,4 +86,3 @@ packets:
     priority: P1
     product_code: true
     column: Prompt Backlog
-

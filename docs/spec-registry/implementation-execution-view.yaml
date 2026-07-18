@@ -8,11 +8,11 @@ gates:
   - {id: G0, name: base_scaffold, packets: [WP-001, WP-002, WP-003], verify: manual_readiness_review}
   - {id: G0R, name: region_scaffold, packets: [WP-004], verify: initialization_map_review}
   - {id: G1, name: data_contract_baseline, packets: [WP-005, WP-006, WP-007, WP-008, WP-009]}
-  - {id: G2, name: foundation_baseline, packets: [WP-101, WP-102, WP-103, WP-104, WP-105]}
+  - {id: G2, name: runtime_foundation_baseline, packets: [WP-010, WP-500, WP-101, WP-102, WP-103, WP-104, WP-105]}
   - {id: G3, name: tool_baseline, packets: [WP-201, WP-202, WP-203, WP-204]}
   - {id: G4, name: ai_baseline, packets: [WP-301, WP-302, WP-303, WP-304, WP-305, WP-306]}
   - {id: G5, name: capability_api_baseline, packets: [WP-401, WP-402, WP-403, WP-404]}
-  - {id: G6, name: experience_baseline, packets: [WP-501, WP-502, WP-503, WP-504, WP-505, WP-506]}
+  - {id: G6, name: experience_baseline, packets: [WP-500, WP-501, WP-502, WP-503, WP-504, WP-505, WP-506]}
   - {id: G7, name: release_baseline, packets: [WP-601, WP-602, WP-603, WP-604, WP-605, WP-606]}
 waves:
   - id: wave-0
@@ -29,8 +29,8 @@ waves:
     exit: data_contract_baseline
   - id: wave-2
     sprint: 1
-    packets: [WP-101, WP-102, WP-103, WP-104, WP-105]
-    parallel_groups: [[WP-101, WP-102, WP-103, WP-104, WP-105]]
+    packets: [WP-010, WP-500, WP-101, WP-102, WP-103, WP-104, WP-105]
+    parallel_groups: [[WP-010, WP-500], [WP-101, WP-102, WP-103, WP-104, WP-105]]
     entry: data_contract_baseline
     exit: foundation_baseline
   - id: wave-3

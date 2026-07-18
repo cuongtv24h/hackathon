@@ -19,7 +19,7 @@ Trust boundaries và canonical flows giữa browser, backend, AI providers, Supa
 
 ### RAG query
 
-User query → embedding API → 768-d query vector → pgvector cosine search with domain filter/threshold → ranked approved chunks → KnowledgeContext → grounded response + citations.
+User query → Jina `jina-embeddings-v5-text-small` API → 1024-d query vector → pgvector cosine search with domain filter/threshold → ranked approved chunks → KnowledgeContext → grounded response + citations.
 
 ### Emergency keyword path
 
@@ -47,6 +47,7 @@ Message/response metadata → `detect_pii` → anonymized record → async Analy
 ## Key Constraints
 
 - Approved chunks only.
+- Embedding model is `jina-embeddings-v5-text-small`, with exactly 1024 numeric dimensions. Documents use task `retrieval.passage`; user queries use task `retrieval.query` so both vectors share the retrieval space.
 - Provider output and tool content are untrusted until validated.
 - PII anonymization failure must not result in raw conversation storage.
 - Integration errors degrade to configured channel/hotline.
@@ -56,4 +57,3 @@ Message/response metadata → `detect_pii` → anonymized record → async Analy
 - `docs/artifacts/architecture/deployment-resilience.md`
 - `docs/artifacts/interface/error-contracts.md`
 - `docs/artifacts/interface/tool-contracts.md`
-

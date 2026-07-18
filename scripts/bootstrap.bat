@@ -23,7 +23,7 @@ for %%D in (
   "apps\chat-web\src\shared"
   "apps\chat-web\src\features"
   "apps\admin-web\src\features"
-  "apps\mock-his"
+  "apps\mock_his"
   "packages\contracts"
   "supabase\migrations"
   "supabase\policies"

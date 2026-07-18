@@ -157,6 +157,32 @@ work_packages:
     acceptance_criteria:
       - "Validation tuân thủ DTO canonical"
       - "Response/error/versioning thống nhất"
+  - id: WP-010
+    title: "Backend runtime scaffold and package normalization"
+    layer: L0
+    module: M0.4
+    capability: "ALL_CAPABILITIES"
+    owner_pool: API
+    size: M
+    purpose: "Establish FastAPI runtime scaffold, snake_case package conventions and leaf-module import validation before backend feature work."
+    dependencies: [WP-009]
+    related_artifacts: [ARCH-03, INT-09]
+    related_contracts: []
+    expected_outputs: ["FastAPI application scaffold", "Backend package conventions"]
+    acceptance_criteria: ["Backend source uses Python snake_case package paths and leaf modules", "No substantive business logic remains only in __init__.py"]
+  - id: WP-500
+    title: "Frontend runtime scaffold and test harness"
+    layer: L5
+    module: M5.0
+    capability: "ALL_CAPABILITIES"
+    owner_pool: FE
+    size: M
+    purpose: "Create Vite/React/TypeScript chat and admin scaffolds with Vitest before UI capability work."
+    dependencies: [WP-009]
+    related_artifacts: [ARCH-03, INT-09]
+    related_contracts: []
+    expected_outputs: ["Chat/admin Vite React TypeScript scaffolds", "Frontend test harness"]
+    acceptance_criteria: ["Both frontend apps build and npm run test passes", "No Python source exists inside frontend application zones"]
   - id: WP-101
     title: "Session, configuration and feedback foundation services"
     layer: L1

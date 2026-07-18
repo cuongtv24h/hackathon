@@ -1,0 +1,358 @@
+version: r1
+supersedes: legacy task-to-file contract entries for WP-101 through WP-606
+work_packages:
+- id: WP-101-R1
+  canonical_work_package: WP-101
+  owner_pool: API
+  files:
+  - path: apps/api/foundation/session/service.py
+    operation: CREATE
+    region: '{TASK:WP-101}'
+  - path: apps/api/foundation/configuration/service.py
+    operation: CREATE
+    region: '{TASK:WP-101}'
+  - path: apps/api/foundation/feedback/service.py
+    operation: CREATE
+    region: '{TASK:WP-101}'
+  - path: tests/unit/test_wp_101_foundation_session.py
+    operation: CREATE
+    region: '{TASK:WP-101}'
+- id: WP-102-R1
+  canonical_work_package: WP-102
+  owner_pool: API
+  files:
+  - path: apps/api/foundation/knowledge/repository/service.py
+    operation: CREATE
+    region: '{TASK:WP-102}'
+  - path: apps/api/foundation/knowledge/content/service.py
+    operation: CREATE
+    region: '{TASK:WP-102}'
+  - path: tests/integration/test_wp_102_knowledge_content.py
+    operation: CREATE
+    region: '{TASK:WP-102}'
+- id: WP-103-R1
+  canonical_work_package: WP-103
+  owner_pool: API
+  files:
+  - path: apps/api/foundation/emergency/service.py
+    operation: CREATE
+    region: '{TASK:WP-103}'
+  - path: apps/api/capabilities/emergency/protocols/service.py
+    operation: CREATE
+    region: '{TASK:WP-103}'
+  - path: tests/unit/test_wp_103_emergency_foundation.py
+    operation: CREATE
+    region: '{TASK:WP-103}'
+- id: WP-104-R1
+  canonical_work_package: WP-104
+  owner_pool: API
+  files:
+  - path: apps/api/foundation/appointments/service.py
+    operation: CREATE
+    region: '{TASK:WP-104}'
+  - path: apps/mock_his/app.py
+    operation: CREATE
+    region: '{TASK:WP-104}'
+  - path: tests/integration/test_wp_104_appointments.py
+    operation: CREATE
+    region: '{TASK:WP-104}'
+- id: WP-105-R1
+  canonical_work_package: WP-105
+  owner_pool: API
+  files:
+  - path: apps/api/logging/conversation/service.py
+    operation: CREATE
+    region: '{TASK:WP-105}'
+  - path: apps/api/logging/audit/service.py
+    operation: CREATE
+    region: '{TASK:WP-105}'
+  - path: apps/api/foundation/analytics/service.py
+    operation: CREATE
+    region: '{TASK:WP-105}'
+  - path: tests/integration/test_wp_105_analytics_logging.py
+    operation: CREATE
+    region: '{TASK:WP-105}'
+- id: WP-201-R1
+  canonical_work_package: WP-201
+  owner_pool: AI-CORE
+  files:
+  - path: apps/api/ai/rag/search_tool.py
+    operation: CREATE
+    region: '{TASK:WP-201}'
+  - path: tests/unit/test_wp_201_knowledge_search.py
+    operation: CREATE
+    region: '{TASK:WP-201}'
+- id: WP-202-R1
+  canonical_work_package: WP-202
+  owner_pool: AI-CORE
+  files:
+  - path: apps/api/capabilities/emergency/prefilter/tool.py
+    operation: CREATE
+    region: '{TASK:WP-202}'
+  - path: tests/unit/test_wp_202_emergency_prefilter.py
+    operation: CREATE
+    region: '{TASK:WP-202}'
+- id: WP-203-R1
+  canonical_work_package: WP-203
+  owner_pool: API
+  files:
+  - path: apps/api/foundation/appointments/tools/service.py
+    operation: CREATE
+    region: '{TASK:WP-203}'
+  - path: tests/integration/test_wp_203_appointment_tools.py
+    operation: CREATE
+    region: '{TASK:WP-203}'
+- id: WP-204-R1
+  canonical_work_package: WP-204
+  owner_pool: AI-CORE
+  files:
+  - path: apps/api/ai/guardrails/privacy/service.py
+    operation: CREATE
+    region: '{TASK:WP-204}'
+  - path: apps/api/logging/conversation/tool_adapter.py
+    operation: CREATE
+    region: '{TASK:WP-204}'
+  - path: tests/unit/test_wp_204_privacy_logging.py
+    operation: CREATE
+    region: '{TASK:WP-204}'
+- id: WP-301-R1
+  canonical_work_package: WP-301
+  owner_pool: AI-CORE
+  files:
+  - path: apps/api/ai/providers/llm_provider.py
+    operation: CREATE
+    region: '{TASK:WP-301}'
+  - path: apps/api/ai/providers/embedding_provider.py
+    operation: CREATE
+    region: '{TASK:WP-301}'
+  - path: tests/unit/test_wp_301_ai_provider.py
+    operation: CREATE
+    region: '{TASK:WP-301}'
+- id: WP-302-R1
+  canonical_work_package: WP-302
+  owner_pool: AI-CORE
+  files:
+  - path: apps/api/ai/orchestrator/core/service.py
+    operation: CREATE
+    region: '{TASK:WP-302}'
+  - path: apps/api/ai/guardrails/service.py
+    operation: CREATE
+    region: '{TASK:WP-302}'
+  - path: tests/unit/test_wp_302_ai_orchestration.py
+    operation: CREATE
+    region: '{TASK:WP-302}'
+- id: WP-303-R1
+  canonical_work_package: WP-303
+  owner_pool: AI-CORE
+  files:
+  - path: apps/api/ai/orchestrator/information_assistance/pipeline.py
+    operation: CREATE
+    region: '{TASK:WP-303}'
+  - path: tests/integration/test_wp_303_information_assistance.py
+    operation: CREATE
+    region: '{TASK:WP-303}'
+- id: WP-304-R1
+  canonical_work_package: WP-304
+  owner_pool: AI-CORE
+  files:
+  - path: apps/api/ai/orchestrator/emergency_safety/pipeline.py
+    operation: CREATE
+    region: '{TASK:WP-304}'
+  - path: tests/integration/test_wp_304_emergency_safety.py
+    operation: CREATE
+    region: '{TASK:WP-304}'
+- id: WP-305-R1
+  canonical_work_package: WP-305
+  owner_pool: AI-CORE
+  files:
+  - path: apps/api/ai/orchestrator/appointment_booking/pipeline.py
+    operation: CREATE
+    region: '{TASK:WP-305}'
+  - path: tests/integration/test_wp_305_appointment_booking.py
+    operation: CREATE
+    region: '{TASK:WP-305}'
+- id: WP-306-R1
+  canonical_work_package: WP-306
+  owner_pool: AI-CORE
+  files:
+  - path: apps/api/ai/orchestrator/appointment_status/pipeline.py
+    operation: CREATE
+    region: '{TASK:WP-306}'
+  - path: tests/integration/test_wp_306_appointment_status.py
+    operation: CREATE
+    region: '{TASK:WP-306}'
+- id: WP-401-R1
+  canonical_work_package: WP-401
+  owner_pool: API
+  files:
+  - path: apps/api/gateway/capabilities/information_assistance/router.py
+    operation: CREATE
+    region: '{TASK:WP-401}'
+  - path: tests/contract/test_wp_401_information_assistance.py
+    operation: CREATE
+    region: '{TASK:WP-401}'
+- id: WP-402-R1
+  canonical_work_package: WP-402
+  owner_pool: API
+  files:
+  - path: apps/api/gateway/capabilities/emergency_safety/router.py
+    operation: CREATE
+    region: '{TASK:WP-402}'
+  - path: tests/contract/test_wp_402_emergency_safety.py
+    operation: CREATE
+    region: '{TASK:WP-402}'
+- id: WP-403-R1
+  canonical_work_package: WP-403
+  owner_pool: API
+  files:
+  - path: apps/api/gateway/capabilities/appointment_booking/router.py
+    operation: CREATE
+    region: '{TASK:WP-403}'
+  - path: tests/contract/test_wp_403_appointment_booking.py
+    operation: CREATE
+    region: '{TASK:WP-403}'
+- id: WP-404-R1
+  canonical_work_package: WP-404
+  owner_pool: API
+  files:
+  - path: apps/api/gateway/capabilities/appointment_status/router.py
+    operation: CREATE
+    region: '{TASK:WP-404}'
+  - path: tests/contract/test_wp_404_appointment_status.py
+    operation: CREATE
+    region: '{TASK:WP-404}'
+- id: WP-501-R1
+  canonical_work_package: WP-501
+  owner_pool: FE
+  files:
+  - path: apps/chat-web/src/shared/ChatClient.ts
+    operation: CREATE
+    region: '{TASK:WP-501}'
+  - path: apps/chat-web/src/shared/SSEClient.ts
+    operation: CREATE
+    region: '{TASK:WP-501}'
+  - path: apps/chat-web/src/widget/WidgetShell.tsx
+    operation: CREATE
+    region: '{TASK:WP-501}'
+  - path: apps/chat-web/src/widget/WidgetShell.test.tsx
+    operation: CREATE
+    region: '{TASK:WP-501}'
+  - path: apps/chat-web/src/standalone/StandaloneShell.tsx
+    operation: CREATE
+    region: '{TASK:WP-501}'
+  - path: apps/chat-web/src/standalone/StandaloneShell.test.tsx
+    operation: CREATE
+    region: '{TASK:WP-501}'
+- id: WP-502-R1
+  canonical_work_package: WP-502
+  owner_pool: FE
+  files:
+  - path: apps/chat-web/src/features/information-assistance/InformationResponse.tsx
+    operation: CREATE
+    region: '{TASK:WP-502}'
+  - path: apps/chat-web/src/features/information-assistance/InformationResponse.test.tsx
+    operation: CREATE
+    region: '{TASK:WP-502}'
+- id: WP-503-R1
+  canonical_work_package: WP-503
+  owner_pool: FE
+  files:
+  - path: apps/chat-web/src/features/appointments/AppointmentFlow.tsx
+    operation: CREATE
+    region: '{TASK:WP-503}'
+  - path: apps/chat-web/src/features/appointments/AppointmentFlow.test.tsx
+    operation: CREATE
+    region: '{TASK:WP-503}'
+- id: WP-504-R1
+  canonical_work_package: WP-504
+  owner_pool: FE
+  files:
+  - path: apps/chat-web/src/features/emergency-safety/EmergencyBanner.tsx
+    operation: CREATE
+    region: '{TASK:WP-504}'
+  - path: apps/chat-web/src/features/emergency-safety/EmergencyBanner.test.tsx
+    operation: CREATE
+    region: '{TASK:WP-504}'
+- id: WP-505-R1
+  canonical_work_package: WP-505
+  owner_pool: FE
+  files:
+  - path: apps/admin-web/src/features/content-management/ContentManagementPage.tsx
+    operation: CREATE
+    region: '{TASK:WP-505}'
+  - path: apps/admin-web/src/features/content-management/ContentManagementPage.test.tsx
+    operation: CREATE
+    region: '{TASK:WP-505}'
+- id: WP-506-R1
+  canonical_work_package: WP-506
+  owner_pool: FE
+  files:
+  - path: apps/admin-web/src/features/analytics-audit/AnalyticsAuditPage.tsx
+    operation: CREATE
+    region: '{TASK:WP-506}'
+  - path: apps/admin-web/src/features/analytics-audit/AnalyticsAuditPage.test.tsx
+    operation: CREATE
+    region: '{TASK:WP-506}'
+- id: WP-601-R1
+  canonical_work_package: WP-601
+  owner_pool: QA
+  files:
+  - path: tests/contract/test_wp_601_data_contracts.py
+    operation: CREATE
+    region: '{TASK:WP-601}'
+  - path: tests/data_validation/test_wp_601_seed_contracts.py
+    operation: CREATE
+    region: '{TASK:WP-601}'
+- id: WP-602-R1
+  canonical_work_package: WP-602
+  owner_pool: QA
+  files:
+  - path: apps/chat-web/src/e2e/information-assistance.spec.ts
+    operation: CREATE
+    region: '{TASK:WP-602}'
+  - path: tests/integration/test_wp_602_information_assistance.py
+    operation: CREATE
+    region: '{TASK:WP-602}'
+- id: WP-603-R1
+  canonical_work_package: WP-603
+  owner_pool: QA
+  files:
+  - path: apps/chat-web/src/e2e/emergency-safety.spec.ts
+    operation: CREATE
+    region: '{TASK:WP-603}'
+  - path: tests/integration/test_wp_603_emergency_safety.py
+    operation: CREATE
+    region: '{TASK:WP-603}'
+- id: WP-604-R1
+  canonical_work_package: WP-604
+  owner_pool: QA
+  files:
+  - path: apps/chat-web/src/e2e/appointments.spec.ts
+    operation: CREATE
+    region: '{TASK:WP-604}'
+  - path: tests/integration/test_wp_604_appointments.py
+    operation: CREATE
+    region: '{TASK:WP-604}'
+- id: WP-605-R1
+  canonical_work_package: WP-605
+  owner_pool: QA
+  files:
+  - path: apps/admin-web/src/e2e/admin-dashboard.spec.ts
+    operation: CREATE
+    region: '{TASK:WP-605}'
+  - path: tests/integration/test_wp_605_admin_dashboard.py
+    operation: CREATE
+    region: '{TASK:WP-605}'
+- id: WP-606-R1
+  canonical_work_package: WP-606
+  owner_pool: QA
+  files:
+  - path: tests/nfr/test_wp_606_release_gate.py
+    operation: CREATE
+    region: '{TASK:WP-606}'
+  - path: tests/release/test_wp_606_vps_release.py
+    operation: CREATE
+    region: '{TASK:WP-606}'
+  - path: config/deployment/release_gate.yaml
+    operation: CREATE
+    region: '{TASK:WP-606}'

@@ -62,9 +62,19 @@ TOOL_TIMEOUT = "TOOL_TIMEOUT"
 TOOL_OUTPUT_INVALID = "TOOL_OUTPUT_INVALID"
 INTEGRATION_UNAVAILABLE = "INTEGRATION_UNAVAILABLE"
 
+# Tool - Privacy/Logging (WP-204, HTTP 502/503/400)
+PII_PROCESSING_FAILED = "PII_PROCESSING_FAILED"
+LOG_DEFERRED = "LOG_DEFERRED"
+LOG_REJECTED = "LOG_REJECTED"
+
 # Safety (HTTP 200/warning or 503)
 EMERGENCY_PROTOCOL_FALLBACK_USED = "EMERGENCY_PROTOCOL_FALLBACK_USED"
 EMERGENCY_AUDIT_DEFERRED = "EMERGENCY_AUDIT_DEFERRED"
+
+# Privacy/Logging (HTTP 422/502/503) - WP-204
+PII_PROCESSING_FAILED = "PII_PROCESSING_FAILED"
+LOG_DEFERRED = "LOG_DEFERRED"
+LOG_REJECTED = "LOG_REJECTED"
 
 # Rate limit (HTTP 429)
 RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED"
@@ -141,12 +151,14 @@ class ErrorDetail:
 
 
 @dataclass(frozen=True)
-class UnifiedErrorEnvelope:
+class UnifiedErrorEnvelope(Exception):
     """The canonical error envelope shape declared in INT-07.
 
     ``trace_id`` is an opaque identifier used for log correlation. The inner
     ``error`` object contains the canonical fields. The envelope never exposes
     stack traces, prompts, provider secrets, raw tool payloads or PII.
+
+    Inherits from Exception so it can be raised directly, per WP-101 test contract.
     """
 
     trace_id: str
@@ -245,6 +257,10 @@ __all__ = [
     "INTEGRATION_UNAVAILABLE",
     "EMERGENCY_PROTOCOL_FALLBACK_USED",
     "EMERGENCY_AUDIT_DEFERRED",
+    # Privacy/Logging - WP-204
+    "PII_PROCESSING_FAILED",
+    "LOG_DEFERRED",
+    "LOG_REJECTED",
     "RATE_LIMIT_EXCEEDED",
     "INTERNAL_ERROR",
     "CONFIG_UNAVAILABLE",

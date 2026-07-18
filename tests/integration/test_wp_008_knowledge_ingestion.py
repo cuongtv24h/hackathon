@@ -258,6 +258,14 @@ class TestSplitMarkdown:
             assert a["chunk_id"] == b["chunk_id"]
             assert a["content"] == b["content"]
 
+    def test_large_bhyt_document_is_bounded_for_embedding(self, ing):
+        path = ROOT / "docs" / "knowledge" / "bhyt" / "faq-bhyt.md"
+        chunks = ing.split_markdown_chunks(
+            "SRC-BHYT-006", path, "bhyt", "1.0", "approved_for_pilot", "2025-08-15",
+        )
+        assert len(chunks) > 1
+        assert max(len(chunk["content"]) for chunk in chunks) <= 6000
+
 
 # ---------------------------------------------------------------------------
 # Error / edge cases
@@ -343,20 +351,65 @@ class TestEdgeCases:
 
 class TestEmbeddingValidation:
 
-    def test_768_dim_accepted(self, ing):
-        ing._validate_embedding_dim([0.5] * 768)
+    def test_1024_dim_accepted(self, ing):
+        ing._validate_embedding_dim([0.5] * 1024)
 
-    def test_767_dim_rejected(self, ing):
+    def test_1023_dim_rejected(self, ing):
         with pytest.raises(ValueError, match="dimension"):
-            ing._validate_embedding_dim([0.5] * 767)
+            ing._validate_embedding_dim([0.5] * 1023)
 
-    def test_769_dim_rejected(self, ing):
+    def test_1025_dim_rejected(self, ing):
         with pytest.raises(ValueError, match="dimension"):
-            ing._validate_embedding_dim([0.5] * 769)
+            ing._validate_embedding_dim([0.5] * 1025)
 
     def test_non_list_rejected(self, ing):
         with pytest.raises(ValueError, match="list or tuple"):
             ing._validate_embedding_dim("not-a-list")
+
+
+class TestJinaEmbeddingProvider:
+
+    def test_provider_uses_jina_1024_retrieval_contract(self, ing, monkeypatch):
+        captured = {}
+
+        class FakeResponse:
+            def raise_for_status(self):
+                return None
+
+            def json(self):
+                return {"data": [{"embedding": [0.25] * 1024}]}
+
+        def fake_post(url, headers, json, timeout):
+            captured["url"] = url
+            captured["headers"] = headers
+            captured["json"] = json
+            captured["timeout"] = timeout
+            return FakeResponse()
+
+        fake_requests = type("fake_requests", (), {"post": staticmethod(fake_post)})
+        monkeypatch.setitem(sys.modules, "requests", fake_requests)
+        monkeypatch.setenv("JINA_API_KEY", "test-key")
+        monkeypatch.setenv("EMBEDDING_MODEL", "jina-embeddings-v5-text-small")
+        monkeypatch.setenv("EMBEDDING_DIMENSIONS", "1024")
+        monkeypatch.setenv("EMBEDDING_BASE_URL", "https://embedding-proxy.example/v1")
+
+        embedding = ing.make_embedding_provider()("test content")
+
+        assert len(embedding) == 1024
+        assert captured["url"] == "https://embedding-proxy.example/v1/embeddings"
+        assert captured["json"] == {
+            "model": "jina-embeddings-v5-text-small",
+            "input": ["test content"],
+            "task": "retrieval.passage",
+            "dimensions": 1024,
+            "normalized": True,
+        }
+
+    def test_provider_rejects_non_jina_pilot_configuration(self, ing, monkeypatch):
+        monkeypatch.setenv("JINA_API_KEY", "test-key")
+        monkeypatch.setenv("EMBEDDING_MODEL", "other-model")
+        with pytest.raises(ValueError, match="EMBEDDING_MODEL"):
+            ing.make_embedding_provider()
 
 
 # ---------------------------------------------------------------------------
@@ -458,7 +511,7 @@ class FakePsycopgCursor:
             return
         if "INSERT INTO knowledge_chunks" in query or "ON CONFLICT" in query:
             return
-        if "REINDEX" in query:
+        if "ANALYZE" in query:
             return
 
     def fetchone(self):
@@ -502,7 +555,7 @@ def _fake_connect(url):
 
 
 def _fake_embed(content):
-    return [0.42] * 768
+    return [0.42] * 1024
 
 
 class TestPersistenceWithFakeDriver:
@@ -551,11 +604,12 @@ class TestPersistenceWithFakeDriver:
         )
         assert result.inserted >= 0
         assert result.updated >= 0
-        assert result.vector_dim == 768
+        assert result.vector_dim == 1024
 
-    def test_missing_provider_in_non_dry_run_fails(self, ing):
+    def test_missing_provider_in_non_dry_run_fails(self, ing, monkeypatch):
         """Non-dry-run without provider fails before DB write."""
-        with pytest.raises(ValueError, match="GEMINI_API_KEY"):
+        monkeypatch.delenv("JINA_API_KEY", raising=False)
+        with pytest.raises(ValueError, match="JINA_API_KEY"):
             ing.ingest_knowledge(
                 database_url="postgresql://fake",
                 embed_provider=None,
@@ -610,7 +664,7 @@ class TestPersistenceWithFakeDriver:
     def test_invalid_embedding_causes_no_upsert(self, ing, monkeypatch):
         """An embedding with wrong dimension is rejected before upsert."""
         def _bad_embed(content):
-            return [0.0] * 767  # wrong dimension
+            return [0.0] * 1023  # wrong dimension
 
         fake_psycopg = type("fake", (), {"connect": staticmethod(_fake_connect)})
         monkeypatch.setitem(sys.modules, "psycopg", fake_psycopg)

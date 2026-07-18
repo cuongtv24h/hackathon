@@ -1,0 +1,27 @@
+version: "1.1.0"
+source: docs/5-6-runtime-correction.md
+runtime_policies:
+  - zone: apps/api/
+    runtime: python_fastapi
+    allowed_extensions: [".py"]
+    package_naming: snake_case
+    required_validation: "py -m pytest <affected-backend-tests> -q"
+  - zone: apps/mock_his/
+    runtime: python_fastapi
+    allowed_extensions: [".py"]
+    package_naming: snake_case
+    required_validation: "py -m pytest <affected-backend-tests> -q"
+  - zone: apps/chat-web/
+    runtime: vite_react_typescript
+    allowed_extensions: [".ts", ".tsx", ".css", ".json"]
+    forbidden_extensions: [".py"]
+    required_validation: "npm run test"
+  - zone: apps/admin-web/
+    runtime: vite_react_typescript
+    allowed_extensions: [".ts", ".tsx", ".css", ".json"]
+    forbidden_extensions: [".py"]
+    required_validation: "npm run test"
+test_layers:
+  backend: {framework: pytest, locations: [tests/unit/, tests/integration/, tests/contract/]}
+  frontend: {framework: vitest_react_testing_library, locations: [apps/chat-web/src/, apps/admin-web/src/]}
+  browser_e2e: {framework: playwright, locations: [apps/chat-web/e2e/, apps/admin-web/e2e/]}

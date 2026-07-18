@@ -2,6 +2,18 @@
 version: "1.0.0"
 
 packs:
+  - pack_id: WP-010
+    pack_type: work-package
+    name: "Backend runtime scaffold and package normalization"
+    file: docs/reference-packs/work-packages/wp-010.pack.md
+    artifact_dependencies: [ARCH-03, INT-09]
+    target_audience: [builder, reviewer]
+  - pack_id: WP-500
+    pack_type: work-package
+    name: "Frontend runtime scaffold and test harness"
+    file: docs/reference-packs/work-packages/wp-500.pack.md
+    artifact_dependencies: [ARCH-03, INT-09]
+    target_audience: [builder, reviewer]
   - pack_id: PACK-PC-01
     pack_type: capability
     name: Information Assistance

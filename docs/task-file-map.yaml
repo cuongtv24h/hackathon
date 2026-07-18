@@ -8,7 +8,7 @@ operation_rules:
   UPDATE: May update only the declared region after reviewer-visible diff.
   FULL_FILE: Allowed only for a newly created file or explicit Human Lead exception.
 zone_groups:
-  foundation: [apps/api/foundation/, apps/api/logging/, apps/mock-his/]
+  foundation: [apps/api/foundation/, apps/api/logging/, apps/mock_his/]
   ai: [apps/api/ai/, apps/api/capabilities/emergency/]
   experience: [apps/chat-web/, apps/admin-web/]
   quality: [tests/]
@@ -26,7 +26,7 @@ mapping:
   - {work_package: WP-101, owner_pool: API, zones: [apps/api/foundation/session/, apps/api/foundation/configuration/, apps/api/foundation/feedback/]}
   - {work_package: WP-102, owner_pool: API, zones: [apps/api/foundation/knowledge/repository/, apps/api/foundation/knowledge/content/]}
   - {work_package: WP-103, owner_pool: API, zones: [apps/api/foundation/emergency/, apps/api/capabilities/emergency/protocols/]}
-  - {work_package: WP-104, owner_pool: API, zones: [apps/api/foundation/appointments/, apps/mock-his/]}
+  - {work_package: WP-104, owner_pool: API, zones: [apps/api/foundation/appointments/, apps/mock_his/]}
   - {work_package: WP-105, owner_pool: API, zones: [apps/api/logging/conversation/, apps/api/logging/audit/, apps/api/foundation/analytics/]}
   - {work_package: WP-201, owner_pool: AI-CORE, zones: [apps/api/ai/rag/]}
   - {work_package: WP-202, owner_pool: AI-CORE, zones: [apps/api/capabilities/emergency/prefilter/]}

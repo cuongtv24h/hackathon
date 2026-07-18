@@ -125,64 +125,74 @@ def _read_markdown(path):
     return fm, body
 
 
-def split_markdown_chunks(source_id, path, domain, version, approval_status, effective_date):
-    """Split a markdown file into deterministic chunks by H2 sections.
+MAX_EMBEDDING_CHUNK_CHARACTERS = 6000
 
-    Returns a list of dicts suitable for processing as chunks.
+
+def split_markdown_chunks(source_id, path, domain, version, approval_status, effective_date):
+    """Split Markdown deterministically by H2 then paragraph-sized pieces.
+
+    A heading alone is not a safe embedding boundary: some approved BHYT files
+    contain a single section hundreds of thousands of characters long. Each
+    returned document chunk therefore remains below the Pilot size limit.
     """
-    fm, body = _read_markdown(path)
+    _, body = _read_markdown(path)
     chunks = []
-    lines = body.split("\n")
+    sections = []
     current_section = "general"
     current_lines = []
-    ordinal = 0
 
-    for line in lines:
+    for line in body.split("\n"):
         if line.startswith("## "):
-            if current_lines:
-                text = "\n".join(current_lines).strip()
-                if text:
-                    ordinal += 1
-                    chunk_id = "%s-SEC-%03d" % (source_id, ordinal)
-                    chunks.append({
-                        "chunk_id": chunk_id,
-                        "content": text,
-                        "domain": domain,
-                        "sub_topic": current_section,
-                        "source_id": source_id,
-                        "source_section": current_section,
-                        "source_page": None,
-                        "version": version,
-                        "is_active": True,
-                        "approval_status": approval_status,
-                        "effective_date": effective_date,
-                        "tags": [domain, current_section],
-                        "is_mock": False,
-                        "answerable": True,
-                    })
+            sections.append((current_section, "\n".join(current_lines).strip()))
             current_section = line.strip("# ").strip()
             current_lines = []
         else:
             current_lines.append(line)
+    sections.append((current_section, "\n".join(current_lines).strip()))
 
-    if current_lines:
-        text = "\n".join(current_lines).strip()
-        if text:
+    ordinal = 0
+    for section, text in sections:
+        if not text:
+            continue
+        pieces = []
+        current_piece = ""
+        for paragraph in re.split(r"\n\s*\n", text):
+            paragraph = paragraph.strip()
+            if not paragraph:
+                continue
+            if len(paragraph) > MAX_EMBEDDING_CHUNK_CHARACTERS:
+                if current_piece:
+                    pieces.append(current_piece)
+                    current_piece = ""
+                pieces.extend(
+                    paragraph[index:index + MAX_EMBEDDING_CHUNK_CHARACTERS]
+                    for index in range(0, len(paragraph), MAX_EMBEDDING_CHUNK_CHARACTERS)
+                )
+                continue
+            candidate = paragraph if not current_piece else current_piece + "\n\n" + paragraph
+            if len(candidate) > MAX_EMBEDDING_CHUNK_CHARACTERS:
+                pieces.append(current_piece)
+                current_piece = paragraph
+            else:
+                current_piece = candidate
+        if current_piece:
+            pieces.append(current_piece)
+
+        for piece in pieces:
             ordinal += 1
-            chunk_id = "%s-SEC-%03d" % (source_id, ordinal)
             chunks.append({
-                "chunk_id": chunk_id,
-                "content": text,
+                "chunk_id": "%s-SEC-%03d" % (source_id, ordinal),
+                "content": piece,
                 "domain": domain,
-                "sub_topic": current_section,
+                "sub_topic": section,
                 "source_id": source_id,
-                "source_section": current_section,
+                "source_section": section,
                 "source_page": None,
                 "version": version,
                 "is_active": True,
                 "approval_status": approval_status,
                 "effective_date": effective_date,
-                "tags": [domain, current_section],
+                "tags": [domain, section],
                 "is_mock": False,
                 "answerable": True,
             })
@@ -320,7 +330,12 @@ def process_chunks(knowledge_base=None, registry=None, dry_run=True):
     )
 
 
-def _validate_embedding_dim(embedding, expected=768):
+EMBEDDING_DIMENSIONS = 1024
+EMBEDDING_MODEL = "jina-embeddings-v5-text-small"
+JINA_EMBEDDINGS_URL = "https://api.jina.ai/v1/embeddings"
+
+
+def _validate_embedding_dim(embedding, expected=EMBEDDING_DIMENSIONS):
     if not isinstance(embedding, (list, tuple)):
         raise ValueError("Embedding must be a list or tuple")
     if len(embedding) != expected:
@@ -330,35 +345,49 @@ def _validate_embedding_dim(embedding, expected=768):
 
 
 def _make_embedding_fake(content):
-    """Fake embedding provider for testing — returns 768 zeros."""
-    return [0.0] * 768
+    """Test-only provider. It must never be selected for a Pilot write."""
+    return [0.0] * EMBEDDING_DIMENSIONS
 
 
-def _make_embedding_from_env():
+def make_embedding_provider():
     """Build a real embedding provider from environment configuration.
 
-    Reads GEMINI_API_KEY and EMBEDDING_MODEL from environment.
-    Returns a callable(content) -> list of floats (768-d).
+    Reads JINA_API_KEY, EMBEDDING_MODEL and EMBEDDING_DIMENSIONS at runtime.
+    Returns a callable(content) -> list of floats (1024-d by default).
     """
-    api_key = os.environ.get("GEMINI_API_KEY")
-    model = os.environ.get("EMBEDDING_MODEL", "text-embedding-004")
+    api_key = os.environ.get("JINA_API_KEY")
+    model = os.environ.get("EMBEDDING_MODEL", EMBEDDING_MODEL)
+    dimensions = int(os.environ.get("EMBEDDING_DIMENSIONS", EMBEDDING_DIMENSIONS))
+    if model != EMBEDDING_MODEL:
+        raise ValueError("EMBEDDING_MODEL must be jina-embeddings-v5-text-small for Pilot")
+    if dimensions != EMBEDDING_DIMENSIONS:
+        raise ValueError("EMBEDDING_DIMENSIONS must be 1024 for Pilot")
     if not api_key:
-        raise ValueError(
-            "GEMINI_API_KEY not set. Cannot create real embedding provider."
-        )
-    try:
-        from google import genai
-    except ImportError:
-        raise ValueError("google-genai package not installed. Cannot create real embedding provider.")
+        raise ValueError("JINA_API_KEY not set. Cannot create real embedding provider.")
 
-    client = genai.Client(api_key=api_key)
+    def _embed_batch(contents):
+        import requests
+        base_url = os.environ.get("EMBEDDING_BASE_URL", "https://api.jina.ai/v1").rstrip("/")
+        response = requests.post(
+            base_url + "/embeddings",
+            headers={"Authorization": "Bearer " + api_key, "Content-Type": "application/json"},
+            json={"model": model, "input": contents, "task": "retrieval.passage", "dimensions": dimensions, "normalized": True},
+            timeout=30,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        try:
+            embeddings = [item["embedding"] for item in payload["data"]]
+        except (KeyError, IndexError, TypeError):
+            raise ValueError("Jina embedding response has no embedding data")
+        if len(embeddings) != len(contents):
+            raise ValueError("Jina embedding response count does not match request count")
+        return embeddings
 
     def _embed(content):
-        response = client.models.embed_content(
-            model=model,
-            contents=content,
-        )
-        return response.embeddings[0].values
+        return _embed_batch([content])[0]
+
+    _embed.embed_batch = _embed_batch
 
     return _embed
 
@@ -385,7 +414,7 @@ def _upsert_domain(cur, domain_code, domain_name, owner_name):
 def _upsert_chunk(cur, record, domain_id, embedding):
     """Upsert a single chunk record into knowledge_chunks."""
     import datetime
-    now = datetime.datetime.utcnow().isoformat()
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat()
     page_numbers = json.dumps([record.source_page] if record.source_page else [])
     tags = json.dumps(record.tags)
     metadata = json.dumps({
@@ -459,7 +488,7 @@ def ingest_knowledge(
     database_url : str, optional
         Supabase/Postgres connection string. Falls back to DATABASE_URL env var.
     embed_provider : callable, optional
-        A callable(content) -> list of floats (768-d). Required when dry_run=False.
+        A callable(content) -> list of floats (1024-d). Required when dry_run=False.
         Falls back to environment-configured provider if omitted.
     knowledge_base : dict, optional
         Pre-loaded knowledge-base JSON.
@@ -495,7 +524,7 @@ def ingest_knowledge(
 
     # Resolve embedding provider
     if embed_provider is None:
-        embed_provider = _make_embedding_from_env()
+        embed_provider = make_embedding_provider()
 
     # Import psycopg (version 3) — the installed dependency
     import psycopg
@@ -520,14 +549,27 @@ def ingest_knowledge(
                     did = _upsert_domain(cur, dc, dn, owner)
                     domain_map[dc] = did
 
-                # Step 2: Upsert approved, answerable chunks
-                for rec in result.chunk_records:
-                    if not rec.answerable:
-                        continue
-                    if rec.approval_status not in ("approved_for_pilot", "approved"):
-                        continue
+                # Step 2: Embed in provider batches when available, then upsert.
+                # The public callable contract remains supported for injected tests.
+                eligible_records = [
+                    rec for rec in result.chunk_records
+                    if rec.answerable and rec.approval_status in ("approved_for_pilot", "approved")
+                ]
+                batch_embeddings = {}
+                if hasattr(embed_provider, "embed_batch"):
+                    for start in range(0, len(eligible_records), 8):
+                        batch = eligible_records[start:start + 8]
+                        vectors = embed_provider.embed_batch([rec.content for rec in batch])
+                        if len(vectors) != len(batch):
+                            raise ValueError("Embedding provider returned an unexpected batch size")
+                        for rec, vector in zip(batch, vectors):
+                            batch_embeddings[rec.chunk_id] = vector
 
-                    embedding = embed_provider(rec.content)
+                for rec in eligible_records:
+                    if batch_embeddings:
+                        embedding = batch_embeddings[rec.chunk_id]
+                    else:
+                        embedding = embed_provider(rec.content)
                     _validate_embedding_dim(embedding)
                     if vector_dim is None:
                         vector_dim = len(embedding)
@@ -551,8 +593,10 @@ def ingest_knowledge(
                     else:
                         inserted += 1
 
-                # Step 3: Index maintenance
-                cur.execute("REINDEX INDEX knowledge_chunks_embedding_idx;")
+                # Step 3: Refresh planner statistics. Rebuilding the ivfflat index
+                # on every import exceeds managed Supabase maintenance memory and
+                # would turn an otherwise successful batch into a rollback.
+                cur.execute("ANALYZE public.knowledge_chunks;")
 
     except Exception:
         conn.close()

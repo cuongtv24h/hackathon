@@ -20,7 +20,7 @@ input_documents:
 
 ## Mission
 
-Fix the remaining runtime blockers in the rejected WP-008 Fix. The prior result passed static/fake tests but cannot successfully persist to the configured Pilot Supabase database. Do not claim completion until the real persistence happy path has run successfully against the Pilot database using a real 768-d embedding provider.
+Fix the remaining runtime blockers in the rejected WP-008 Fix. The prior result passed static/fake tests but cannot successfully persist to the configured Pilot Supabase database. Do not claim completion until the real persistence happy path has run successfully against the Pilot database using Jina `jina-embeddings-v5-text-small` with 1024-dimensional vectors.
 
 ## Verified Findings — Fix in This Exact Order
 
@@ -57,14 +57,14 @@ Required fix:
 
 ### Finding 4 — Fake embedding must never persist to Pilot (P0)
 
-Current non-dry-run mode silently defaults to a 768-zero fake vector. This is forbidden for Pilot data.
+Current non-dry-run mode silently defaults to a fake zero vector. This is forbidden for Pilot data.
 
 Required fix:
 
 - Fake embeddings are test-only and must be injected explicitly by tests.
 - When `dry_run=False`, require a real embedding provider/callable. If it is absent, fail before opening a write transaction with a clear error.
-- Retain the exact 768 numeric-value validation before every database upsert.
-- Implement or expose a provider factory that reads `GEMINI_API_KEY` and `EMBEDDING_MODEL` from environment only at execution time, using the already approved installed provider dependency. The factory must never log a key or return it in a result.
+- Retain the exact 1024 numeric-value validation before every database upsert.
+- Implement or expose a provider factory that calls the configured `EMBEDDING_BASE_URL` using `JINA_API_KEY`, `EMBEDDING_MODEL=jina-embeddings-v5-text-small` and `EMBEDDING_DIMENSIONS=1024` read at execution time only. Send document chunks with `task: retrieval.passage`, `dimensions: 1024` and normalized output. The factory must never log a key or return it in a result.
 - An explicit `database_url`/provider parameter may override environment configuration for tests and controlled operations.
 
 ### Finding 5 — Runtime configuration claim is incomplete (P1)
@@ -95,7 +95,7 @@ Required fix:
 - Add isolated tests using a fake `psycopg` connection/cursor seam that prove:
   1. the supported `psycopg` path is invoked;
   2. seven domains are upserted before chunk lookup/upsert;
-  3. a successful batch returns stable `inserted`, `updated` and `vector_dim=768` fields;
+  3. a successful batch returns stable `inserted`, `updated` and `vector_dim=1024` fields;
   4. the second run is counted as updates, not inserts;
   5. missing provider in non-dry-run fails before any DB write;
   6. a database exception rolls back and closes the connection;
@@ -113,7 +113,9 @@ Required fix:
 3. `docs/spec-registry/task-to-file-contract-map.yaml`
    - Purpose: allowed write zones.
 4. `supabase/migrations/202607180001_wp005_initial_schema.sql`
-   - Purpose: existing schema; do not alter it.
+   - Purpose: historical schema baseline; do not alter it.
+5. `supabase/migrations/202607180004_wp008_jina_embedding_dimension.sql`
+   - Purpose: required fail-safe upgrade to `vector(1024)` before any Pilot embedding write.
 5. `data/mvp/seed/knowledge-base.json`
    - Purpose: canonical seven domains and seed order.
 6. `data/mvp/seed/source-registry.json`
@@ -128,6 +130,7 @@ Only modify:
 - `apps/api/foundation/knowledge/ingestion/`
 - `tests/integration/test_wp_008_knowledge_ingestion.py`
 - `supabase/seed/202607180003_wp008_knowledge_seed.sql` only if required to retain the existing no-duplicate-index readiness behavior.
+- `supabase/migrations/202607180004_wp008_jina_embedding_dimension.sql` to create or correct the fail-safe Jina dimension migration.
 
 Do not modify:
 
@@ -146,7 +149,7 @@ Report only non-sensitive evidence:
 - inserted and updated counts from run 1 and run 2;
 - total persisted answerable chunks;
 - persisted BHYT chunk count and distinct BHYT source count (must be 7);
-- `embedding` non-null count and dimensionality verification (768);
+- `embedding` non-null count and dimensionality verification (1024);
 - duplicate vector-index check;
 - no secret values.
 
@@ -159,6 +162,7 @@ The second import must not increase the `knowledge_chunks` row count.
 - [ ] Result statistics are declared, stable and do not mutate a frozen object.
 - [ ] Non-dry-run rejects missing real embedding provider before any write.
 - [ ] Pilot persistence never writes the test-only zero-vector embedding.
+- [ ] Pilot uses only Jina `jina-embeddings-v5-text-small` and persists exactly 1024-dimensional vectors.
 - [ ] Existing UUID-v5, approved-only, BHYT and no-duplicate-index behavior remains intact.
 - [ ] A supported-driver persistence happy path and rollback path are covered by automated tests.
 - [ ] `py -m pytest tests/contract/test_wp_007_seed_registry.py tests/integration/test_wp_008_knowledge_ingestion.py -q` passes.

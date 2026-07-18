@@ -16,7 +16,7 @@ components:
   - {name: RAG Engine, type: ai_service, artifact_id: ARCH-03, artifact_file: docs/artifacts/architecture/component-architecture.md, owns: [apps/api/ai/rag/], depends_on: [Knowledge Store, Embedding Provider]}
   - {name: Knowledge Store, type: data, artifact_id: ARCH-03, artifact_file: docs/artifacts/architecture/component-architecture.md, owns: [apps/api/foundation/knowledge/repository/], depends_on: []}
   - {name: Appointment Service, type: backend, artifact_id: ARCH-03, artifact_file: docs/artifacts/architecture/component-architecture.md, owns: [apps/api/foundation/appointments/], depends_on: [Mock HIS Adapter]}
-  - {name: Mock HIS Adapter, type: backend, artifact_id: ARCH-03, artifact_file: docs/artifacts/architecture/component-architecture.md, owns: [apps/mock-his/], depends_on: [Mock HIS Store]}
+  - {name: Mock HIS Adapter, type: backend, artifact_id: ARCH-03, artifact_file: docs/artifacts/architecture/component-architecture.md, owns: [apps/mock_his/], depends_on: [Mock HIS Store]}
   - {name: Conversation Logger, type: backend, artifact_id: ARCH-03, artifact_file: docs/artifacts/architecture/component-architecture.md, owns: [apps/api/logging/conversation/], depends_on: [Analytics Store]}
   - {name: Audit Logger, type: backend, artifact_id: ARCH-03, artifact_file: docs/artifacts/architecture/component-architecture.md, owns: [apps/api/logging/audit/], depends_on: [Audit Store]}
   - {name: Content Manager, type: backend, artifact_id: ARCH-03, artifact_file: docs/artifacts/architecture/component-architecture.md, owns: [apps/api/foundation/knowledge/content/], depends_on: [Knowledge Store, Audit Logger]}

@@ -1,0 +1,126 @@
+version: r1
+packets:
+- id: WP-101-R1
+  work_package: WP-101
+  file: prompts/reissues/r1/task-packets/WP-101-R1.packet.md
+  supersedes: legacy WP-101
+- id: WP-102-R1
+  work_package: WP-102
+  file: prompts/reissues/r1/task-packets/WP-102-R1.packet.md
+  supersedes: legacy WP-102
+- id: WP-103-R1
+  work_package: WP-103
+  file: prompts/reissues/r1/task-packets/WP-103-R1.packet.md
+  supersedes: legacy WP-103
+- id: WP-104-R1
+  work_package: WP-104
+  file: prompts/reissues/r1/task-packets/WP-104-R1.packet.md
+  supersedes: legacy WP-104
+- id: WP-105-R1
+  work_package: WP-105
+  file: prompts/reissues/r1/task-packets/WP-105-R1.packet.md
+  supersedes: legacy WP-105
+- id: WP-201-R1
+  work_package: WP-201
+  file: prompts/reissues/r1/task-packets/WP-201-R1.packet.md
+  supersedes: legacy WP-201
+- id: WP-202-R1
+  work_package: WP-202
+  file: prompts/reissues/r1/task-packets/WP-202-R1.packet.md
+  supersedes: legacy WP-202
+- id: WP-203-R1
+  work_package: WP-203
+  file: prompts/reissues/r1/task-packets/WP-203-R1.packet.md
+  supersedes: legacy WP-203
+- id: WP-204-R1
+  work_package: WP-204
+  file: prompts/reissues/r1/task-packets/WP-204-R1.packet.md
+  supersedes: legacy WP-204
+- id: WP-301-R1
+  work_package: WP-301
+  file: prompts/reissues/r1/task-packets/WP-301-R1.packet.md
+  supersedes: legacy WP-301
+- id: WP-302-R1
+  work_package: WP-302
+  file: prompts/reissues/r1/task-packets/WP-302-R1.packet.md
+  supersedes: legacy WP-302
+- id: WP-303-R1
+  work_package: WP-303
+  file: prompts/reissues/r1/task-packets/WP-303-R1.packet.md
+  supersedes: legacy WP-303
+- id: WP-304-R1
+  work_package: WP-304
+  file: prompts/reissues/r1/task-packets/WP-304-R1.packet.md
+  supersedes: legacy WP-304
+- id: WP-305-R1
+  work_package: WP-305
+  file: prompts/reissues/r1/task-packets/WP-305-R1.packet.md
+  supersedes: legacy WP-305
+- id: WP-306-R1
+  work_package: WP-306
+  file: prompts/reissues/r1/task-packets/WP-306-R1.packet.md
+  supersedes: legacy WP-306
+- id: WP-401-R1
+  work_package: WP-401
+  file: prompts/reissues/r1/task-packets/WP-401-R1.packet.md
+  supersedes: legacy WP-401
+- id: WP-402-R1
+  work_package: WP-402
+  file: prompts/reissues/r1/task-packets/WP-402-R1.packet.md
+  supersedes: legacy WP-402
+- id: WP-403-R1
+  work_package: WP-403
+  file: prompts/reissues/r1/task-packets/WP-403-R1.packet.md
+  supersedes: legacy WP-403
+- id: WP-404-R1
+  work_package: WP-404
+  file: prompts/reissues/r1/task-packets/WP-404-R1.packet.md
+  supersedes: legacy WP-404
+- id: WP-501-R1
+  work_package: WP-501
+  file: prompts/reissues/r1/task-packets/WP-501-R1.packet.md
+  supersedes: legacy WP-501
+- id: WP-502-R1
+  work_package: WP-502
+  file: prompts/reissues/r1/task-packets/WP-502-R1.packet.md
+  supersedes: legacy WP-502
+- id: WP-503-R1
+  work_package: WP-503
+  file: prompts/reissues/r1/task-packets/WP-503-R1.packet.md
+  supersedes: legacy WP-503
+- id: WP-504-R1
+  work_package: WP-504
+  file: prompts/reissues/r1/task-packets/WP-504-R1.packet.md
+  supersedes: legacy WP-504
+- id: WP-505-R1
+  work_package: WP-505
+  file: prompts/reissues/r1/task-packets/WP-505-R1.packet.md
+  supersedes: legacy WP-505
+- id: WP-506-R1
+  work_package: WP-506
+  file: prompts/reissues/r1/task-packets/WP-506-R1.packet.md
+  supersedes: legacy WP-506
+- id: WP-601-R1
+  work_package: WP-601
+  file: prompts/reissues/r1/task-packets/WP-601-R1.packet.md
+  supersedes: legacy WP-601
+- id: WP-602-R1
+  work_package: WP-602
+  file: prompts/reissues/r1/task-packets/WP-602-R1.packet.md
+  supersedes: legacy WP-602
+- id: WP-603-R1
+  work_package: WP-603
+  file: prompts/reissues/r1/task-packets/WP-603-R1.packet.md
+  supersedes: legacy WP-603
+- id: WP-604-R1
+  work_package: WP-604
+  file: prompts/reissues/r1/task-packets/WP-604-R1.packet.md
+  supersedes: legacy WP-604
+- id: WP-605-R1
+  work_package: WP-605
+  file: prompts/reissues/r1/task-packets/WP-605-R1.packet.md
+  supersedes: legacy WP-605
+- id: WP-606-R1
+  work_package: WP-606
+  file: prompts/reissues/r1/task-packets/WP-606-R1.packet.md
+  supersedes: legacy WP-606

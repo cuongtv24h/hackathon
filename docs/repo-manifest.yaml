@@ -18,7 +18,7 @@ workspaces:
     purpose: widget and standalone chat channels
   - path: apps/admin-web/
     purpose: content management and analytics dashboard
-  - path: apps/mock-his/
+  - path: apps/mock_his/
     purpose: database-backed Mock HIS adapter
   - path: packages/contracts/
     purpose: shared implementation contracts derived from canonical DTOs
@@ -42,4 +42,3 @@ constraints:
   - No builder task starts before WP-003 base verification passes.
   - A task edits only its contracted zone and marker.
   - Source documents remain outside product source ownership.
-

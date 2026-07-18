@@ -44,7 +44,7 @@ Runtime component responsibilities và dependency boundaries.
 | Gateway | `apps/api/gateway/` |
 | Emergency | `apps/api/capabilities/emergency/prefilter/`, `apps/api/capabilities/emergency/protocols/` |
 | AI | `apps/api/ai/orchestrator/`, `apps/api/ai/providers/`, `apps/api/ai/guardrails/`, `apps/api/ai/rag/` |
-| Appointment/Mock HIS | `apps/api/foundation/appointments/`, `apps/mock-his/` |
+| Appointment/Mock HIS | `apps/api/foundation/appointments/`, `apps/mock_his/` |
 | Knowledge Store access | `apps/api/foundation/knowledge/repository/` |
 | Content management | `apps/api/foundation/knowledge/content/` |
 | Logging | `apps/api/logging/conversation/`, `apps/api/logging/audit/` |

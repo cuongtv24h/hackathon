@@ -1,6 +1,16 @@
 # Task Packet Index — Phase 6.5
 version: "1.0.0"
 packets:
+  - id: WP-010
+    sprint: 1
+    wave: 2
+    file: prompts/sprint-1/task-packets/WP-010.packet.md
+    type: implementation
+  - id: WP-500
+    sprint: 1
+    wave: 2
+    file: prompts/sprint-1/task-packets/WP-500.packet.md
+    type: implementation
   - id: S0-IMPLEMENTATION-EXECUTION-VIEW
     sprint: 0
     file: prompts/sprint-0/task-packets/S0-IMPLEMENTATION-EXECUTION-VIEW.packet.md
@@ -205,4 +215,3 @@ packets:
     wave: 7
     file: prompts/sprint-3/task-packets/WP-606.packet.md
     type: implementation
-

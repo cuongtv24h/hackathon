@@ -1,5 +1,6 @@
 {
   "_comment": "Example rate-limit budget configuration. Copy to rate-limits.json and adjust values.",
+  "x-task-region-markers": ["TASK:WP-009:START", "TASK:WP-009:END"],
   "budgets": [
     {
       "name": "chat_messages_per_session_per_minute",

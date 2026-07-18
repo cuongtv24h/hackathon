@@ -21,6 +21,14 @@ Dùng comment phù hợp ngôn ngữ nhưng giữ nguyên token:
 
 Không lồng marker. Không đổi ID, không xóa marker của task khác. File có nhiều task phải có một marker độc lập cho mỗi task.
 
+Với JSON nghiêm ngặt không hỗ trợ comment (ví dụ `package.json`), dùng metadata hợp lệ thay cho comment:
+
+```json
+"x-task-region-markers": ["TASK:WP-xxx:START", "TASK:WP-xxx:END"]
+```
+
+Metadata này là marker governance, không phải runtime configuration.
+
 ## 4. Quy tắc sửa
 
 1. Builder đọc `docs/spec-registry/task-to-file-contract-map.yaml` trước khi sửa.
