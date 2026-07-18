@@ -343,20 +343,121 @@ class TestEdgeCases:
 
 class TestEmbeddingValidation:
 
-    def test_768_dim_accepted(self, ing):
-        ing._validate_embedding_dim([0.5] * 768)
+    def test_1024_dim_accepted(self, ing):
+        ing._validate_embedding_dim([0.5] * 1024)
 
-    def test_767_dim_rejected(self, ing):
+    def test_1023_dim_rejected(self, ing):
         with pytest.raises(ValueError, match="dimension"):
-            ing._validate_embedding_dim([0.5] * 767)
+            ing._validate_embedding_dim([0.5] * 1023)
 
-    def test_769_dim_rejected(self, ing):
+    def test_1025_dim_rejected(self, ing):
         with pytest.raises(ValueError, match="dimension"):
-            ing._validate_embedding_dim([0.5] * 769)
+            ing._validate_embedding_dim([0.5] * 1025)
 
     def test_non_list_rejected(self, ing):
         with pytest.raises(ValueError, match="list or tuple"):
             ing._validate_embedding_dim("not-a-list")
+
+
+class TestJinaEmbeddingProvider:
+
+    def test_factory_selects_jina_with_canonical_profile(self, monkeypatch):
+        from foundation.knowledge.ingestion.embeddings.factory import get_embedding_provider
+
+        monkeypatch.setenv("JINA_API_KEY", "test-key")
+        provider = get_embedding_provider(
+            provider_name="jina",
+            model="jina-embeddings-v5-text-small",
+            dimensions=1024,
+        )
+
+        assert provider.model == "jina-embeddings-v5-text-small"
+        assert provider.dimensions == 1024
+
+    def test_jina_request_uses_passage_task_and_reuses_client(self, monkeypatch):
+        from types import SimpleNamespace
+        from foundation.knowledge.ingestion.embeddings.jina import JinaEmbeddingProvider
+
+        monkeypatch.setenv("JINA_API_KEY", "test-key")
+        calls = []
+
+        class FakeEmbeddings:
+            def create(self, **kwargs):
+                calls.append(kwargs)
+                return SimpleNamespace(
+                    data=[SimpleNamespace(embedding=[0.25] * 1024)]
+                )
+
+        fake_client = SimpleNamespace(embeddings=FakeEmbeddings())
+        provider = JinaEmbeddingProvider(
+            model="jina-embeddings-v5-text-small",
+            dimensions=1024,
+            base_url="https://proxy.example/v1",
+        )
+        provider._client = fake_client
+
+        assert len(provider.embed("Tài liệu BHYT")) == 1024
+        assert len(provider.embed("Tài liệu khác")) == 1024
+        assert provider._get_client() is fake_client
+        assert calls[0]["input"] == ["Tài liệu BHYT"]
+        assert calls[0]["dimensions"] == 1024
+        assert calls[0]["extra_body"] == {"task": "retrieval.passage"}
+
+    def test_jina_rejects_insecure_base_url(self, monkeypatch):
+        from foundation.knowledge.ingestion.embeddings.jina import JinaEmbeddingProvider
+
+        monkeypatch.setenv("JINA_API_KEY", "test-key")
+        with pytest.raises(ValueError, match="HTTPS"):
+            JinaEmbeddingProvider(base_url="http://proxy.example/v1")
+
+    def test_jina_native_batch_uses_one_request_and_preserves_index_order(self, monkeypatch):
+        from types import SimpleNamespace
+        from foundation.knowledge.ingestion.embeddings.jina import JinaEmbeddingProvider
+
+        monkeypatch.setenv("JINA_API_KEY", "test-key")
+        calls = []
+
+        class FakeEmbeddings:
+            def create(self, **kwargs):
+                calls.append(kwargs)
+                return SimpleNamespace(data=[
+                    SimpleNamespace(index=1, embedding=[0.2] * 1024),
+                    SimpleNamespace(index=0, embedding=[0.1] * 1024),
+                ])
+
+        provider = JinaEmbeddingProvider(base_url="https://proxy.example/v1")
+        provider._client = SimpleNamespace(embeddings=FakeEmbeddings())
+
+        vectors = provider.embed_batch(["chunk one", "chunk two"])
+
+        assert len(calls) == 1
+        assert calls[0]["input"] == ["chunk one", "chunk two"]
+        assert len(vectors) == 2
+        assert vectors[0][0] == 0.1
+        assert vectors[1][0] == 0.2
+
+    def test_jina_batch_rejects_response_count_mismatch(self, monkeypatch):
+        from types import SimpleNamespace
+        from foundation.knowledge.ingestion.embeddings.jina import JinaEmbeddingProvider
+        from foundation.knowledge.ingestion.errors import IngestionError
+
+        monkeypatch.setenv("JINA_API_KEY", "test-key")
+        monkeypatch.setattr(
+            "foundation.knowledge.ingestion.embeddings.jina.EMBEDDING_MAX_RETRIES",
+            1,
+        )
+
+        class FakeEmbeddings:
+            def create(self, **kwargs):
+                return SimpleNamespace(
+                    data=[SimpleNamespace(index=0, embedding=[0.1] * 1024)]
+                )
+
+        provider = JinaEmbeddingProvider(base_url="https://proxy.example/v1")
+        provider._client = SimpleNamespace(embeddings=FakeEmbeddings())
+
+        with pytest.raises(IngestionError, match="1 embeddings for 2 inputs"):
+            provider.embed_batch(["chunk one", "chunk two"])
 
 
 # ---------------------------------------------------------------------------
@@ -465,10 +566,15 @@ class FakePsycopgCursor:
         # Return a fake domain_id for domain lookups and chunk existence checks
         # We need to differentiate between "select domain_id" and "select 1 from knowledge_chunks"
         # by looking at the last execute call
+        if any("pg_attribute" in op[1] for op in self.operations[-3:] if op[0] == "execute"):
+            return (1024,)
         if any("knowledge_domains" in op[1] for op in self.operations[-3:] if op[0] == "execute"):
             if self.domain_rows:
                 return (list(self.domain_rows.values())[0],)
         return None
+
+    def fetchall(self):
+        return []
 
     def __enter__(self):
         return self
@@ -502,7 +608,7 @@ def _fake_connect(url):
 
 
 def _fake_embed(content):
-    return [0.42] * 768
+    return [0.42] * 1024
 
 
 class TestPersistenceWithFakeDriver:
@@ -551,11 +657,11 @@ class TestPersistenceWithFakeDriver:
         )
         assert result.inserted >= 0
         assert result.updated >= 0
-        assert result.vector_dim == 768
+        assert result.vector_dim == 1024
 
     def test_missing_provider_in_non_dry_run_fails(self, ing):
         """Non-dry-run without provider fails before DB write."""
-        with pytest.raises(ValueError, match="GEMINI_API_KEY"):
+        with pytest.raises(ValueError, match="JINA_API_KEY"):
             ing.ingest_knowledge(
                 database_url="postgresql://fake",
                 embed_provider=None,
@@ -659,6 +765,107 @@ class TestSeedSQL:
         content = self.SEED_SQL.read_text(encoding="utf-8")
         assert "knowledge_chunks" in content
         assert "pg_tables" in content
+
+
+class TestChunkPreview:
+
+    def test_preview_is_readable_and_filterable(self):
+        from foundation.knowledge.ingestion.models import ChunkRecord, IngestionResult
+        from foundation.knowledge.ingestion.preview import render_preview
+
+        result = IngestionResult(
+            total_chunks=2,
+            chunk_records=[
+                ChunkRecord(
+                    chunk_id="SRC-A-SEC-001",
+                    source_id="SRC-A",
+                    source_section="Giấy tờ",
+                    domain="bhyt",
+                    sub_topic="documents",
+                    token_count=350,
+                    content_hash="abc123",
+                    content="Nội dung cần hiển thị trong console.",
+                ),
+                ChunkRecord(
+                    chunk_id="SRC-B-SEC-001",
+                    source_id="SRC-B",
+                    token_count=20,
+                    content_hash="def456",
+                    content="Không được hiển thị khi lọc.",
+                ),
+            ],
+        )
+
+        output = render_preview(result, source_id="SRC-A", limit=None, width=80)
+
+        assert "RAG CHUNKING PREVIEW" in output
+        assert "SRC-A-SEC-001 | OK target" in output
+        assert "tokens=350" in output
+        assert "locator=Giấy tờ" in output
+        assert "Nội dung cần hiển thị" in output
+        assert "SRC-B-SEC-001" not in output
+
+    def test_preview_marks_oversized_chunks(self):
+        from foundation.knowledge.ingestion.models import ChunkRecord, IngestionResult
+        from foundation.knowledge.ingestion.preview import render_preview
+
+        result = IngestionResult(
+            chunk_records=[
+                ChunkRecord(
+                    chunk_id="TOO-LARGE",
+                    source_id="SRC-A",
+                    token_count=801,
+                    content_hash="abc123",
+                    content="oversized",
+                )
+            ]
+        )
+
+        assert "ERROR oversized" in render_preview(result, width=80)
+
+
+class TestFaqTopicMetadata:
+
+    def test_topic_follows_each_question_when_headings_are_missing(self):
+        from foundation.knowledge.ingestion.chunking.faq_chunker import split_faq_chunks
+
+        content = """\
+## Nhóm 1. Đăng ký và tiếp đón
+┌──────────┐
+│ CÂU HỎI 100: Tôi gặp trường hợp đăng ký và tiếp đón số 100; tôi cần làm gì? │
+│ TRẢ LỜI: Đến quầy tiếp đón. │
+└──────────┘
+┌──────────┐
+│ CÂU HỎI 101: Tôi gặp trường hợp giấy tờ và xác minh số 1; tôi cần làm gì? │
+│ TRẢ LỜI: Mang giấy tờ liên quan. │
+└──────────┘
+"""
+
+        chunks = split_faq_chunks(content)
+
+        assert [chunk["sub_topic"] for chunk in chunks] == [
+            "Đăng ký và tiếp đón",
+            "Giấy tờ và xác minh",
+        ]
+        assert [chunk["source_section"] for chunk in chunks] == [
+            "Đăng ký và tiếp đón",
+            "Giấy tờ và xác minh",
+        ]
+
+    def test_topic_falls_back_to_current_heading_for_other_faq_formats(self):
+        from foundation.knowledge.ingestion.chunking.faq_chunker import split_faq_chunks
+
+        content = """\
+## Hồ sơ cần chuẩn bị
+┌──────────┐
+│ Tôi cần mang giấy tờ gì? │
+│ Vui lòng mang giấy tờ tùy thân. │
+└──────────┘
+"""
+
+        chunks = split_faq_chunks(content)
+
+        assert chunks[0]["sub_topic"] == "Hồ sơ cần chuẩn bị"
 
 
 # ---------------------------------------------------------------------------

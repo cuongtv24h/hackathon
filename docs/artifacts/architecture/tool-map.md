@@ -19,7 +19,7 @@ Danh mục 10 LLM/utility tools và nguồn dữ liệu.
 
 | Tool | Input summary | Output summary | Source |
 |---|---|---|---|
-| `search_knowledge_base` | query, domains, top_k, threshold | chunks, scores, sources, has_results | pgvector |
+| `search_knowledge_base` | query, domains, top_k, threshold | hybrid-ranked chunks, vector/lexical/fusion/rerank metadata, sources, has_results | pgvector + PostgreSQL FTS + reranker |
 | `fallback_response` | query, domain, reason | fallback_message, channels | static templates |
 | `trigger_emergency` | level, reason, session_id | protocol, event_id | Protocol Store + Audit |
 | `get_specialty_list` | none | active specialties | Mock HIS |
@@ -36,6 +36,7 @@ Danh mục 10 LLM/utility tools và nguồn dữ liệu.
 - `detect_pii` precedes `log_conversation`.
 - Appointment tools are provider-neutral through Appointment Service/HIS Adapter.
 - Tool schemas are authoritative; LLM cannot invent tools or fields.
+- Knowledge search uses vector + lexical candidates, RRF fusion and reranking; reranker failure returns the RRF order with degraded metadata.
 
 ## Dependencies
 

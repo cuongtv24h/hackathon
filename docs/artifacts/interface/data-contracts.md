@@ -36,8 +36,8 @@ Canonical DTO inventory, ownership and validation-critical fields.
 
 ### Knowledge/content DTOs
 
-- `KnowledgeSearchRequest`: query, domain_filter, top_k 1..20(default 5), threshold 0..1.
-- `KnowledgeSearchResponse`: chunks, result/sufficient/conflict flags, metadata.
+- `KnowledgeSearchRequest`: query, domain_filter, top_k 1..20(default 5), threshold 0..1; hybrid retrieval is server-default and not caller-selectable in MVP.
+- `KnowledgeSearchResponse`: chunks, result/sufficient/conflict flags, plus search metadata containing strategy, candidate counts, degraded lanes and per-result vector/lexical/fusion/rerank scores or ranks. Internal raw vectors are never exposed.
 - `KnowledgeChunkDTO`: content, domain/subtopic/source/version/active + effective/approval metadata; embedding not public.
 - `ContentDraftCreateRequest`, `ContentDraftPatchRequest`, `ContentDraftDTO`.
 - `ContentSubmitRequest`, `ContentReviewRequest`, `ContentApprovalStateDTO`, `ContentPublishRequest`, `ContentVersionDTO`.

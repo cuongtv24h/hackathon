@@ -19,7 +19,7 @@ Tool I/O, dependency, retry and timeout constraints.
 
 | Tool | Input → Output | Errors | Retry | Timeout |
 |---|---|---|---|---:|
-| `search_knowledge_base` | query/domains/top_k/threshold → chunks/sufficient/conflict | KNOWLEDGE_UNAVAILABLE, NO_GROUNDED_RESULT, CONTENT_CONFLICT | 1 transient | 800ms |
+| `search_knowledge_base` | query/domains/top_k/threshold → hybrid + reranked chunks/sufficient/conflict/search metadata | KNOWLEDGE_UNAVAILABLE, NO_GROUNDED_RESULT, CONTENT_CONFLICT | 1 transient; reranker failure falls back to RRF without retry | 1200ms total; rerank budget 400ms |
 | `fallback_response` | query/domain/reason → message/channels | CONFIG_UNAVAILABLE | 1, then cache | 100ms |
 | `trigger_emergency` | level/reason/session/evidence → protocol/event | PROTOCOL_UNAVAILABLE, AUDIT_DEFERRED | protocol 0/cache; audit 3 async | 100ms critical; 300ms tool |
 | `get_specialty_list` | active filter → specialties | INTEGRATION_UNAVAILABLE | 1 | 500ms |
@@ -36,6 +36,8 @@ Tool I/O, dependency, retry and timeout constraints.
 - Validate inputs outside LLM and validate/sanitize outputs before reuse.
 - `detect_pii` before `log_conversation`; failure is fail-closed for raw message storage.
 - Timeout/retry cannot exceed capability SLA.
+- Knowledge retrieval runs vector and PostgreSQL FTS candidate searches, fuses them with RRF and reranks the fused set. Metadata filters are identical in both lanes.
+- If reranking fails or exceeds its budget, return RRF order with an explicit degraded flag. If one retrieval lane fails, the healthy lane may continue; no failure may bypass approval/effective/active filters.
 
 ## Dependencies
 

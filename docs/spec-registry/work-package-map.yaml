@@ -90,6 +90,7 @@ work_packages:
     acceptance_criteria:
       - "Bao phủ entity MVP và quan hệ canonical"
       - "Migration có thể áp dụng trên môi trường sạch"
+      - "Knowledge chunks có pgvector cosine index và PostgreSQL FTS/GIN index để hỗ trợ hybrid retrieval"
   - id: WP-006
     title: "Database connectivity, RLS and retention controls"
     layer: L0
@@ -123,7 +124,8 @@ work_packages:
       - "Tất cả JSON/manifest và metadata nguồn trong docs/knowledge hợp lệ; đường dẫn legacy được thay thế"
       - "Chỉ tài liệu nghiệp vụ trong source allowlist được đăng ký ingest; docs/knowledge/spec-normalization-plan.md và metadata frontmatter không được chunk như nội dung trả lời"
       - "Bảy tài liệu BHYT bootstrap, gồm biểu giá, được đăng ký approved_for_pilot; file bootstrap không có frontmatter nhận metadata mặc định từ source registry"
-      - "Nội dung bổ sung sau bootstrap không nhận approval mặc định và phải đi qua Content Management workflow"
+      - "Approval áp dụng ở cấp source/version; chunk kế thừa metadata, không yêu cầu duyệt thủ công từng chunk trong MVP"
+      - "Nội dung bổ sung sau bootstrap mặc định draft và chỉ được index sau khi Human Lead cập nhật source registry; workflow duyệt nhiều bước nằm ngoài scope ingestion MVP"
   - id: WP-008
     title: "Seed import and RAG knowledge ingestion/indexing"
     layer: L0
@@ -136,11 +138,14 @@ work_packages:
     related_artifacts: [ARCH-08, ARCH-09, INT-04]
     related_contracts: ["KnowledgeChunkDTO", "ContentVersionDTO", "AppointmentDTO"]
     expected_outputs:
-      - "Seed importer, RAG ingestion pipeline, dry-run report and vector index"
+      - "Seed importer, document-aware bounded chunker, embedding/persistence pipeline and dry-run report"
     acceptance_criteria:
       - "Import theo seed_order và chạy lại an toàn"
       - "Mỗi chunk có source_id, path, version, approval status, effective dates và content hash truy vết được"
       - "Bảy nguồn BHYT bootstrap được index answerable cho runtime; content bổ sung chưa approved không được index answerable"
+      - "Chunking theo loại tài liệu: FAQ theo cặp hỏi-đáp, bảng giá theo dòng/nhóm nhỏ, prose theo heading rồi paragraph; không có chunk vượt 800 tokens"
+      - "Validation MVP chỉ chặn source/chunk/embedding không hợp lệ; không xây chunk approval, quarantine workflow hoặc quality dashboard"
+      - "Embedding 768 chiều và lexical search document được ghi bằng transaction idempotent; vector/FTS indexes do WP-005 sở hữu"
   - id: WP-009
     title: "Shared DTO, error and runtime configuration contracts"
     layer: L0
@@ -180,14 +185,15 @@ work_packages:
     capability: "PC-01"
     owner_pool: API
     size: L
-    purpose: "Cung cấp retrieval, content lifecycle và cảnh báo conflict trên dashboard."
+    purpose: "Cung cấp hybrid vector/FTS retrieval, RRF fusion, content lifecycle và cảnh báo conflict trên dashboard."
     dependencies: [WP-008, WP-009]
     related_artifacts: [ARCH-08, INT-03, INT-04]
     related_contracts: ["FND-KNW-01 SearchKnowledge", "FND-KNW-02 GetKnowledgeChunk", "FND-KNW-03 CreateContentDraft", "FND-KNW-08 ListContentConflicts", "FND-KNW-09 ResolveContentConflict", "ContentConflictDTO"]
     expected_outputs:
-      - "Knowledge repository and content management services"
+      - "Hybrid knowledge repository, RRF candidate pipeline and content management services"
     acceptance_criteria:
       - "Chỉ nội dung approved được dùng cho retrieval"
+      - "Vector và PostgreSQL FTS candidates dùng cùng filter và được hợp nhất bằng RRF cho WP-201 rerank"
       - "Conflict có thể list/resolve và audit"
   - id: WP-103
     title: "Emergency protocol and event foundation services"
@@ -254,6 +260,7 @@ work_packages:
       - "Tool trả citation/provenance"
       - "Insufficient/conflict kích hoạt fallback"
       - "Retrieval bắt buộc lọc is_active, effective date và approval status trước khi trả chunk"
+      - "Tool rerank fused candidates, trả hybrid/RRF/rerank metadata và giữ RRF order khi reranker lỗi"
   - id: WP-202
     title: "Emergency trigger and pre-filter tool"
     layer: L2
