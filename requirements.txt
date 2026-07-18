@@ -11,6 +11,8 @@ psycopg[binary]
 pgvector
 httpx
 google-genai
+# Runtime provider adapter used by the configured OpenAI-compatible LLM chain.
+openai
 
 # Automated test harness required by Phase 6.5.
 pytest
