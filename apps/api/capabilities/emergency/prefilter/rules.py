@@ -9,6 +9,34 @@ from packages.contracts.dto import RuleEvidenceDTO
 
 ROOT = Path(__file__).resolve().parents[5]
 
+
+def _contains_phrase(text: str, phrase: str) -> bool:
+    normalized_text = normalize_text(text)
+    normalized_phrase = normalize_text(phrase)
+    return (
+        normalized_phrase.normalized_nfc in normalized_text.normalized_nfc
+        or normalized_phrase.diacritic_free in normalized_text.diacritic_free
+    )
+
+
+def has_safety_signal(text: str, rules_config: RulesRoot) -> bool:
+    return any(_contains_phrase(text, signal) for signal in rules_config.safety_signals)
+
+
+def is_clear_non_risk(text: str, rules_config: RulesRoot) -> bool:
+    """Return LOW locally for ordinary queries and explicit catalog/reference context."""
+    if not has_safety_signal(text, rules_config):
+        return True
+    if any(
+        _contains_phrase(text, marker)
+        for marker in rules_config.current_risk_assertion_markers
+    ):
+        return False
+    return any(
+        _contains_phrase(text, marker)
+        for marker in rules_config.clear_non_risk_markers
+    )
+
 def load_emergency_configs() -> Tuple[RulesRoot, ProtocolsRoot, ClarificationsRoot]:
     rules_path = ROOT / "config" / "emergency" / "rules.example.json"
     protocols_path = ROOT / "config" / "emergency" / "protocols.example.json"
@@ -63,6 +91,8 @@ def validate_configs(
 def match_rules(text: str, rules_config: RulesRoot) -> Optional[RuleEvidenceDTO]:
     """Determine if a user message contains direct HIGH keywords or prohibited content."""
     if not text:
+        return None
+    if is_clear_non_risk(text, rules_config):
         return None
     norm = normalize_text(text)
 

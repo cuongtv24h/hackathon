@@ -22,15 +22,21 @@ def _claim_text(line: str) -> str:
     return re.sub(r"^\s*(?:[-*+]\s+|\d+[.)]\s+)", "", without_marker).strip()
 
 
-def _requires_citation(line: str) -> bool:
+def _requires_citation(line: str, next_content_line: str = "") -> bool:
     claim = _claim_text(line)
     if not claim or len(claim.split()) < 4:
         return False
     lowered = claim.lower()
+    is_section_label = (
+        not CITATION_MARKER_RE.search(line)
+        and not claim.endswith((".", "!", "?"))
+        and bool(CITATION_MARKER_RE.search(next_content_line))
+    )
     return not (
         line.lstrip().startswith("#")
         or claim.endswith(":")
         or claim.endswith("?")
+        or is_section_label
         or lowered.startswith(NON_FACTUAL_PREFIXES)
     )
 
@@ -48,17 +54,51 @@ def map_citations_to_response(
     candidates: List[SearchCandidateDTO],
 ) -> Tuple[bool, List[CitationDTO]]:
     """Validate explicit claim citations against server-owned search candidates."""
+    grounded, citations, _, _ = _validate_citations(response_text, candidates)
+    return grounded, citations
+
+
+def citation_validation_issues(
+    response_text: str,
+    candidates: List[SearchCandidateDTO],
+) -> List[str]:
+    """Return stable diagnostic reasons without changing validation behavior."""
+    _, _, issues, _ = _validate_citations(response_text, candidates)
+    return issues
+
+
+def supported_response_text(
+    response_text: str,
+    candidates: List[SearchCandidateDTO],
+) -> str:
+    """Remove unsupported factual lines while retaining verified claims and prose."""
+    _, _, _, supported_lines = _validate_citations(response_text, candidates)
+    return "\n".join(supported_lines).strip()
+
+
+def _validate_citations(
+    response_text: str,
+    candidates: List[SearchCandidateDTO],
+) -> Tuple[bool, List[CitationDTO], List[str], List[str]]:
     if not response_text:
-        return True, []
+        return True, [], [], []
 
     candidates_by_id: Dict[str, SearchCandidateDTO] = {
         candidate.chunk_id: candidate for candidate in candidates
     }
     citations: List[CitationDTO] = []
+    issues: List[str] = []
+    supported_lines: List[str] = []
     all_grounded = True
 
-    for line in response_text.splitlines():
-        if not _requires_citation(line):
+    lines = response_text.splitlines()
+    for index, line in enumerate(lines):
+        next_content_line = next(
+            (candidate for candidate in lines[index + 1:] if candidate.strip()),
+            "",
+        )
+        if not _requires_citation(line, next_content_line):
+            supported_lines.append(line)
             continue
 
         claim = _claim_text(line)
@@ -69,11 +109,19 @@ def map_citations_to_response(
             if chunk_id in candidates_by_id
         ]
 
-        if not cited_ids or len(cited_candidates) != len(cited_ids):
+        if not cited_ids:
             all_grounded = False
+            issues.append(f"missing_citation: {claim[:120]}")
+            continue
+        unknown_ids = [chunk_id for chunk_id in cited_ids if chunk_id not in candidates_by_id]
+        if unknown_ids:
+            all_grounded = False
+            issues.append(f"unknown_chunk_id: {', '.join(unknown_ids)}")
             continue
         if not _numbers_supported(claim, cited_candidates):
             all_grounded = False
+            numbers = [number for number in NUMBER_RE.findall(claim) if len(number) > 1]
+            issues.append(f"unsupported_number: {', '.join(numbers)}")
             continue
 
         for candidate in cited_candidates:
@@ -86,8 +134,9 @@ def map_citations_to_response(
                 version=candidate.version,
                 matched_text=claim,
             ))
+        supported_lines.append(line)
 
-    return all_grounded, citations
+    return all_grounded, citations, issues, supported_lines
 
 
 def render_citation_markers(

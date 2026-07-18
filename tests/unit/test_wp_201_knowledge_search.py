@@ -3,10 +3,12 @@ import pytest
 from unittest.mock import MagicMock
 from packages.contracts.dto import SearchCandidateDTO
 from apps.api.ai.rag import (
+    citation_validation_issues,
     reciprocal_rank_fusion,
     rerank_candidates,
     map_citations_to_response,
     search_hospital_information,
+    supported_response_text,
     check_sufficiency_and_conflicts
 )
 
@@ -60,6 +62,8 @@ def test_citation_mapping_rejects_missing_or_unknown_chunk_id():
 
     assert not map_citations_to_response("Bệnh viện mở cửa lúc 8:00.", [c1])[0]
     assert not map_citations_to_response("Bệnh viện mở cửa lúc 8:00. [[fake]]", [c1])[0]
+    assert citation_validation_issues("Bệnh viện mở cửa lúc 8:00.", [c1])[0].startswith("missing_citation")
+    assert citation_validation_issues("Bệnh viện mở cửa lúc 8:00. [[fake]]", [c1]) == ["unknown_chunk_id: fake"]
 
 def test_citation_mapping_rejects_unsupported_number():
     c1 = SearchCandidateDTO("c1", "Bệnh viện mở cửa lúc 8:00.", 0.9, "general", "hours", "s1", "p1", "v1")
@@ -67,6 +71,31 @@ def test_citation_mapping_rejects_unsupported_number():
     grounded, _ = map_citations_to_response("Bệnh viện mở cửa lúc 9:00. [[c1]]", [c1])
 
     assert not grounded
+    assert citation_validation_issues("Bệnh viện mở cửa lúc 9:00. [[c1]]", [c1]) == ["unsupported_number: 9:00"]
+
+
+def test_uncited_section_label_is_not_treated_as_factual_claim():
+    c1 = SearchCandidateDTO("c1", "Người bệnh chuẩn bị CCCD trước khi đến.", 0.9, "general", "procedure", "s1", "p1", "v1")
+    response = "1) Chuẩn bị trước khi đến bệnh viện\n- Người bệnh chuẩn bị CCCD trước khi đến. [[c1]]"
+
+    grounded, citations = map_citations_to_response(response, [c1])
+
+    assert grounded
+    assert len(citations) == 1
+
+
+def test_unsupported_claim_is_dropped_without_losing_supported_claim():
+    c1 = SearchCandidateDTO("c1", "Bệnh viện mở cửa lúc 8:00.", 0.9, "general", "hours", "s1", "p1", "v1")
+    response = (
+        "Thông tin giờ làm việc:\n"
+        "- Bệnh viện mở cửa lúc 8:00. [[c1]]\n"
+        "- Bệnh viện đóng cửa lúc 21:00. [[c1]]"
+    )
+
+    filtered = supported_response_text(response, [c1])
+
+    assert "8:00" in filtered
+    assert "21:00" not in filtered
 
 def test_sufficiency_conflict_detection():
     c1 = SearchCandidateDTO("c1", "Giá dịch vụ: 150.000 VND.", 0.9, "bhyt", "khám bệnh", "s1", "p1", "v1")

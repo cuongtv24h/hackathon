@@ -2,9 +2,9 @@
 import time
 import pytest
 from unittest.mock import MagicMock
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 from apps.api.ai.orchestrator.core import agent_graph
-from apps.api.ai.orchestrator.core.agent import llm_node
+from apps.api.ai.orchestrator.core.agent import direct_safety_node, llm_node
 
 def test_direct_high_safety_routing():
     # Composed Vietnamese emergency keyword to trigger direct rules
@@ -134,4 +134,77 @@ def test_tool_batch_cannot_exceed_remaining_budget(monkeypatch):
     result = llm_node(state, {"configurable": {"openai_api_key": "fake"}})
 
     assert "vượt quá giới hạn" in result["final_response"]
+
+
+def test_new_turn_clears_previous_search_and_grounding_state():
+    state = {
+        "messages": [HumanMessage(content="Giá chích lễ")],
+        "safety_result": {"risk": "LOW"},
+        "observations": [{"candidates": [{"chunk_id": "old"}]}],
+        "citations": [{"chunk_id": "old"}],
+        "call_fingerprints": ["old"],
+        "call_count": 2,
+        "elapsed_time_seconds": 3.0,
+        "final_response": "old",
+        "degradation_status": {"old": True},
+        "repair_attempted": True,
+        "grounding_retry_reasons": ["old"],
+    }
+
+    result = direct_safety_node(state, {"configurable": {}})
+
+    assert result["safety_result"]["risk"] == "LOW"
+    assert result["safety_result"]["source"] == "local_clear_non_risk"
+    assert result["observations"] == []
+    assert result["citations"] == []
+    assert result["repair_attempted"] is False
+
+
+def test_new_turn_removes_stale_tool_evidence_and_internal_citation_answers():
+    state = {
+        "messages": [
+            HumanMessage(content="Giá chích lễ"),
+            AIMessage(content="", tool_calls=[{
+                "name": "search_hospital_information_tool",
+                "args": {"query": "Giá chích lễ"},
+                "id": "call-old",
+            }]),
+            ToolMessage(content="{'candidates': []}", tool_call_id="call-old"),
+            AIMessage(content="Giá chích lễ là 69,400. [[chunk-old]]"),
+            HumanMessage(content="Thủ tục khám bệnh"),
+        ],
+        "safety_result": {"risk": "LOW"},
+        "clarification_count": 0,
+    }
+
+    result = direct_safety_node(state, {"configurable": {}})
+
+    assert all(not isinstance(message, ToolMessage) for message in result["messages"])
+    assert all("[[" not in str(message.content) for message in result["messages"])
+
+
+def test_catalog_reference_bypasses_semantic_safety():
+    state = {
+        "messages": [HumanMessage(content="Chích lễ ở phần cấp cứu, lọc máu ấy")],
+        "safety_result": None,
+        "clarification_count": 0,
+    }
+
+    result = direct_safety_node(state, {"configurable": {}})
+
+    assert result["safety_result"]["risk"] == "LOW"
+    assert result["safety_result"]["source"] == "local_clear_non_risk"
+
+
+def test_bare_emergency_term_routes_direct_high():
+    state = {
+        "messages": [HumanMessage(content="cấp cứu")],
+        "safety_result": None,
+        "clarification_count": 0,
+    }
+
+    result = direct_safety_node(state, {"configurable": {}})
+
+    assert result["safety_result"]["risk"] == "HIGH"
+    assert result["safety_result"]["source"] == "direct_rule"
 # === TASK:WP-302:END ===

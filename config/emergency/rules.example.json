@@ -2,11 +2,42 @@
   "rules": [
     {
       "rule_id": "RULE-EMERGENCY-001",
-      "keywords": ["cấp cứu", "nguy kịch", "ngừng tim", "khó thở dữ dội", "đau ngực dữ dội", "tai nạn giao thông", "đột quỵ"],
+      "keywords": [
+        "tôi đang trong tình trạng cấp cứu",
+        "cần cấp cứu ngay",
+        "cấp cứu",
+        "nguy kịch lắm rồi",
+        "ngừng tim",
+        "bị ngừng tim",
+        "đang ngừng tim",
+        "không thở được",
+        "bất tỉnh",
+        "mất ý thức",
+        "co giật liên tục",
+        "chảy máu không cầm",
+        "khó thở dữ dội",
+        "đau ngực dữ dội",
+        "vừa bị tai nạn giao thông",
+        "có dấu hiệu đột quỵ"
+      ],
       "description": "Direct emergency terms indicating acute medical crisis."
     }
   ],
   "prohibited_content": ["tự tử", "tự sát", "chết"],
+  "safety_signals": [
+    "cấp cứu", "nguy kịch", "ngừng tim", "không thở được", "bất tỉnh",
+    "mất ý thức", "co giật", "chảy máu", "khó thở", "đau ngực",
+    "đột quỵ", "tai nạn", "tự tử", "tự sát", "đau", "sốt", "nôn", "ngất"
+  ],
+  "clear_non_risk_markers": [
+    "giá", "bảng giá", "chi phí", "bao nhiêu", "dịch vụ", "phần", "mục",
+    "tài liệu", "quy trình", "khoa", "ở đâu", "danh mục", "mã dịch vụ"
+  ],
+  "current_risk_assertion_markers": [
+    "tôi đang", "tôi bị", "mình đang", "mình bị", "em đang", "em bị",
+    "người nhà tôi đang", "người nhà tôi bị", "bố tôi đang", "mẹ tôi đang",
+    "con tôi đang", "bệnh nhân đang"
+  ],
   "version": "1.0.0",
   "effective_date": "2026-07-18",
   "approval_status": "mock"

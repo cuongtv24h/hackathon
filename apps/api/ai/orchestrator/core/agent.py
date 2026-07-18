@@ -12,12 +12,20 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 
 from packages.contracts.dto import SafetyDecisionDTO, RuleEvidenceDTO, SearchResultDTO, CitationDTO, SearchCandidateDTO
-from apps.api.capabilities.emergency.prefilter import match_rules, load_emergency_configs, validate_configs
+from apps.api.capabilities.emergency.prefilter import (
+    has_safety_signal,
+    is_clear_non_risk,
+    load_emergency_configs,
+    match_rules,
+    validate_configs,
+)
 from apps.api.ai.providers.openai import OpenAIProvider
 from apps.api.ai.rag import (
+    citation_validation_issues,
     map_citations_to_response,
     render_citation_markers,
     search_hospital_information,
+    supported_response_text,
 )
 from apps.api.foundation.appointments.tools import book_appointment_mock, MockBookingRequest
 
@@ -46,6 +54,8 @@ class AgentState(TypedDict):
     final_response: Optional[str]
     degradation_status: Dict[str, Any]
     repair_attempted: bool
+    grounding_retry_reasons: List[str]
+    booking_result: Optional[Dict[str, Any]]
 
 
 # Define LangChain tools with RunnableConfig access to connection context
@@ -102,21 +112,59 @@ def direct_safety_node(state: AgentState, config: RunnableConfig) -> Dict[str, A
     messages = state.get("messages", [])
     if not messages:
         return {}
+
+    pending_caution = (
+        state.get("safety_result")
+        if (state.get("safety_result") or {}).get("risk") == "CAUTION"
+        and state.get("clarification_count", 0) > 0
+        else None
+    )
+    sanitized_messages = [
+        message
+        for message in messages
+        if not isinstance(message, ToolMessage)
+        and not (isinstance(message, AIMessage) and getattr(message, "tool_calls", None))
+        and not (isinstance(message, AIMessage) and "[[" in str(message.content))
+    ]
+    turn_reset = {
+        "messages": sanitized_messages,
+        "safety_result": pending_caution,
+        "observations": [],
+        "citations": [],
+        "call_fingerprints": [],
+        "call_count": 0,
+        "elapsed_time_seconds": 0.0,
+        "final_response": None,
+        "degradation_status": {},
+        "repair_attempted": False,
+        "grounding_retry_reasons": [],
+        "booking_result": None,
+    }
         
     last_msg = messages[-1].content
     rules, _, _ = load_emergency_configs()
     
+    if pending_caution is not None:
+        return turn_reset
+
+    if is_clear_non_risk(last_msg, rules):
+        turn_reset["safety_result"] = {
+            "risk": "LOW",
+            "source": "local_clear_non_risk",
+            "reason_code": "NO_SAFETY_SIGNAL_OR_REFERENCE_CONTEXT",
+            "evidence_spans": [],
+        }
+        return turn_reset
+
     evidence = match_rules(last_msg, rules)
     if evidence:
-        return {
-            "safety_result": {
+        turn_reset["safety_result"] = {
                 "risk": "HIGH",
                 "source": "direct_rule",
                 "rule_id": evidence.rule_id,
                 "evidence_spans": [evidence.evidence_span]
-            }
         }
-    return {}
+    return turn_reset
 
 
 # Node 2: Semantic safety evaluation (OpenAI structured outputs)
@@ -136,7 +184,8 @@ def semantic_safety_node(state: AgentState, config: RunnableConfig) -> Dict[str,
         return {"safety_result": decision.to_dict()}
     except Exception as exc:
         # If evaluator fails/times out, fall back to CAUTION if caution-hinted, else LOW
-        if has_safety_hint(last_msg):
+        rules, _, _ = load_emergency_configs()
+        if has_safety_signal(last_msg, rules):
             return {
                 "safety_result": {
                     "risk": "CAUTION",
@@ -253,11 +302,18 @@ def llm_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
     
     # If this is a repair attempt, append the repair prompt
     if state.get("repair_attempted", False) and not state.get("final_response"):
-        input_msgs.append(SystemMessage(
-            content="VERIFICATION FAILED: one or more factual lines had a missing/unknown [[chunk_id]] citation, "
-                    "or used a number absent from the cited evidence. Rewrite once using only observed chunk IDs. "
-                    "End every factual sentence or bullet with one or more [[chunk_id]] markers."
-        ))
+        if not state.get("observations"):
+            repair_instruction = (
+                "VERIFICATION FAILED: there are no search observations for the current turn. "
+                "You MUST call search_hospital_information now using the user's current question before answering."
+            )
+        else:
+            repair_instruction = (
+                "VERIFICATION FAILED: one or more factual lines had a missing/unknown [[chunk_id]] citation, "
+                "or used a number absent from the cited evidence. Rewrite once using only observed chunk IDs. "
+                "End every factual sentence or bullet with one or more [[chunk_id]] markers."
+            )
+        input_msgs.append(SystemMessage(content=repair_instruction))
         
     started_at = time.monotonic()
     response = llm_with_tools.invoke(input_msgs)
@@ -311,6 +367,7 @@ def tool_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
     
     new_messages = []
     observations = list(state.get("observations", []))
+    booking_result = state.get("booking_result")
     call_count = state.get("call_count", 0)
     
     for tc in tool_calls:
@@ -328,18 +385,30 @@ def tool_node(state: AgentState, config: RunnableConfig) -> Dict[str, Any]:
         tc_id = tc["id"]
         
         if name == "search_hospital_information_tool":
-            res = search_hospital_information_tool.invoke({"query": args.get("query")}, config)
+            # Preserve exact service names and codes from the user's latest turn.
+            latest_user_query = next(
+                (
+                    message.content
+                    for message in reversed(state.get("messages", [])[:-1])
+                    if isinstance(message, HumanMessage) and isinstance(message.content, str)
+                ),
+                "",
+            ).strip()
+            search_query = latest_user_query or args.get("query")
+            res = search_hospital_information_tool.invoke({"query": search_query}, config)
             # Record observations
             observations.append(res)
             new_messages.append(ToolMessage(content=str(res), tool_call_id=tc_id))
         elif name == "book_appointment_mock_tool":
             res = book_appointment_mock_tool.invoke(args, config)
+            booking_result = res
             new_messages.append(ToolMessage(content=str(res), tool_call_id=tc_id))
         call_count += 1
 
     return {
         "messages": state.get("messages", []) + new_messages,
         "observations": observations,
+        "booking_result": booking_result,
         "call_count": call_count
     }
 
@@ -354,8 +423,39 @@ def route_tool(state: AgentState) -> str:
 def grounding_verification_node(state: AgentState) -> Dict[str, Any]:
     last_msg = state.get("messages", [])[-1]
     response_text = last_msg.content
+
+    if state.get("booking_result"):
+        booking_result = state["booking_result"]
+        appointment = booking_result.get("appointment") or {}
+        detail = appointment.get("detail")
+        rendered = booking_result.get("message", "")
+        if detail:
+            rendered = f"{rendered}\n\n{detail}"
+        return {
+            "final_response": rendered,
+            "citations": [],
+        }
     
     if not state.get("observations"):
+        issues = citation_validation_issues(response_text, [])
+        if issues and not state.get("repair_attempted", False):
+            return {
+                "repair_attempted": True,
+                "grounding_retry_reasons": [
+                    "no_current_turn_search_observations",
+                    *issues,
+                ],
+            }
+        if issues:
+            abstain = "Tôi không có đủ thông tin để trả lời câu hỏi này."
+            return {
+                "final_response": abstain,
+                "grounding_retry_reasons": [
+                    "no_current_turn_search_observations",
+                    *issues,
+                ],
+                "messages": state.get("messages", []) + [AIMessage(content=abstain)],
+            }
         return {
             "final_response": response_text,
             "citations": []
@@ -385,17 +485,31 @@ def grounding_verification_node(state: AgentState) -> Dict[str, Any]:
             "citations": [c.to_dict() for c in citations]
         }
     else:
+        retry_reasons = citation_validation_issues(response_text, candidates)
+        if citations:
+            filtered_response = supported_response_text(response_text, candidates)
+            rendered_response = render_citation_markers(filtered_response, citations)
+            return {
+                "final_response": rendered_response,
+                "citations": [citation.to_dict() for citation in citations],
+                "degradation_status": {
+                    "grounding_claims_dropped": True,
+                    "reasons": retry_reasons,
+                },
+            }
         # If repair was already attempted, abstain
         if state.get("repair_attempted", False):
             abstain = "Tôi không có đủ thông tin để trả lời câu hỏi này."
             return {
                 "final_response": abstain,
+                "grounding_retry_reasons": retry_reasons,
                 "messages": state.get("messages", []) + [AIMessage(content=abstain)]
             }
         else:
             # Trigger repair once
             return {
-                "repair_attempted": True
+                "repair_attempted": True,
+                "grounding_retry_reasons": retry_reasons,
             }
 
 

@@ -10,6 +10,9 @@ class RuleConfig(BaseModel):
 class RulesRoot(BaseModel):
     rules: List[RuleConfig]
     prohibited_content: List[str]
+    safety_signals: List[str] = Field(default_factory=list)
+    clear_non_risk_markers: List[str] = Field(default_factory=list)
+    current_risk_assertion_markers: List[str] = Field(default_factory=list)
     version: str
     effective_date: str
     approval_status: str

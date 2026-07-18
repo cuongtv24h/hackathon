@@ -124,6 +124,18 @@ def main():
             # Invoke graph
             state = agent_graph.invoke(state, config)
 
+            if state.get("repair_attempted"):
+                reasons = state.get("grounding_retry_reasons") or ["unknown"]
+                print("  [Grounding Retry] Có retry do verifier chặn:")
+                for reason in reasons:
+                    print(f"    - {reason}")
+                if state.get("final_response") == "Tôi không có đủ thông tin để trả lời câu hỏi này.":
+                    print("  [Grounding Retry] Retry không hợp lệ; agent đã abstain.")
+                else:
+                    print("  [Grounding Retry] Câu trả lời sau retry hợp lệ.")
+            else:
+                print("  [Grounding Retry] Không retry trong lượt này.")
+
             # Print outcome details
             safety = state.get("safety_result") or {}
             print(f"  [Safety Gate] Risk: {safety.get('risk', 'LOW')} (Source: {safety.get('source', 'evaluator')})")

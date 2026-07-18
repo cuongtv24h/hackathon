@@ -25,7 +25,7 @@ def test_negated_or_educational_safety_low_routing(monkeypatch):
     
     # We also mock ChatOpenAI.invoke so it returns a simple text without trying to query the real API
     mock_chat = MagicMock()
-    mock_chat.invoke.return_value = AIMessage(content="Đây là thông tin học thuật về cấp cứu. [[uuid-1]]")
+    mock_chat.invoke.return_value = AIMessage(content="Bạn muốn tìm hiểu nội dung học thuật nào về cấp cứu?")
     monkeypatch.setattr(
         "apps.api.ai.orchestrator.core.agent.ChatOpenAI",
         lambda **kwargs: MagicMock(bind_tools=lambda tools: mock_chat)
