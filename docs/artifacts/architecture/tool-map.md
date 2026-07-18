@@ -25,8 +25,10 @@ Danh mục 10 LLM/utility tools và nguồn dữ liệu.
 | `get_specialty_list` | none | active specialties | Mock HIS |
 | `get_doctor_list` | optional specialty_id | doctors | Mock HIS |
 | `get_available_slots` | doctor_id, date range | slots | Mock HIS |
-| `create_appointment` | doctor/slot/patient/visit data | appointment_id, pending, created_at | Mock HIS |
-| `lookup_appointment` | appointment_id | appointment or null | Mock HIS |
+| `create_appointment_draft` | doctor/slot/patient/visit data | draft + public confirmation summary | Appointment Service |
+| `submit_appointment_request` | confirmed draft + idempotency key | request_id, pending_staff_review | Appointment Service + Mock HIS |
+| `get_patient_appointments` | authenticated patient context | authorized appointment summaries | Mock HIS |
+| `get_appointment_request_status` | authenticated context + request reference | authorized request state | Mock HIS |
 | `log_conversation` | session/message/metadata | async log_id | Analytics Store |
 | `detect_pii` | text | anonymized_text, detected flag | internal patterns |
 
@@ -36,6 +38,7 @@ Danh mục 10 LLM/utility tools và nguồn dữ liệu.
 - `detect_pii` precedes `log_conversation`.
 - Appointment tools are provider-neutral through Appointment Service/HIS Adapter.
 - Tool schemas are authoritative; LLM cannot invent tools or fields.
+- Tool visibility follows authorization and workflow state, not predicted intent. Staff-only confirm/reject operations are excluded from the patient agent.
 - Knowledge search uses vector + lexical candidates, RRF fusion and reranking; reranker failure returns the RRF order with degraded metadata.
 
 ## Dependencies

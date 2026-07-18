@@ -20,13 +20,13 @@ capabilities:
     name: Appointment Booking
     description: Multi-turn appointment collection, confirmation and pending creation through provider-neutral tools.
     required_artifacts: [ARCH-02, ARCH-03, ARCH-04, ARCH-05, ARCH-06, ARCH-07, ARCH-08, INT-01, INT-02, INT-03, INT-04, INT-05, INT-06, INT-07, INT-08, INT-09]
-    required_tools: [get_specialty_list, get_doctor_list, get_available_slots, create_appointment, fallback_response]
+    required_tools: [get_specialty_list, get_doctor_list, get_available_slots, create_appointment_draft, submit_appointment_request, fallback_response]
     required_contracts: [AppointmentBookingRequest, AppointmentBookingResponse, BookingFlowStateDTO, PatientAppointmentDataDTO, AppointmentCreateRequest, AppointmentDTO]
     pack_file: docs/reference-packs/capabilities/appointment-booking.pack.md
   - id: PC-04
     name: Appointment Status
     description: Minimal-reference appointment lookup with canonical status and safe next steps.
     required_artifacts: [ARCH-02, ARCH-03, ARCH-04, ARCH-05, ARCH-06, ARCH-07, ARCH-08, INT-01, INT-02, INT-03, INT-04, INT-05, INT-06, INT-07, INT-08, INT-09]
-    required_tools: [lookup_appointment, search_knowledge_base, fallback_response]
+    required_tools: [get_patient_appointments, get_appointment_request_status, search_knowledge_base, fallback_response]
     required_contracts: [AppointmentStatusRequest, AppointmentStatusResponse, AppointmentDTO, SuggestedActionDTO]
     pack_file: docs/reference-packs/capabilities/appointment-status.pack.md

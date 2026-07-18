@@ -31,7 +31,11 @@ Canonical DTO inventory, ownership and validation-critical fields.
 
 - `SessionCreateRequest`, `SessionDTO`, `SessionContextDTO`, `SessionContextPatchRequest`.
 - `MessageDTO`: role, content, intent, tools, citations, emergency metadata, time.
-- `BookingFlowStateDTO`: flow_id, step, selected IDs, collected/missing fields, version.
+- `BookingFlowStateDTO`: flow_id, exploring|draft_ready|awaiting_patient_confirmation|pending_staff_review|needs_information|confirmed|rejected, selected IDs, collected/missing fields, draft/request references and version.
+- `AgentDecisionDTO`: tool_call|clarify|final|abstain, normalized tool calls, public reason code, safety disposition and budget state; no intent-router or chain-of-thought fields.
+- `ToolPolicyDecisionDTO`: allow|deny|confirmation_required, validated arguments, reason code and workflow transition.
+- `AgentExecutionBudgetDTO`: max/used tool calls, max/used repairs, deadline and duplicate-call fingerprints.
+- `AgentInterruptDTO`: opaque thread/run reference, public confirmation summary and allowed decisions; no credentials, raw PII or hidden state.
 - `EmergencyContextDTO`: triggered, level/path/time/banner; Level 2 does not auto-reset.
 
 ### Knowledge/content DTOs
@@ -55,7 +59,9 @@ Canonical DTO inventory, ownership and validation-critical fields.
 
 - `SpecialtyDTO/PageDTO`, `DoctorDTO/PageDTO`, `AvailableSlotDTO/PageDTO`.
 - `PatientAppointmentDataDTO`: name, phone, dob, insurance, reason, first_visit|follow_up.
-- `AppointmentCreateRequest`: doctor, slot, patient data, confirmation token.
+- `AppointmentDraftDTO`: selected doctor/slot, scoped patient data, workflow state and public confirmation summary; it is not an appointment.
+- `AppointmentRequestDTO`: request ID, draft reference, pending_staff_review state and timestamps; it is not a confirmed appointment.
+- `AppointmentRequestSubmitRequest`: confirmed draft reference, confirmation token and idempotency key.
 - `AppointmentDTO`: appointment ID, doctor/schedule summary, scoped patient data, canonical status/timestamps/rejection reason.
 
 ### Configuration/analytics DTOs

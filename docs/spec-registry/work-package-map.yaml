@@ -156,12 +156,14 @@ work_packages:
     purpose: "Hiện thực hóa contract dùng chung mà không chặn schema database."
     dependencies: [WP-003]
     related_artifacts: [INT-04, INT-07, INT-09]
-    related_contracts: ["CapabilityResponseEnvelope", "UnifiedErrorEnvelope", "ClientContextDTO", "ChannelConfigurationDTO", "ChatConfigurationDTO"]
+    related_contracts: ["CapabilityResponseEnvelope", "UnifiedErrorEnvelope", "ClientContextDTO", "AgentDecisionDTO", "ToolPolicyDecisionDTO", "AgentExecutionBudgetDTO", "AgentInterruptDTO"]
     expected_outputs:
       - "Shared contract and configuration libraries"
     acceptance_criteria:
       - "Validation tuân thủ DTO canonical"
       - "Response/error/versioning thống nhất"
+      - "Agent state, budget, policy và interrupt/resume DTO không chứa secret, raw PII hoặc chain-of-thought"
+      - "Runtime config mặc định OpenAI và cho phép override provider/model bằng environment"
   - id: WP-101
     title: "Session, configuration and feedback foundation services"
     layer: L1
@@ -169,7 +171,7 @@ work_packages:
     capability: "ALL_CAPABILITIES"
     owner_pool: API
     size: M
-    purpose: "Cung cấp session/context/config/feedback không có AI reasoning."
+    purpose: "Cung cấp session, thread ownership, auth/consent context, runtime config và feedback không có AI reasoning."
     dependencies: [WP-006, WP-009]
     related_artifacts: [INT-03, INT-04, INT-07]
     related_contracts: ["FND-SES-01 CreateSession", "FND-SES-02 GetSessionContext", "FND-SES-03 PatchSessionContext", "FND-CFG-01 GetChannels", "FND-CFG-02 GetChatConfiguration", "FND-FBK-01 CreateFeedback"]
@@ -178,6 +180,7 @@ work_packages:
     acceptance_criteria:
       - "Foundation API không gọi LLM"
       - "Session và config đúng retention/channel"
+      - "Chỉ chủ sở hữu được invoke/resume LangGraph thread; consent và authorization context được xác thực server-side"
   - id: WP-102
     title: "Knowledge, content workflow and conflict services"
     layer: L1
@@ -218,15 +221,16 @@ work_packages:
     capability: "PC-03,PC-04"
     owner_pool: API
     size: L
-    purpose: "Cung cấp khoa, bác sĩ, slot, tạo và tra cứu lịch qua Mock HIS."
+    purpose: "Cung cấp khoa, bác sĩ, slot và state machine draft → request → staff decision qua Mock HIS."
     dependencies: [WP-008, WP-009]
     related_artifacts: [ARCH-03, ARCH-08, INT-03, INT-04]
-    related_contracts: ["FND-APT-01 ListSpecialties", "FND-APT-02 ListDoctors", "FND-APT-03 ListAvailableSlots", "FND-APT-04 CreateAppointment", "FND-APT-05 GetAppointment", "AppointmentDTO"]
+    related_contracts: ["FND-APT-01 ListSpecialties", "FND-APT-02 ListDoctors", "FND-APT-03 ListAvailableSlots", "FND-APT-04 CreateDraft", "FND-APT-05 SubmitRequest", "FND-APT-06 GetAuthorizedStatus", "AppointmentDraftDTO", "AppointmentRequestDTO", "AppointmentDTO"]
     expected_outputs:
       - "Appointment service and Mock HIS adapter"
     acceptance_criteria:
-      - "Lịch mới mặc định pending"
-      - "Create idempotent; lookup dùng tham chiếu tối thiểu"
+      - "Draft, request và confirmed appointment là ba entity/state khác nhau"
+      - "Patient confirmation chỉ tạo pending_staff_review; chỉ staff được confirm/reject"
+      - "Submit idempotent; lookup bắt buộc identity scope và tham chiếu tối thiểu"
   - id: WP-105
     title: "Conversation, analytics and audit foundation services"
     layer: L1
@@ -234,7 +238,7 @@ work_packages:
     capability: "ALL_CAPABILITIES"
     owner_pool: API
     size: M
-    purpose: "Lưu hội thoại ẩn danh, analytics, audit và history."
+    purpose: "Lưu hội thoại ẩn danh, analytics và immutable agent/tool/policy/approval audit history."
     dependencies: [WP-006, WP-009]
     related_artifacts: [ARCH-08, INT-03, INT-04]
     related_contracts: ["FND-HIS-01 GetConversationHistory", "FND-ANA-01 GetAnalyticsSummary", "ConversationHistoryPageDTO", "AnalyticsSummaryDTO"]
@@ -243,6 +247,7 @@ work_packages:
     acceptance_criteria:
       - "PII không được ghi vào analytics"
       - "Retention và audit integrity được kiểm thử"
+      - "Audit persistence tách khỏi LangGraph checkpoint và không lưu chain-of-thought"
   - id: WP-201
     title: "Knowledge search and fallback tools"
     layer: L2
@@ -262,13 +267,13 @@ work_packages:
       - "Retrieval bắt buộc lọc is_active, effective date và approval status trước khi trả chunk"
       - "Tool rerank fused candidates, trả hybrid/RRF/rerank metadata và giữ RRF order khi reranker lỗi"
   - id: WP-202
-    title: "Emergency trigger and pre-filter tool"
+    title: "Emergency gate and restricted safety tools"
     layer: L2
     module: M2.2
     capability: "PC-02"
     owner_pool: AI-CORE
     size: M
-    purpose: "Hiện thực pre-filter deterministic và trigger emergency."
+    purpose: "Hiện thực safety-first high/caution/low gate trước agent và emergency tools giới hạn."
     dependencies: [WP-103, WP-009]
     related_artifacts: [ARCH-06, ARCH-09, INT-06]
     related_contracts: ["trigger_emergency", "PreFilterResultDTO", "EmergencyEventReceiptDTO"]
@@ -277,22 +282,25 @@ work_packages:
     acceptance_criteria:
       - "Kiểm tra trước LLM"
       - "Negative context giảm false positive theo test seed"
+      - "High bypass LLM; caution/uncertain chỉ vào restricted safety profile; low mới vào general agent"
   - id: WP-203
-    title: "Appointment tools"
+    title: "Policy-aware appointment tools"
     layer: L2
     module: M2.3
     capability: "PC-03,PC-04"
     owner_pool: API
     size: M
-    purpose: "Bọc Foundation APIs thành tool appointment provider-neutral."
+    purpose: "Bọc Foundation APIs thành public/authenticated read, workflow draft và confirmation-required request tools."
     dependencies: [WP-104, WP-009]
     related_artifacts: [ARCH-06, INT-06, INT-07]
-    related_contracts: ["get_specialty_list", "get_doctor_list", "get_available_slots", "create_appointment", "lookup_appointment"]
+    related_contracts: ["get_specialty_list", "get_doctor_list", "get_available_slots", "create_appointment_draft", "submit_appointment_request", "get_patient_appointments", "get_appointment_request_status"]
     expected_outputs:
       - "Appointment tool adapters"
     acceptance_criteria:
       - "Input/output đúng tool contract"
       - "Timeout/retry/idempotency đúng chính sách"
+      - "Write tools không execute nếu thiếu workflow state, authorization hoặc resumable confirmation"
+      - "Staff-only confirm/reject tools không được đăng ký cho patient agent"
   - id: WP-204
     title: "PII detection and conversation logging tools"
     layer: L2
@@ -300,7 +308,7 @@ work_packages:
     capability: "ALL_CAPABILITIES"
     owner_pool: AI-CORE
     size: M
-    purpose: "Ẩn danh PII trước khi ghi log và phát receipt bất đồng bộ."
+    purpose: "Ẩn danh PII và audit agent/tool/policy/approval transitions mà không lưu chain-of-thought."
     dependencies: [WP-105, WP-009]
     related_artifacts: [ARCH-06, INT-06, INT-07]
     related_contracts: ["detect_pii", "log_conversation"]
@@ -309,38 +317,43 @@ work_packages:
     acceptance_criteria:
       - "PII category được phát hiện/che"
       - "Logging failure không làm lộ dữ liệu hoặc phá response"
+      - "Audit ghi tool name, validated args digest, authorization outcome, result status và approval decision"
   - id: WP-301
-    title: "LLM provider abstraction"
+    title: "Native tool-calling provider abstraction"
     layer: L3
     module: M3.1
     capability: "ALL_CAPABILITIES"
     owner_pool: AI-CORE
     size: M
-    purpose: "Cô lập provider LLM/embedding theo kiến trúc đã chốt."
+    purpose: "Cô lập provider LLM/embedding; OpenAI mặc định, provider/model cấu hình qua environment và hỗ trợ native tool calling."
     dependencies: [WP-201, WP-202, WP-203, WP-204]
     related_artifacts: [ARCH-03, ARCH-09, INT-05]
-    related_contracts: ["ReasoningResultDTO", "UnifiedErrorEnvelope"]
+    related_contracts: ["AgentDecisionDTO", "UnifiedErrorEnvelope"]
     expected_outputs:
       - "LLM and embedding provider adapters"
     acceptance_criteria:
       - "Không rò rỉ provider vào Capability API"
       - "Timeout/failure ánh xạ error contract"
+      - "OpenAI là mặc định; provider/model override qua environment không rò rỉ vào Capability API"
+      - "Tool calls được chuẩn hóa provider-neutral"
   - id: WP-302
-    title: "Guardrails, context and orchestration core"
+    title: "LangGraph bounded agent and guardrail core"
     layer: L3
     module: M3.2
     capability: "ALL_CAPABILITIES"
     owner_pool: AI-CORE
     size: L
-    purpose: "Điều phối context, guardrail, tool calls, explainability và fallback."
+    purpose: "Điều phối LangGraph state, dynamic tools, policy gates, checkpoint/interrupt, guardrail, grounding và fallback mà không dùng intent router."
     dependencies: [WP-301, WP-201, WP-202, WP-203, WP-204]
     related_artifacts: [ARCH-05, ARCH-07, INT-05, INT-07]
-    related_contracts: ["ReasoningResultDTO", "PlanningResultDTO", "ObservationResultDTO", "ConversationResultDTO", "ExplainabilityResultDTO", "GroundingFallbackBehavior"]
+    related_contracts: ["AgentDecisionDTO", "ToolPolicyDecisionDTO", "ObservationResultDTO", "ConversationResultDTO", "ExplainabilityResultDTO", "GroundingFallbackBehavior"]
     expected_outputs:
-      - "AI orchestration and guardrail core"
+      - "LangGraph bounded agent, persistence, policy and guardrail core"
     acceptance_criteria:
       - "Emergency prefilter chạy trước reasoning"
       - "Output có grounding/explainability và không lộ chain-of-thought"
+      - "Model tự chọn tool từ visible subset; backend kiểm tra policy trước execution"
+      - "Confirmation interrupt/resume và execution budget có test"
   - id: WP-303
     title: "Information assistance AI pipeline"
     layer: L3
@@ -348,7 +361,7 @@ work_packages:
     capability: "PC-01"
     owner_pool: AI-CORE
     size: M
-    purpose: "Xây pipeline hỏi đáp grounded, multi-turn và citation."
+    purpose: "Cấu hình information-assistance profile trên shared agent cho grounded multi-turn và citation; không tạo router/agent loop riêng."
     dependencies: [WP-302, WP-201]
     related_artifacts: [ARCH-04, ARCH-05, INT-05]
     related_contracts: ["InformationAssistanceRequest", "InformationAssistanceResponse", "CitationDTO"]
@@ -357,6 +370,7 @@ work_packages:
     acceptance_criteria:
       - "Không trả factual claim thiếu căn cứ"
       - "BHYT chỉ được trả từ chunk approved_for_pilot/effective có citation; không xác định quyền lợi hoặc số tiền cuối cùng theo hồ sơ cá nhân"
+      - "Factual final answer phải có validated observation hoặc approved static response"
   - id: WP-304
     title: "Emergency safety AI pipeline"
     layer: L3
@@ -364,7 +378,7 @@ work_packages:
     capability: "PC-02"
     owner_pool: AI-CORE
     size: M
-    purpose: "Xây caution path emergency sau lớp deterministic."
+    purpose: "Xây restricted caution/uncertain safety profile sau deterministic emergency gate."
     dependencies: [WP-302, WP-202]
     related_artifacts: [ARCH-04, ARCH-05, ARCH-09, INT-05]
     related_contracts: ["EmergencySafetyRequest", "EmergencySafetyResponse", "EmergencyProtocolDTO"]
@@ -373,6 +387,7 @@ work_packages:
     acceptance_criteria:
       - "Không chẩn đoán/điều trị"
       - "Level 1 chỉ hướng dẫn contact handoff"
+      - "Restricted profile không nhìn thấy knowledge/appointment write tools"
   - id: WP-305
     title: "Appointment booking AI pipeline"
     layer: L3
@@ -380,15 +395,15 @@ work_packages:
     capability: "PC-03"
     owner_pool: AI-CORE
     size: M
-    purpose: "Điều phối thu thập dữ liệu nhiều lượt, confirm rồi tạo pending."
+    purpose: "Xây booking subgraph: collect → draft → patient interrupt/resume → pending staff review."
     dependencies: [WP-302, WP-203]
     related_artifacts: [ARCH-04, ARCH-05, INT-05]
     related_contracts: ["AppointmentBookingRequest", "AppointmentBookingResponse", "BookingFlowStateDTO", "PatientAppointmentDataDTO"]
     expected_outputs:
       - "PC-03 orchestration pipeline"
     acceptance_criteria:
-      - "Không tạo lịch trước xác nhận"
-      - "State chuyển bước đúng contract"
+      - "Không submit request trước patient confirmation và không tự confirm appointment"
+      - "Interrupt/resume bảo toàn thread ownership, draft version và idempotency"
   - id: WP-306
     title: "Appointment status AI pipeline"
     layer: L3
@@ -396,7 +411,7 @@ work_packages:
     capability: "PC-04"
     owner_pool: AI-CORE
     size: S
-    purpose: "Điều phối tra cứu trạng thái và next action an toàn."
+    purpose: "Cấu hình authenticated status profile trên shared agent và trả next action an toàn."
     dependencies: [WP-302, WP-203]
     related_artifacts: [ARCH-04, ARCH-05, INT-05]
     related_contracts: ["AppointmentStatusRequest", "AppointmentStatusResponse", "AppointmentDTO"]
@@ -405,6 +420,7 @@ work_packages:
     acceptance_criteria:
       - "Không suy diễn trạng thái"
       - "Không tìm thấy trả fallback an toàn"
+      - "Không lộ trạng thái giữa bệnh nhân; tool chỉ visible/executable khi auth context hợp lệ"
   - id: WP-401
     title: "Information Assistance Capability API"
     layer: L4
@@ -412,7 +428,7 @@ work_packages:
     capability: "PC-01"
     owner_pool: API
     size: M
-    purpose: "Expose một primary API cho PC-01."
+    purpose: "Expose PC-01 profile qua shared agent execute/stream contract."
     dependencies: [WP-303, WP-101, WP-102, WP-105]
     related_artifacts: [INT-02, INT-08, INT-09]
     related_contracts: ["InformationAssistanceAPI", "InformationAssistanceRequest", "InformationAssistanceResponse", "CapabilityResponseEnvelope"]
@@ -428,7 +444,7 @@ work_packages:
     capability: "PC-02"
     owner_pool: API
     size: M
-    purpose: "Expose một primary API cho PC-02."
+    purpose: "Expose deterministic emergency và restricted safety-agent paths qua cùng response contract."
     dependencies: [WP-304, WP-101, WP-103, WP-105]
     related_artifacts: [INT-02, INT-08, INT-09]
     related_contracts: ["EmergencySafetyAPI", "EmergencySafetyRequest", "EmergencySafetyResponse", "CapabilityResponseEnvelope"]
@@ -444,15 +460,15 @@ work_packages:
     capability: "PC-03"
     owner_pool: API
     size: M
-    purpose: "Expose một primary API cho PC-03."
+    purpose: "Expose booking execute/resume API cho LangGraph confirmation workflow."
     dependencies: [WP-305, WP-101, WP-104, WP-105]
     related_artifacts: [INT-02, INT-08, INT-09]
     related_contracts: ["AppointmentBookingAPI", "AppointmentBookingRequest", "AppointmentBookingResponse", "CapabilityResponseEnvelope"]
     expected_outputs:
       - "PC-03 endpoint and contract tests"
     acceptance_criteria:
-      - "Idempotency key được áp dụng khi create"
-      - "Pending status được bảo toàn"
+      - "Resume xác minh thread ownership và confirmation token"
+      - "Submit idempotent và chỉ trả pending_staff_review, không trả confirmed giả"
   - id: WP-404
     title: "Appointment Status Capability API"
     layer: L4
@@ -460,7 +476,7 @@ work_packages:
     capability: "PC-04"
     owner_pool: API
     size: S
-    purpose: "Expose một primary API cho PC-04."
+    purpose: "Expose authenticated appointment/request status profile qua shared agent."
     dependencies: [WP-306, WP-101, WP-104, WP-105]
     related_artifacts: [INT-02, INT-08, INT-09]
     related_contracts: ["AppointmentStatusAPI", "AppointmentStatusRequest", "AppointmentStatusResponse", "CapabilityResponseEnvelope"]
@@ -469,6 +485,7 @@ work_packages:
     acceptance_criteria:
       - "Lookup không yêu cầu dữ liệu thừa"
       - "Not-found/error đúng unified contract"
+      - "Auth failure và cross-patient lookup không được phân biệt theo cách làm lộ dữ liệu"
   - id: WP-501
     title: "Shared chat client, SSE and channel shells"
     layer: L5
@@ -485,6 +502,7 @@ work_packages:
     acceptance_criteria:
       - "Demo được cả hai kênh"
       - "Auth/session/error/stream handling nhất quán"
+      - "SSE/client hỗ trợ confirmation_required và resume bằng opaque thread/run reference"
   - id: WP-502
     title: "Information response, citation and actions UI"
     layer: L5
@@ -663,3 +681,4 @@ work_packages:
       - "Rate limit/auth/RLS/fallback/performance đạt mức pilot"
       - "Placeholder contact và emergency mock được chặn hoặc sign-off trước demo thật"
       - "Chỉ nguồn bootstrap approved_for_pilot hoặc content đã được workflow phê duyệt mới answerable"
+      - "Checkpoint retention/serialization protection, thread ownership, interrupt recovery, execution budget và duplicate-write prevention pass"

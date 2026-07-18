@@ -18,3 +18,9 @@ pytest-asyncio
 # Development automation: packet parsing and governance validation.
 PyYAML
 requests
+
+# LangGraph and LangChain agent orchestration
+langgraph
+langchain-core
+langchain-openai
+langgraph-checkpoint-postgres

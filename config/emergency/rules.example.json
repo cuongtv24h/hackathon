@@ -1,0 +1,13 @@
+{
+  "rules": [
+    {
+      "rule_id": "RULE-EMERGENCY-001",
+      "keywords": ["cấp cứu", "nguy kịch", "ngừng tim", "khó thở dữ dội", "đau ngực dữ dội", "tai nạn giao thông", "đột quỵ"],
+      "description": "Direct emergency terms indicating acute medical crisis."
+    }
+  ],
+  "prohibited_content": ["tự tử", "tự sát", "chết"],
+  "version": "1.0.0",
+  "effective_date": "2026-07-18",
+  "approval_status": "mock"
+}
