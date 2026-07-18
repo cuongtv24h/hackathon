@@ -3,6 +3,7 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { AppointmentFlow, type AppointmentBookingResponse, type AppointmentStatusResponse } from './features/appointments/AppointmentFlow'
 import { EmergencyBanner, type EmergencySafetyResponse } from './features/emergency-safety/EmergencyBanner'
 import { InformationResponse, type InformationAssistanceResponse } from './features/information-assistance/InformationResponse'
+import { SpeechInput, type SpeechRecognitionProvider } from './features/speech-to-text'
 import { ChatClient, ChatClientError, type ChatCapability, type CapabilityResponseEnvelope, type FoundationPage } from './shared/ChatClient'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? ''
@@ -23,7 +24,11 @@ const quickActions = [
   { id: 'emergency', icon: '!', title: 'Tình huống khẩn cấp', prompt: 'Tôi cần hỗ trợ khẩn cấp.' },
 ]
 
-function App() {
+export interface AppProps {
+  speechRecognitionProvider?: SpeechRecognitionProvider
+}
+
+function App({ speechRecognitionProvider }: AppProps) {
   const [input, setInput] = useState('')
   const [mode, setMode] = useState<'chat' | 'booking' | 'status'>('chat')
   const [loading, setLoading] = useState(false)
@@ -145,7 +150,7 @@ function App() {
         {loading ? <div className="typing"><i /><i /><i /> Đang xử lý yêu cầu…</div> : null}
         {error ? <p className="error" role="alert">{error}</p> : null}<div ref={endRef} />
       </section>
-      <footer className="composer"><form onSubmit={submitChat}><textarea aria-label="Nội dung" placeholder="Nhập câu hỏi của bạn…" value={input} onChange={(e) => setInput(e.target.value)} disabled={loading || mode !== 'chat'} /><button aria-label="Gửi" disabled={!input.trim() || loading || mode !== 'chat'}>↑</button></form><p>Thông tin chỉ mang tính tham khảo, không thay thế tư vấn y tế trực tiếp.</p></footer>
+      <footer className="composer"><form onSubmit={submitChat}><textarea aria-label="Nội dung" placeholder="Nhập câu hỏi của bạn…" value={input} onChange={(e) => setInput(e.target.value)} disabled={loading || mode !== 'chat'} /><SpeechInput value={input} onChange={setInput} disabled={loading || mode !== 'chat'} provider={speechRecognitionProvider} /><button aria-label="Gửi" disabled={!input.trim() || loading || mode !== 'chat'}>↑</button></form><p>Thông tin chỉ mang tính tham khảo, không thay thế tư vấn y tế trực tiếp.</p></footer>
     </section>
   </main>
 }

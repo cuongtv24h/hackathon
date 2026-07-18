@@ -1,12 +1,14 @@
 // === TASK:WP-501:START ===
 import { useState } from 'react'
+import { SpeechInput, type SpeechRecognitionProvider } from '../features/speech-to-text'
 import type { ChatClient, CapabilityResponseEnvelope } from '../shared/ChatClient'
 
 export interface StandaloneShellProps {
   client: ChatClient
+  speechRecognitionProvider?: SpeechRecognitionProvider
 }
 
-export function StandaloneShell({ client }: StandaloneShellProps) {
+export function StandaloneShell({ client, speechRecognitionProvider }: StandaloneShellProps) {
   const [prompt, setPrompt] = useState('')
   const [reply, setReply] = useState('Standalone channel ready')
 
@@ -29,6 +31,7 @@ export function StandaloneShell({ client }: StandaloneShellProps) {
       <h1>Hospital chat</h1>
       <label htmlFor="standalone-prompt">Prompt</label>
       <textarea id="standalone-prompt" value={prompt} onChange={(event) => setPrompt(event.target.value)} />
+      <SpeechInput value={prompt} onChange={setPrompt} provider={speechRecognitionProvider} />
       <button type="button" onClick={ask} disabled={prompt.trim().length === 0}>
         Ask
       </button>

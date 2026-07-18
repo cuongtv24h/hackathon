@@ -1,12 +1,14 @@
 // === TASK:WP-501:START ===
 import { useState } from 'react'
+import { SpeechInput, type SpeechRecognitionProvider } from '../features/speech-to-text'
 import type { ChatClient, CapabilityResponseEnvelope } from '../shared/ChatClient'
 
 export interface WidgetShellProps {
   client: ChatClient
+  speechRecognitionProvider?: SpeechRecognitionProvider
 }
 
-export function WidgetShell({ client }: WidgetShellProps) {
+export function WidgetShell({ client, speechRecognitionProvider }: WidgetShellProps) {
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState('Ready')
 
@@ -29,6 +31,7 @@ export function WidgetShell({ client }: WidgetShellProps) {
       <h2>Hospital chat widget</h2>
       <label htmlFor="widget-message">Message</label>
       <input id="widget-message" value={message} onChange={(event) => setMessage(event.target.value)} />
+      <SpeechInput value={message} onChange={setMessage} provider={speechRecognitionProvider} />
       <button type="button" onClick={submitMessage} disabled={message.trim().length === 0}>
         Send
       </button>
